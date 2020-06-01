@@ -40,7 +40,7 @@ header {
 }
 
 .uranai {
-  font-size:30px;
+  /* font-size:30px;　*/
   background-color:rgba(0,0,0,0.1);
   float:left;
   height: 85%;
@@ -49,11 +49,11 @@ header {
 }
 
 .uranai button {
-  font-size:30px;
+  /* font-size:30px; */
   background: black;
   border:gray;
   height: 2em;
-  width:300px;
+  width:200px;
 }
 
 footer {
