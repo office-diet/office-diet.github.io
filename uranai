@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script type="text/javascript" src="script.js"></script>
+  </head>
+  <body class="slide">
+    <div id="bodycover">
+      <header>
+        <div class="container">
+          <h1>office_diet</h1>
+        </div>
+      </header>
+      <div class="clock">
+        <div class="container">
+        </div>
+      </div>
+  
+      <div class="uranai">
+        <div class="container">
+          <p>結果：<span id="answer"></span></p>
+          <p>アドバイス：<span id="advise"></span></p>
+          <p>ラッキーアイテム：<span id="lucky"></span></p>
+          
+          <button onclick="fncUranai()">占ってみる</button>
+        </div>
+      </div>
+      <footer>
+        office_diet 2020-10000
+      </footer>
+    </div>
+  </body>
+</html>
