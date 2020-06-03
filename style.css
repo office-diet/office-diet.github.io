@@ -7,59 +7,113 @@ html, body , h1 {
   padding:0;
   height: 100%;
 }
-.slide {
+
+body {
+  background-color: black;
+}
+
+#backImage {
+  height: 100%;
   background-image: url('01.jpg');
   background-attachment: fixed;
   background-position: center;
   background-repeat: no-repeat;
   background-color:darkslategray;
-}
-
-#bodycover{
-  height: 100%;
-  background-color:rgba(0,0,0,0.5);
+  background-color: rgba(0, 0, 0, 0.5);
+  background-blend-mode: darken;
 }
 
 .container {
-  margin:0 120px;
+  width: 80%;
+  margin:0 auto;
 }
 
 header {
   height: 10% ;
-  background-color:rgba(0,0,0,0.1);
+  background-color: rgba(0, 0, 0, 0.8);
   display: block;
   color:white;
 }
 
 .clock {
   background-color:rgba(100, 100, 255, 0.1);
-  float:left;
+  /* float:left; */
   height: 85%;
   width:50%;
   display: none;
 }
 
 .uranai {
-  /* font-size:30px;　*/
+  font-size:30px;
   background-color:rgba(0,0,0,0.1);
-  float:left;
   height: 85%;
   width: 100%;
+  /* float:left; */  
   /* width:50%; */
 }
 
-.uranai button {
-  /* font-size:30px; */
+.warikan {
+  font-size:30px;
+  background-color:rgba(0,0,0,0.1);
+  /* float:left; */
+  height: 85%;
+  width: 100%;
+  display:block;
+  /* width:50%; */
+}
+
+input {
+  font-size:30px;
+  color:black;
+  background:gray;;
+  height: 1.5em;
+  width:300px;
+}
+
+button {
+  font-size:30px;
   background: black;
   border:gray;
   height: 2em;
-  width:200px;
+  width:300px;
+}
+
+p {
+  font-size:30px;
 }
 
 footer {
   clear:left;
   height: 5%;
-  background-color: black;
+  background-color: rgba(0, 0, 0, 0.8);
   display: block;
 }
 
+@media screen and (max-width: 480px) { 
+  .uranai {
+    font-size:14px;
+  }
+  
+  .warikan {
+    font-size:14px;
+  }
+  
+  input {
+    font-size:14px;
+    height: 1.5em;
+    width:200px;
+  }
+  
+  button {
+    font-size:14px;
+    background: black;
+    border:gray;
+    height: 2em;
+    width:200px;
+  }
+  
+  p {
+    font-size:14px;
+  }
+  
+}
