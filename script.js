@@ -60,3 +60,26 @@ function fncSetsuzokushi(){
 function fncRandomSelect(ary){
   return ary[Math.floor(Math.random() * ary.length)]
 };
+
+// ワリカンツール
+
+const aryAlphabet = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+function fncWarikan(){
+  let totalPrice = document.getElementById('totalPrice').value;
+  let count = document.getElementById('count').value;
+  let answer = '';
+  let aryRandom = new Array(count);
+  let totalRandom = 0;
+   
+  for (let i = 0; i < count; i++){
+    aryRandom[i] = Math.random();
+    totalRandom += aryRandom[i];
+  }
+
+  for (let i = 0; i < count; i++){
+    answer += '<p>'+ aryAlphabet[i] + 'さん：' + Math.round( totalPrice * aryRandom[i] / totalRandom ) +'円</p>' 
+  }
+
+  document.getElementById('answer').innerHTML = answer;
+  
+}
