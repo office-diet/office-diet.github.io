@@ -76,10 +76,12 @@ button {
   border:gray;
   height: 2em;
   width:300px;
+  padding:0.3em 0;
 }
 
 p {
   font-size:30px;
+  padding:0.3em 0;
 }
 
 footer {
