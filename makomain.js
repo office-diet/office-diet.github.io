@@ -199,11 +199,12 @@ const youTubeUrl = document.getElementById('url')
 
 //ウインドウを開く関数
 function MakoJump() {
-  if (youTubeUrl === '' ){
+  if (youTubeUrl.value !== '' ){
     document.getElementById("btnMako").disabled = "disabled";
     document.getElementById("btnMako").innerHTML = "マコなり目覚まし実行中";
     document.getElementById("slcHour").disabled = "disabled";
     document.getElementById("slcMinute").disabled = "disabled";
+    youTubeUrl.disabled = 'disabled'
   } else {
     alert('再生する動画のURLが入力されていません！');
   }
