@@ -22,18 +22,17 @@ body
 /* id="clock_date" のspan要素 */
 #clock_date 
 {
-  margin-right: 0;
+  margin: 0;
   text-align: right;
-  font-size:0.5em;
-  padding-right: 0.5em;
+  font-size:0.4em;
   display: block;
 }
 
 #clock_time
 {
-  font-size: 2.2em;
+  font-size: 2.3em;
   display: block;
-  margin:0;
+  margin:0 0 -0.2em;
   padding:0;
 }
 
@@ -41,10 +40,10 @@ body
 {
   font-size: 0.5em;
   display: flex;
-  margin:0 auto;
+  margin:0 auto 0.5em;
   padding:0;
-  height: 2em;
-  line-height: 2em;
+  height: 1.5em;
+  line-height: 1.5em;
 }
 
 
@@ -82,7 +81,7 @@ button{
   text-indent: 0.01px;
   text-overflow: '';
   background: none transparent;
-  line-height: 2em;
+  line-height: 1.5em;
   font-size: inherit;
   font-family: inherit;
   color: inherit;
@@ -95,21 +94,22 @@ button{
   width:73%;
 }
 
-label{
-  margin:1em 0;
-  line-height: 0.5em;
-  font-size: 0.5em;
+.label{
+  margin:0.6em 0 0.4em;
+  height: 0.3em;
+  line-height: 0.3em;
+  font-size: 0.3em;
   font-family: inherit;
   color: inherit;
   display: block;
 }
 input {
-  margin:1em 0;
   border:grey 1px solid;
   border-radius: 0.2em;
   background: none transparent;
   font-family: inherit;
   color: inherit;
   display:block;
+  font-size:0.15em;
   width:100%
 }
