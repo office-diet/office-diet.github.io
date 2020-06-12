@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+  <button onclick="winOpen()"></button>
+
+  <script type="text/javascript">
+    // 親ウインドウからサブウインドウを閉じる
+    
+    var winObj;	//サブウインドウオブジェクト
+    
+    // サブウインドウOPEN
+    function winOpen(){
+      winObj = window.open('https://twitter.com/compose/tweet', 'sample2');
+      window.focus();
+      winObj.focus();
+      setTimeout(() => {
+       alert(winObj.document.all.count);        
+      }, 2000);
+    }
+    
+    // サブウインドウCLOSE
+    function winClose(){
+      if( (winObj) && (!winObj.closed) ){   //サブウインドウが開かれているか？
+        winObj.close();                     //サブウインドウを閉じる
+      }
+      else{
+        alert('サブウインドウは開かれていません');
+      }
+      winObj = null;
+    }
+
+    winOpen();
+    </script>
+                
+</body>
+</html>
