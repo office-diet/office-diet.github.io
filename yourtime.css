@@ -1,0 +1,117 @@
+* {
+  color:gray;
+}
+
+html, body, h1, p {
+  margin:0;
+  padding:0;
+  height: 100%;
+}
+
+
+body {
+  background-color: black;
+}
+
+#backImage {
+  height: 100%;
+  background-image: url('21.jpg');
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color:darkslategray;
+  background-color: rgba(0, 0, 0, 0.7);
+  background-blend-mode: darken;
+}
+
+.container {
+  width: 80%;
+  margin:0 auto;
+}
+
+header {
+  height: 10% ;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: block;
+  color:white;
+}
+
+
+.main {
+  font-size:30px;
+  background-color:rgba(0,0,0,0.1);
+  height: 85%;
+  width: 100%;
+}
+
+
+input {
+  font-size:30px;
+  color:black;
+  background:gray;;
+  height: 1.5em;
+  width:300px;
+  border-radius: 0.3em;
+  margin:0.5em 0;
+}
+
+button {
+  font-size:30px;
+  background: black;
+  border:gray;
+  border-radius: 0.3em;
+  height: 2em;
+  width:500px;
+  padding:0.3em 0;
+  margin:0.5em 0;
+}
+
+#answer {
+  background:rgba(150, 150, 150, 0.9);
+  width:480px;
+  height: 280px;
+  padding:10px;
+  color:#222;
+  border-radius: 0.3em;;
+}
+
+footer {
+  clear:left;
+  height: 5%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: block;
+}
+
+@media screen and (max-width: 480px) { 
+  .main {
+    font-size:14px;
+  }
+  
+  input {
+    font-size:14px;
+    height: 1.5em;
+    width:200px;
+  }
+  
+  button {
+    font-size:14px;
+    background: black;
+    border:gray;
+    height: 2em;
+    width:200px;
+  }
+  
+  #answer {
+    padding:0;
+    font-size:14px;
+    height: 5em;
+    width:290px;
+    padding: 5px 5px;
+  }
+
+
+  h1, p, label, footer {
+    font-size:14px;
+  }
+  
+}
