@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1分メモトレーニング</title>
+    <link rel="stylesheet" href="memo.css">
+  </head>
+  <body>
+    <header>
+      <div class="container header-info">
+        1分メモトレーニング
+      </div>
+      <div id="info" class="info">
+        <h2>【1分メモトレーニングの使い方】</h1>
+        <div>
+          <h3>基本操作</h3>
+          <ul>
+            <li>
+              「メモの枚数」を選択してください。
+            </li>
+            <li>
+              入力欄に文字を入力・決定すると、入力内容が下段のリストへ追加されます。
+            </li>
+            <li>
+              一番最初のリストへの追加から、60秒が制限時間です。<br>
+            </li>
+            <li>
+              入力欄がロックされた状態で、「次へ」ボタンを押すと入力欄のロックが解除されます。
+            </li>
+            <li>
+              上部赤文字部にランダムな課題が表示されますので、連想されることを入力してください。
+            </li>
+          </ul>
+          <h3>初期課題</h3>
+          <ul>
+            <li>
+              現在あなたの抱える課題を無条件に、思いつくまま入力してください。
+            </li>
+            <li>
+              60秒間で、できるだけ大量に課題をあげることが目標です。<br>
+            </li>
+            <li>
+              自分が入力した課題農地の一つが「メモ-01」の課題になります。
+            </li>
+          </ul>
+          <h3>メモ-01〜09</h3>
+          <ul>
+            <li>
+              前作業で自分が入力した課題・解決方法などから、次の課題がランダムで選択されます。
+            </li>
+            <li>
+              初期課題同様、解決策・新たな課題・関連事項などを大量にあげることが目標です。
+            </li>
+          </ul>
+          <h3>メモ-終了後</h3>
+          <ul>
+            <li>
+              「次へ」ボタンをクリックすると、自分が入力したメモが全て表示されます。
+            </li>
+            <li>
+              自分が入力したのメモをもとに思考してください。
+            </li>
+          </ul>
+          <h3 class="point">ポイント</h3>
+          <ul>
+            <li>
+              リラックスして、無意識のような状態で考えてください。
+            </li>
+            <li>
+              関係ないように思える「思いつき」も書いてください。
+            </li>
+            <li>
+              「違う」「間違っている」「書かないでおこう」という判断を排除してください。
+            </li>
+          </ul>
+      
+        </div>
+      
+      </div>
+    </header>
+    <div class="main container">
+      <div>
+        TIMER：<span id="timer">60.0</span>　メモの枚数：
+        <select>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+        </select>
+      </div>
+      <div >
+        THEME：<span id="theme" class="theme">初期課題（自由記入）</span>
+      </div>
+      <input type="text" id="input" autocomplete="off" onkeypress="fncEnter();"> 
+      <div id="btn" onclick="fncNext();">次へ</div>
+      <div id="memoArea">
+        <div class="memo" id="memo-00">
+          <p>初期課題</p>
+          <ul></ul>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <div class="container">
+        Copyright © 2020-2999 office_diet All Rights Reserved.
+      </div>
+    </footer>
+  <script src="memo.js"></script>
+</body>
+</html>
