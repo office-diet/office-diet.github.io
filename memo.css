@@ -31,6 +31,7 @@ header {
   padding:20px;
   box-sizing: border-box;
 }
+
 input {
   margin:10px 0;
   padding:5px 5px;
@@ -38,6 +39,7 @@ input {
   font-size: inherit;
   box-sizing: border-box;
 }
+
 #timer {
   font-size: 1.5em;
 }
@@ -45,13 +47,116 @@ select {
   font-size: 1.5em;
   padding:0 10px;
 }
+
 #theme {
   color:red;
   font-size:1.5em;
+  cursor: pointer;
 }
+
+#theme:hover {
+  background:rgba(255,200,200,0.2);
+}
+
+#modal-back {
+  background-color: rgba(120, 120, 120,0.5);
+  display:block;
+  position: absolute;
+  top:0;
+  left:0;
+  width: 100%;
+  height: 100%;
+}
+
+.modal {
+  position: absolute;
+  top:20%;
+  left:50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+}
+
+.close {
+  transform: translateY(-1000px);
+}
+
+.head-left {
+  display:inline-block ;
+  font-size: 1.5em;
+  height:2em;
+  line-height: 2em;
+  width: calc(100% - 60px);
+  background:#efefef;
+  border-radius: 5px 0 0 0;
+  border-bottom: 1px solid #999;
+  margin:0;
+  padding-left: 5px;
+  box-sizing: border-box; 
+  user-select: none;
+}
+
+.head-right {
+  display:inline-block ;
+  font-size: 1.5em;
+  height:2em;
+  line-height: 2em;
+  text-align: center;
+  background:red;
+  font-weight: bold;
+  color:white;
+  width: 60px;
+  border-radius: 0 5px 0 0;
+  margin:0;
+  padding-left: auto;
+  padding-right: auto;
+  box-sizing: border-box; 
+  cursor: pointer;
+  user-select: none;
+}
+
+
+.body {
+  border-radius: 0 0 5px 5px;
+  background:#efefef;
+  margin:0;
+  padding: 10px 20px;
+  box-sizing: border-box; 
+}
+
+.btn {
+  align-content: right;
+  display: block;
+  text-align: center;
+  font-weight: bold;
+  color:white;
+  cursor: pointer;
+  background: skyblue;
+  border-radius: 4px;
+  user-select: none;
+  box-sizing: border-box;
+  padding:5px 20px;
+  margin:10px 0;
+  box-shadow: 0 5px rgb(115, 178, 202); 
+  transform:translateY(-7px);
+  transition:all 0.1s;
+}
+.btn:hover {
+  opacity: 0.8;
+  box-shadow: 0 4px rgb(115, 178, 202);
+  transform: translateY(-6px);   
+  transition:all 0.1s;
+}
+
+.btn:active {
+  box-shadow: 0 1px rgb(115, 178, 202);
+  transform: translateY(-3px);   
+}
+
 #btn {
   display: block;
   text-align: center;
+  font-weight: bold;
+  color:white;
   width: 100%;
   cursor: pointer;
   background: skyblue;
@@ -59,9 +164,19 @@ select {
   user-select: none;
   box-sizing: border-box;
   padding:5px 0;
+  box-shadow: 0 5px rgb(115, 178, 202); 
+  transition:all 0.1s;
 }
 #btn:hover {
   opacity: 0.8;
+  box-shadow: 0 4px rgb(115, 178, 202);
+  transform: translateY(1px);   
+  transition:all 0.1s;
+}
+
+#btn:active {
+  box-shadow: 0 1px rgb(115, 178, 202);
+  transform: translateY(3px);   
 }
 
 .memo {
@@ -160,6 +275,9 @@ h3.point{
     width: 60%;
   }
   .container{
+    width: 60%;
+  }
+  .modal{
     width: 60%;
   }
 
