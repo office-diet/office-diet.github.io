@@ -24,11 +24,19 @@ class Memo{
   isFinished(){
     return this.timer.isFinished();
   }
+
+  isStarted(){
+    return this.timer.isStarted();
+  }
+
   randomTheme(){
     return this.items[Math.floor(Math.random() * this.items.length)];  
   }
   close(){
     this.memo.querySelector('p').textContent = this.theme;
+  }
+  changeTheme(theme) {
+    this.theme = theme;
   }
 }
 
@@ -71,12 +79,22 @@ const timer = document.getElementById('timer');
 const select = document.querySelector('select');
 const input = document.getElementById('input');
 const btn = document.getElementById('btn');
+const modal = document.getElementById('modal');
+const modalBack = document.getElementById('modal-back');
+const close = document.getElementById('close');
+const themeInput = document.getElementById('theme-input');
+const themeBtn = document.getElementById('theme-change');
+
 const memos = [];
 let count = 0;
 const seconds = 60.0;
 let memoCount = 0;
 
 let memo = new Memo(timer, input, document.getElementById('memo-00'),theme.textContent);
+theme.addEventListener('click', showModal);
+modalBack.addEventListener('click', closeModal);
+close.addEventListener('click', closeModal);
+themeBtn.addEventListener('click',changeTheme)
 
 function fncEnter(){
   if( window.event.keyCode == 13 ){
@@ -131,5 +149,26 @@ function makeMemos(count){
     div.appendChild(p);
     div.appendChild(ul);
     memoArea.appendChild(div)
+  }
+}
+
+function showModal(){
+  if ( !memo.isStarted() && !memo.isFinished() ) {
+    modal.classList.remove('close');
+    modalBack.classList.remove('close');
+  }
+}
+
+function closeModal(){
+  modal.classList.add('close');
+  modalBack.classList.add('close');
+  input.focus();
+}
+
+function changeTheme(){
+  if (themeInput.value) {
+    theme.textContent = themeInput.value;
+    memo.changeTheme(themeInput.value);
+    closeModal();
   }
 }
