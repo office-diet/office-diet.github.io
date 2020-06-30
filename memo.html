@@ -96,6 +96,14 @@
       </div>
       <div >
         THEME：<span id="theme" class="theme">初期課題（自由記入）</span>
+        <div id="modal-back" class="close"></div>
+        <div id="modal" class="modal close">
+          <div><span class="head-left">課題を変更する</span><span class="head-right" id="close">X</span></div>
+          <div class="body">
+            <input type="text" id="theme-input" autocomplete="off">
+            <span id="theme-change" class="theme-change btn">課題を変更</span>
+          </div>
+        </div>
       </div>
       <input type="text" id="input" autocomplete="off" onkeypress="fncEnter();"> 
       <div id="btn" onclick="fncNext();">次へ</div>
