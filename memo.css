@@ -270,6 +270,10 @@ h3.point{
   opacity: 1;
 }
 
+.new {
+  color:red;
+}
+
 @media screen and (min-width:1024px) {
   #info {
     width: 60%;
