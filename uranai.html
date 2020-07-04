@@ -1,40 +1,37 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="thumbnail" content="01.jpg" />
-  <meta name="description" content="「ワリカンは公平でなければいけない」と誰が決めたの？">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>神の判断～ワリカンの裁き～</title>
-  <link rel="stylesheet" type="text/css" href="style.css">
-  <script type="text/javascript" src="script.js"></script>
-</head>
-<body>
-  <header>
-    <div class="container">
-      <h1>神の判断～ワリカンの裁き～</h1>
+  <head>
+    <meta charset="UTF-8">	
+    <meta name="thumbnail" content="01.jpg" />
+    <meta name="description" content="絶対に当たると評判の占いです。是非お試しください。">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>絶対に当たる占い</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script type="text/javascript" src="script.js"></script>
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <h1>絶対に当たる占い</h1>
+      </div>
+    </header>
+    <div class="content">
+      <div class="container">
+        <div class="btn" onclick="fncUranai()">占ってみる</div>
+
+        <p class="theme">結果：</p>
+        <p class="answer" id="answer"></p>
+        <p class="theme">アドバイス：</p>
+        <p class="answer" id="advise"></p>
+        <p class="theme">ラッキーアイテム：</p>
+        <p class="answer" id="lucky"></p>
+        
+      </div>
     </div>
-  </header>
-  <div class="content">
-    <div class="container">
-      <p>
-        <label>金額：
-          <input type="text" id="totalPrice">
-        </label>
-      </p>
-      <p>
-        <label>人数：
-          <input type="text" id="count">
-        </label>
-      </p>
-      <div class="btn" onclick="fncWarikan()">ワリカン計算</div>
-      <p class="answer" id="answer"></p>
-    </div>
-  </div>
-  <footer>
-    <div class="container">
-      Copyright © 2020-2999 office_diet All Rights Reserved.
-    </div>
-  </footer>
-</body>
+    <footer>
+      <div class="container">
+        Copyright © 2020-2999 office_diet All Rights Reserved.
+      </div>
+    </footer>
+  </body>
 </html>
