@@ -6,30 +6,28 @@
     <meta name="description" content="一日は24時間ではありません。あなたが決めることです。">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>あなたの時間</title>
-    <link rel="stylesheet" type="text/css" href="yourtime.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
   </head>
   <body>
-    <div id="backImage">
-      <header>
-        <div class="container">
-          <h1>あなたの時間</h1>
-        </div>
-      </header>
-      <div class="main">
-        <div class="container">
-          <label class="year"> <input id="year"> 年 </label> <br>
-          <label class="day"> <input id="day"> 日増やしたい </label><br>
-          
-          <button id="btn">あなたの一日を計算する</button>
-          <div id="answer"></div>
-        </div>
+    <header>
+      <div class="container">
+        <h1>あなたの時間</h1>
       </div>
-      <footer>
-        <div class="container">
-          Copyright © 2020-2999 office_diet All Rights Reserved.
-        </div>
-      </footer>
+    </header>
+    <div class="content yourtime">
+      <div class="container">
+        <label class="year"> <input id="year"> 年（西暦） </label> <br>
+        <label class="day"> <input id="day"> 日増やしたい </label><br>
+        
+        <div class="btn" id="btn">あなたの一日を計算する</div>
+        <p class="answer" id="answer"></p>
+      </div>
     </div>
+    <footer>
+      <div class="container">
+        Copyright © 2020-2999 office_diet All Rights Reserved.
+      </div>
+    </footer>
     <script type="text/javascript" src="yourtime.js"></script>
   </body>
 </html>
