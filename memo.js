@@ -156,12 +156,14 @@ function showModal(){
   if ( !memo.isStarted() && !memo.isFinished() ) {
     modal.classList.remove('close');
     modalBack.classList.remove('close');
+    document.querySelector('body').classList.add('open');
   }
 }
 
 function closeModal(){
   modal.classList.add('close');
   modalBack.classList.add('close');
+  document.querySelector('body').classList.remove('open');
   input.focus();
 }
 
