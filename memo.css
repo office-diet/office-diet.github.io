@@ -6,6 +6,10 @@ body {
   background:#eee;
 }
 
+body.open {
+  position: fixed;
+}
+
 header {
   height: 50px;
   background: black;
