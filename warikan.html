@@ -10,35 +10,31 @@
   <script type="text/javascript" src="script.js"></script>
 </head>
 <body>
-  <div id="backImage">
-    <header>
-      <div class="container">
-        <h1>神の判断～ワリカンの裁き～</h1>
-      </div>
-    </header>
-    <div class="warikan">
-      <div class="container">
-        <p>
-          <label>金額：
-            <input type="text" id="totalPrice">
-          </label>
-        </p>
-        <p>
-          <label>人数：
-            <input type="text" id="count">
-          </label>
-        </p>
-        <p>
-          <button onclick="fncWarikan()">ワリカン計算</button>
-        </p>
-        <div id="answer"></div>
-      </div>
+  <header>
+    <div class="container">
+      <h1>神の判断～ワリカンの裁き～</h1>
     </div>
-    <footer>
-      <div class="container">
-          Copyright © 2020-2999 office_diet All Rights Reserved.
-      </div>
-    </footer>
+  </header>
+  <div class="content">
+    <div class="container">
+      <p>
+        <label>金額：
+          <input type="text" id="totalPrice">
+        </label>
+      </p>
+      <p>
+        <label>人数：
+          <input type="text" id="count">
+        </label>
+      </p>
+      <div class="btn" onclick="fncWarikan()">ワリカン計算</div>
+      <p class="answer" id="answer"></p>
+    </div>
   </div>
+  <footer>
+    <div class="container">
+      Copyright © 2020-2999 office_diet All Rights Reserved.
+    </div>
+  </footer>
 </body>
 </html>
