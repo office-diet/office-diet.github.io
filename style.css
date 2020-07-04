@@ -1,122 +1,233 @@
-* {
-  color:gray;
-}
-
-html, body, h1, p {
+html, body{
   margin:0;
   padding:0;
-  height: 100%;
 }
 
-body {
-  background-color: black;
+* {
+  color:#333;
 }
 
-#backImage {
-  height: 100%;
-  background-image: url('01.jpg');
-  background-attachment: fixed;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-color:darkslategray;
-  background-color: rgba(0, 0, 0, 0.5);
-  background-blend-mode: darken;
+a {
+  text-decoration: none;
+  color:inherit;
 }
 
-.container {
-  width: 80%;
-  margin:0 auto;
+h1, h2, p {
+  padding:0;
+  margin:0;
+}
+
+h2 {
+  letter-spacing: 0.2em;
+  border-bottom: 3px solid red;
+  margin-bottom: 5px;
 }
 
 header {
-  height: 10% ;
-  background-color: rgba(0, 0, 0, 0.8);
+  background: #333;
+}
+
+header h1 {
+  padding: 10px 0;
+  font-size: 36px;
+  color:#fff;
+  font-weight: normal;
+  text-align: center;
+  letter-spacing: 0.1em;
+  margin-left: 0.1em;
+}
+
+header span {
+  font-size: 14px;
+  color:#fff;
+  font-weight: normal;
+  letter-spacing: 0.1em;
+}
+
+.container {
+  width: 90%;
+  margin: 0 auto;
+}
+
+.apps, .content {
+  padding:20px 0 ;
+  background: #ddd;
+}
+
+.app {
+  box-shadow: 0 0 10px 0 rgba(0,0,0, 0.2);
+}
+.app:not(:last-child) {
+  margin-bottom: 20px;
+}
+.app a {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.app .text {
+  background: #fff ;
   display: block;
-  color:white;
+  text-align: center;
+  padding: 5vw 5vw;
 }
 
-.clock {
-  background-color:rgba(100, 100, 255, 0.1);
-  /* float:left; */
-  height: 85%;
-  width:50%;
-  display: none;
-}
-
-.uranai {
-  font-size:30px;
-  background-color:rgba(0,0,0,0.1);
-  height: 85%;
+.photo {
+  display: block;
   width: 100%;
-  /* float:left; */  
-  /* width:50%; */
+  height: 200px;
+  background-size: cover;
+  background-position: center;
 }
 
-.warikan {
-  font-size:30px;
-  background-color:rgba(0,0,0,0.1);
-  /* float:left; */
-  height: 85%;
-  width: 100%;
-  display:block;
-  /* width:50%; */
+.memo .photo {
+  background-image: url('memo.jpg');
 }
-
-input {
-  font-size:30px;
-  color:black;
-  background:gray;;
-  height: 1.5em;
-  width:300px;
+.yourtime .photo {
+  background-image: url('yourtime.jpg');
 }
-
-button {
-  font-size:30px;
-  background: black;
-  border:gray;
-  height: 2em;
-  width:300px;
-  padding:0.3em 0;
+.uranai .photo {
+  background-image: url('uranai.jpg');
 }
-
-p {
-  font-size:30px;
-  padding:0.3em 0;
+.warikan .photo {
+  background-image: url('warikan.jpg');
+}
+.alarmclock .photo {
+  background-image: url('alarm.jpg');
 }
 
 footer {
-  clear:left;
-  height: 5%;
-  background-color: rgba(0, 0, 0, 0.8);
+  background: #333;
+}
+footer .container {
+  padding: 10px 0;
+  font-size: 2vw;
+  color:#fff;
+  font-weight: normal;
+  text-align: center;
+  letter-spacing: 0.1em;
+}
+
+
+/* ----占い---- */
+
+.content {
+  min-height: 83vh;
+}
+
+.btn {
+  text-align: center;
+  font-size: 2em;
+  font-weight: bold;
+  color: #fff;
+  padding:10px 0;
+  display: block;
+  width: 100%;
+  background: #aaa;
+  border-radius:4px;
+  box-sizing: border-box;
+  box-shadow: 0 7px #888;
+  transition: all 0.1s;
+  margin-bottom: 20px;
+}
+.btn:hover {
+  opacity: 0.8;
+  transform: translateY(1px);
+  box-shadow: 0 6px #888;
+  transition: all 0.1s;
+}
+.btn:active {
+  transform: translateY(5px);
+  box-shadow: 0 1px #888;
+  transition: all 0.1s;
+}
+
+.content p {
+  font-size: 1.5em;
+  min-height: 1.5em;
+  margin-bottom: 10px;
   display: block;
 }
 
-@media screen and (max-width: 480px) { 
-  
-  .uranai {
-    font-size:14px;
+.content label{
+  font-size: 1.5em;
+  min-height: 1.5em;
+  margin-bottom: 10px;
+}
+
+.content input {
+  font-size: inherit;
+  width: 62%;
+  border-radius: 4px;
+  padding-left: 10px;
+  padding-right: 10px;
+  box-sizing: border-box;
+}
+
+.yourtime input {
+  width: 50%;
+  margin-bottom: 10px;
+}
+.yourtime .btn {
+  font-size: 1.5em;
+}
+
+.content p.answer{
+  background: #eee;
+  padding:5px 5px;
+  border-radius: 4px;
+}
+
+
+@media (min-width: 768px) {
+  header h1 {
+    font-size: 48px;
+    letter-spacing: 0.1em;
   }
   
-  .warikan {
-    font-size:14px;
+  header span {
+    font-size: 14px;
+    letter-spacing: 0.1em;
+  }
+
+  .container {
+    width: 80%;
+  }
+  footer .container {
+    font-size: 16px;
+  }
+  .app a {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .app:nth-child(even) a {
+    flex-direction: row-reverse;
   }
   
-  input {
-    font-size:14px;
-    height: 1.5em;
-    width:200px;
+  .app .text {
+    flex: 1 1 auto;
+    background: #fff ;
+    display: block;
+    padding: 5vw 5vw;
+  }
+    
+  .app h2, .app p {
+    text-align: left;
+  }
+
+  .photo {
+    display: block;
+    flex: 0 0 30%;
+    width: 30%;
+    height: auto;
+    background-size: cover;
+    background-position: center;
   }
   
-  button {
-    font-size:14px;
-    background: black;
-    border:gray;
-    height: 2em;
-    width:200px;
-  }
-  
-  h1, p {
-    font-size:14px;
+  .content input {
+    font-size: inherit;
+    width: auto;
   }
   
 }
