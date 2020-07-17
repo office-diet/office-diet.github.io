@@ -31,9 +31,9 @@ body
 
 #clock_time
 {
-  font-size: 25vw;
+  font-size: 23vw;
   display: block;
-  margin:0 0 -5vw;
+  margin: -5vw 0;
   padding:0;
 }
 
