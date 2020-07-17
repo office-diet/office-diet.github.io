@@ -17,41 +17,43 @@ body
   width: 90%;
   display: block;
   margin:10px auto;
+  padding: 0;
 }
 
 /* id="clock_date" のspan要素 */
 #clock_date 
 {
-  margin: 0;
+  padding: 0;
   text-align: right;
-  font-size:0.4em;
+  font-size:7vw;
   display: block;
 }
 
 #clock_time
 {
-  font-size: 2em;
+  font-size: 25vw;
   display: block;
-  margin:0 0 -0.2em;
+  margin:0 0 -5vw;
   padding:0;
 }
 
 #alerm_setting 
 {
-  font-size: 0.5em;
+  font-size: 5vw;
   display: flex;
   margin:0 auto 0.5em;
   padding:0;
-  height: 1.5em;
-  line-height: 1.5em;
+  height: 7vw;
+  line-height: 7vw;
 }
 
 
 select{
   border:grey 1px solid;
-  border-radius: 0.2em;
+  border-radius: 0.5vw;
   background: none transparent;
-  line-height: 2em;
+  height: 7vw;
+  line-height: 7vw;
   font-family: inherit;
   font-size: inherit;
   color: inherit;
@@ -63,7 +65,7 @@ select{
 select option{
   background-color: grey;
   color: black;
-  font-size: 0.5em;
+  font-size: inherit;
   width:10%;
 }
 select::-ms-expand {
@@ -76,40 +78,40 @@ select:-moz-focusring {
 
 button{
   border:grey 1px solid;
-  border-radius: 0.2em;
+  border-radius: 0.5vw;
   outline:none;
   text-indent: 0.01px;
   text-overflow: '';
   background: none transparent;
-  line-height: 1.5em;
+  line-height: 7vw;
   font-size: inherit;
   font-family: inherit;
   color: inherit;
   -webkit-appearance: button;
   -moz-appearance: button;
   /* appearance: button; */
-  padding: 0 0.3em;
-  margin-left:0.5em;
+  padding: 0 1vw;
+  margin-left:3vw;
   display: block;
-  width:73%;
+  flex: 1;
 }
 
 .label{
-  margin:0.6em 0 0.4em;
-  height: 0.3em;
-  line-height: 0.3em;
-  font-size: 0.3em;
+  margin:-2vw 0 0 0;
+  height: 5vw;
+  line-height: 5vw;
+  font-size: 3vw;
   font-family: inherit;
   color: inherit;
   display: block;
 }
 input {
   border:grey 1px solid;
-  border-radius: 0.2em;
+  border-radius: 0.5vw;
   background: none transparent;
   font-family: inherit;
   color: inherit;
   display:block;
-  font-size:0.15em;
-  width:100%
+  font-size: 2vw;
+  width:100%;
 }

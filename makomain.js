@@ -241,7 +241,6 @@ function clock()
   //　HTML: <span id="clock_date">(ココの日付文字列を書き換え)</span>
   document.getElementById("clock_date").innerHTML =  y + "/" + mo + "/" + d + " (" + w + ")";
   document.getElementById("clock_time").innerHTML = h + ":" + mi + ":" + s;
-  document.getElementById("clock_frame").style.fontSize =  window.innerWidth / 10 + "px";
   
   //日付が新規の場合、初期化する
   if (opened_day != d ){
