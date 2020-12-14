@@ -1,0 +1,141 @@
+/* リセット */
+
+html, body{
+  margin:0;
+  padding:0;
+}
+
+* {
+  color:#333;
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+  color:inherit;
+}
+
+h1, h2, p {
+  padding:0;
+  margin:0;
+}
+
+/* ヘッダー */
+
+.head-container {
+  margin-left: auto;
+  margin-right: auto;
+  width: 1000px;
+  padding: 10px 40px;
+  display: flex;
+}
+
+.icon {
+  height: 80px;
+  width: auto;
+  border-radius: 50%;
+}
+
+.title {
+  height: 100%;
+  margin-left: 30px;
+  font-size: 60px;
+  letter-spacing: 3px;
+  font-weight: bold;
+  color: #225522;
+  color: white;
+}
+
+.select {
+  color: white;
+  margin: 20px 0 0 40px;
+  padding-top: 10px;
+  font-size: 24px;
+}
+.time {
+  font-size: 32px;
+  padding: 3px 10px;
+  transform: translateY(-8px);
+  border-radius: 5px;
+}
+
+header {
+  width: 100%;
+  height: 100px;
+  overflow: hidden;
+  background-color: #ccffcc;
+  background-color: #447744;
+}
+
+.main-container {
+  width: 1000px;
+  height: calc(100vh - 100px);
+  margin-left: auto;
+  margin-right: auto;
+  padding: 10px;
+  background-color: black;
+  background-color: #ccffcc;
+}
+
+.description, .theme, .result {
+  background-color: white;
+  width: 920px;
+  margin: 20px auto 0;
+  padding: 10px;
+  font-size: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 20px #669966;
+}
+
+.theme {
+  margin-top: 40px;
+  text-align: center;
+  background-color: #eee;
+}
+
+.japanese {
+  margin: 10px 0;
+  font-size: 32px;
+  font-weight: bold;
+}
+.alphabet {
+  margin: 10px 0;
+  font-size: 24px;
+  /* font-weight: bold; */
+}
+
+.start-button {
+  margin: 20px auto;
+  padding: 10px;
+  background-color: yellow;
+  border:4px solid #ffaaaa;
+  border-radius: 10px;
+  color: red;
+  font-weight: bold;
+  font-size: 24px;
+}
+
+.result {
+  display: flex;
+  justify-content: space-between;
+}
+
+.correct, .failure, .complete, .percentage {
+  display: flex;
+  margin: 20px 10px 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+#correct, #failure, #complete, #percentage {
+  font-size: 32px;
+  font-weight: bold;
+  color: #ff5555;
+  background-color: #ccffcc;
+  margin: -20px 2px 0;
+  padding: 5px;
+  width: 120px;
+  text-align: right;
+  border-radius: 10px;
+
+ }

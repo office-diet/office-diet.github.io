@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="kurumi.css">
+  <script type="text/javascript" src="kurumi.js"></script>
+</head>
+<body>
+  <header>
+    <div class="head-container">
+      <img src="kurumi-icon.jpg" class="icon">
+      <div class="title">
+        くるみタイピング
+      </div>
+      <div class="select">
+        制限時間選択
+        <select name="time" class="time">
+          <option value="30">30秒</option>
+          <option value="60">1分</option>
+          <option value="120">2分</option>
+        </select>
+      </div>
+    </div>
+  </header>
+  <main>
+    <div class="main-container">
+      <div class="description">
+        １．制限時間を選択〇〇〇〇〇全角４５文字程度入力可能〇〇〇〇〇〇〇〇〇〇〇〇〇〇〇〇〇〇〇</br>
+        ２．スペースキーでタイピングスタート</br>
+        ３．ゆっくり落ち着いてミスの無いようタイピングしましょう</br>
+        ４．制限時間終了後スコアが表示されます</br>
+        ５．ツイッターで仲間と共有し、毎日継続しましょう</br>
+      </div>
+      <div class="theme">
+        <div class="japanese">
+          なんだか分からないけど、ぜんぶうまくいっていて嬉しい！
+        </div>
+        <div class="alphabet">
+          nanndakawakaranaikedo,zennbuumakuitteiteuresii!
+        </div>
+        <div class="start-button">
+          スペースキーでタイピング開始
+        </div>
+      </div>
+      <div class="result">
+        <div class="correct">
+          正打<div id="correct">500</div>回
+        </div>
+        <div class="failure">
+          誤打<div id="failure">15</div>回
+        </div>
+        <div class="complete">
+          完了 <div id="complete">20</div>回
+        </div>
+        <div class="percentage">
+          正打率<div id="percentage">98.5</div>％
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer></footer>
+</body>
+</html>
