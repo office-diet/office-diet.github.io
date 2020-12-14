@@ -105,8 +105,19 @@ header {
   /* font-weight: bold; */
 }
 
-.start-button {
+.timer {
+  position: relative;
+  display: block;
+  width: 900px;
+  height: 40px;
   margin: 10px auto;
+  overflow: hidden;
+  border-radius: 10px;
+}
+.timer-back {
+  position: absolute;
+  width: 900px;
+  height: 40px;
   padding: 2px;
   background-color: yellow;
   border:4px solid #ffaaaa;
@@ -114,6 +125,23 @@ header {
   color: #ff8888;
   font-weight: bold;
   font-size: 24px;
+}
+
+.timer-bar {
+  position: absolute;
+  background-color: #ffaaaa;
+  width: 0;
+  height: 40px;
+  padding: 2px;
+}
+
+.timer-text {
+  position: absolute;
+  width: 900px;
+  height: 40px;
+  padding: 7px;
+  font-weight: bold;
+  color: red;
 }
 
 .result {

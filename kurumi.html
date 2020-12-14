@@ -16,7 +16,8 @@
       </div>
       <div class="select">
         制限時間選択
-        <select name="time" class="time">
+        <select name="time" class="time" id="time">
+          <option value="10">10秒</option>
           <option value="30">30秒</option>
           <option value="60">1分</option>
           <option value="120">2分</option>
@@ -40,8 +41,13 @@
         <div class="alphabet">
           nanndakawakaranaikedo,zennbuumakuitteiteuresii!
         </div>
-        <div class="start-button">
-          スペースキーでタイピング開始
+        <div class="timer">
+          <div class="timer-back">
+          </div>
+          <div class="timer-bar" id="timer-bar"></div>
+          <div class="timer-text" id="timer-text">
+            スペースキーでタイピング開始
+          </div>
         </div>
         <div class="result">
           <div class="correct">
@@ -63,6 +69,5 @@
       </div>
     </div>
   </main>
-  <footer></footer>
 </body>
 </html>
