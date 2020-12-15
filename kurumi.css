@@ -205,7 +205,8 @@ header {
 .count-down, .score-board{
   position: fixed;
   top: 250px;
-  left: calc(50vw - 450px);
+  left: 50%;
+  transform: translateX(-50%);
   width: 900px;
   height: 320px;
   background-color: white;
