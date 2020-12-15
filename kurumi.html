@@ -10,14 +10,15 @@
 <body>
   <header>
     <div class="head-container">
-      <img src="kurumi-icon.jpg" class="icon">
+      <a href="https://twitter.com/Kurumimo22" target="_blank">
+        <img src="kurumi-icon.jpg" class="icon">
+      </a>
       <div class="title">
         くるみタイピング
       </div>
       <div class="select">
         制限時間選択
         <select name="time" class="time" id="time">
-          <option value="10">10秒</option>
           <option value="30">30秒</option>
           <option value="60">1分</option>
           <option value="120">2分</option>
@@ -38,7 +39,7 @@
         <div class="japanese">
           なんだか分からないけど、ぜんぶうまくいっていて嬉しい！
         </div>
-        <div class="alphabet">
+        <div class="alphabet" id="alphabet">
           nanndakawakaranaikedo,zennbuumakuitteiteuresii!
         </div>
         <div class="timer">
@@ -51,16 +52,16 @@
         </div>
         <div class="result">
           <div class="correct">
-            正打<div id="correct">500</div>回
+            正打<div id="correct">0</div>回
           </div>
           <div class="failure">
-            誤打<div id="failure">15</div>回
+            誤打<div id="failure">0</div>回
           </div>
           <div class="complete">
-            完了 <div id="complete">20</div>回
+            完了 <div id="complete">0</div>回
           </div>
           <div class="percentage">
-            正打率<div id="percentage">98.5</div>％
+            正打率<div id="percentage">0</div>％
           </div>
         </div>
       </div>
@@ -69,5 +70,29 @@
       </div>
     </div>
   </main>
+  <div class="count-down-back hidden" id="count-down-back"></div>
+  <div class="count-down hidden" id="count-down">
+    <div>タイピング開始まで</div>
+    <div><span class="count-down-number" id="count-down-number">3</span>秒</div> 
+  </div>
+  <div class="score-board-back hidden" id="score-board-back"></div>
+  <div class="score-board hidden" id="score-board">
+    <div class="score-board-header">結果発表</div>
+    <div class="correct-score">
+      正打数<div id="correct-score">0</div>回
+    </div>
+    <div class="failure-score">
+      誤打数<div id="failure-score">0</div>回
+    </div>
+    <div class="complete-score">
+      完了数 <div id="complete-score">0</div>回
+    </div>
+    <div class="percentage-score">
+      正打率<div id="percentage-score">0</div>％
+    </div>
+    <a href="https://twitter.com/share?text=くるみタイピング実施結果%0a30秒コース%20正打率90％%0a&url=https://office-diet.github.io/kurumi.html&hashtags=くるみタイピング" target="_blank">
+      <div class="tweet-button">結果をツイート</div>
+    </a> 
+  </div>
 </body>
 </html>
