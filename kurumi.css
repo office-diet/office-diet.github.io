@@ -27,7 +27,6 @@ header {
   width: 100%;
   height: 80px;
   overflow: hidden;
-  /* background-color: #ccffcc; */
   background-color: #447744;
 }
 
@@ -71,7 +70,7 @@ header {
 
 .main-container {
   width: 1000px;
-  height: calc(100vh - 80px);
+  min-height: calc(100vh - 80px);
   margin-left: auto;
   margin-right: auto;
   padding: 10px 0;
@@ -195,16 +194,16 @@ header {
 }
 
 .count-down-back, .score-board-back {
-  position: absolute;
+  position: fixed;
   width: 100vw;
-  height: 100vh;
+  height: 100%;
   top: 0;
   left: 0;
   background-color: rgba(0, 0, 0, 0.5);
 }
 
 .count-down, .score-board{
-  position: absolute;
+  position: fixed;
   top: 250px;
   left: calc(50vw - 450px);
   width: 900px;

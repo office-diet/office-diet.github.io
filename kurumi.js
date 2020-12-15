@@ -26,6 +26,7 @@ window.addEventListener("load", () => {
 
   document.addEventListener('keydown',event => {
     if (event.keyCode === 32) {
+      event.preventDefault();
       if (timer.isStarted() === false){
         timer.start();
       } 
@@ -54,6 +55,7 @@ class Timer {
   start() {
     this.select.disabled = true;
     if (this.wait === false) {
+      document.addEventListener('mousewheel', noScroll, { passive: false });
       this.wait = true;
       this.countDown.classList.toggle("hidden");
       this.countDownBack.classList.toggle("hidden");
@@ -67,6 +69,7 @@ class Timer {
           this.countDownBack.classList.toggle("hidden");
           clearInterval(intervalId);
           this.wait = false;
+          document.removeEventListener('mousewheel', noScroll, { passive: false });
         }
       }, 1000);
 
@@ -166,13 +169,6 @@ class Typing {
         this.count += 1;
         this.refreshHtml(this.count);
         this.good();
-      } else if (this.str[this.count] === "x" && this.str[this.count + 1] === "n" && key === "n" ) {
-        front = this.str.slice(0, this.count)
-        back = this.str.slice(this.count + 1, this.len)
-        this.str = front + "n" + back;
-        this.count += 1;
-        this.refreshHtml(this.count);
-        this.good();
       } else if (this.str[this.count] === "n" && this.str[this.count - 1] === "n" && this.str[this.count + 1] === key) {
         front = this.str.slice(0, this.count)
         back = this.str.slice(this.count + 1, this.len)
@@ -189,7 +185,6 @@ class Typing {
         this.len += 2;
         this.refreshHtml(this.count);
         this.good();
-      
       } else if (this.str[this.count - 1] === "t" && this.str[this.count] === "u" && key === "s") {
         front = this.str.slice(0, this.count)
         back = this.str.slice(this.count, this.len)
@@ -197,10 +192,15 @@ class Typing {
         this.count += 1;
         this.len += 1;
         this.refreshHtml(this.count);
+        this.good();      
+      } else if (this.str[this.count - 1] === "s" && this.str[this.count] === "i" && key === "h") {
+        front = this.str.slice(0, this.count)
+        back = this.str.slice(this.count, this.len)
+        this.str = front + "h" + back;
+        this.count += 1;
+        this.len += 1;
+        this.refreshHtml(this.count);
         this.good();
-      
-
-
       } else {
         this.badSound.currentTime = 0;
         this.badSound.play();
@@ -261,3 +261,6 @@ class Typing {
   }
 }
 
+function noScroll(event) {
+  event.preventDefault();
+}
