@@ -125,7 +125,9 @@ class Typing {
     this.strOriginal = "nanndakawakaranaikedo,zennbuumakuitteiteuresii!";
     this.str = "nanndakawakaranaikedo,zennbuumakuitteiteuresii!";
     this.variation = ["nanndakawakaranaikedo,zennbuumakuitteiteuresii!",
-                      "nanndakawakaranaikedo,zennbuumakuitteiteuresii!",]
+                      "nanndakawakaranaikedo,zennbuumakuitteiteureshii!",
+                      "nanndakawakaranaikedo,zenbuumakuitteiteuresii!",
+                    ]
     this.htmlStr = "";
     this.text = "";
     this.len = this.str.length;
@@ -150,13 +152,55 @@ class Typing {
   }
   
   check(key){
+    let front = "";
+    let back = "";
     if (this.keys.indexOf(key) != -1) {
       if (this.str[this.count] === key) {
-        this.goodSound.currentTime = 0;
-        this.goodSound.play();
         this.count += 1;
         this.refreshHtml(this.count);
         this.good();
+      } else if (this.str[this.count] === "n" && this.str[this.count + 1] === "n" && key === "x" ) {
+        front = this.str.slice(0, this.count)
+        back = this.str.slice(this.count + 1, this.len)
+        this.str = front + "x" + back;
+        this.count += 1;
+        this.refreshHtml(this.count);
+        this.good();
+      } else if (this.str[this.count] === "x" && this.str[this.count + 1] === "n" && key === "n" ) {
+        front = this.str.slice(0, this.count)
+        back = this.str.slice(this.count + 1, this.len)
+        this.str = front + "n" + back;
+        this.count += 1;
+        this.refreshHtml(this.count);
+        this.good();
+      } else if (this.str[this.count] === "n" && this.str[this.count - 1] === "n" && this.str[this.count + 1] === key) {
+        front = this.str.slice(0, this.count)
+        back = this.str.slice(this.count + 1, this.len)
+        this.str = front + back;
+        this.count += 1;
+        this.len -= 1;
+        this.refreshHtml(this.count);
+        this.good();
+      } else if (this.str[this.count] === "t" && this.str[this.count + 1] === "t" && key === "l") {
+        front = this.str.slice(0, this.count)
+        back = this.str.slice(this.count + 1, this.len)
+        this.str = front + "ltu" + back;
+        this.count += 1;
+        this.len += 2;
+        this.refreshHtml(this.count);
+        this.good();
+      
+      } else if (this.str[this.count - 1] === "t" && this.str[this.count] === "u" && key === "s") {
+        front = this.str.slice(0, this.count)
+        back = this.str.slice(this.count, this.len)
+        this.str = front + "s" + back;
+        this.count += 1;
+        this.len += 1;
+        this.refreshHtml(this.count);
+        this.good();
+      
+
+
       } else {
         this.badSound.currentTime = 0;
         this.badSound.play();
@@ -174,6 +218,8 @@ class Typing {
   }
 
   good() {
+    this.goodSound.currentTime = 0;
+    this.goodSound.play();
     this.correctCount += 1;
     this.correct.textContent = this.correctCount;
     this.correctScore.textContent = this.correctCount;
@@ -200,6 +246,10 @@ class Typing {
   refreshHtml(num){
     this.alphabet.innerHTML = "";
     this.htmlStr = "";
+    if (num === 0) {
+      this.str = this.strOriginal;
+      this.len = this.str.length;
+    }
     for(let i = 0; i < this.len; i++){
       if ( i < num){
         this.htmlStr += `<span class="red">${this.str.charAt(i)}</span>`;

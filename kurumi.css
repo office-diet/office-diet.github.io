@@ -218,6 +218,9 @@ header {
   overflow: hidden;
 }
 
+.count-down {
+  padding: 20px;
+}
 .count-down-number {
   color: red;
   font-size: 140px;
