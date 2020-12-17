@@ -202,8 +202,6 @@ class Typing {
         this.refreshHtml(this.count);
         this.good();
       } else {
-        this.badSound.currentTime = 0;
-        this.badSound.play();
         this.bad()
       }
       if (this.count === this.len) {
@@ -211,27 +209,29 @@ class Typing {
         this.count = 0;
         this.refreshHtml(this.count);
         this.alphabet.innerHTML = this.htmlStr;
-        this.completeSound.currentTime = 0;
-        this.completeSound.play();
       }
     }
   }
 
   good() {
-    this.goodSound.currentTime = 0;
-    this.goodSound.play();
+    // this.goodSound.currentTime = 0;
+    // this.goodSound.play();
     this.correctCount += 1;
     this.correct.textContent = this.correctCount;
     this.correctScore.textContent = this.correctCount;
     this.percent();
   }
   bad() {
+    // this.badSound.currentTime = 0;
+    // this.badSound.play();
     this.failureCount += 1;
     this.failure.textContent = this.failureCount;
     this.failureScore.textContent = this.failureCount;
     this.percent();
   }
   comp() {
+    // this.completeSound.currentTime = 0;
+    // this.completeSound.play();
     this.completeCount += 1;
     this.complete.textContent = this.completeCount;
     this.completeScore.textContent = this.completeCount;
@@ -252,7 +252,7 @@ class Typing {
     }
     for(let i = 0; i < this.len; i++){
       if ( i < num){
-        this.htmlStr += `<span class="red">${this.str.charAt(i)}</span>`;
+        this.htmlStr += `<span class="green">${this.str.charAt(i)}</span>`;
       } else {
         this.htmlStr += `<span class="black">${this.str.charAt(i)}</span>`;
       }

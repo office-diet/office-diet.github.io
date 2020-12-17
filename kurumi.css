@@ -36,6 +36,7 @@ header {
   width: 1000px;
   padding: 5px 40px;
   display: flex;
+  justify-content: space-between;
 }
 
 .icon {
@@ -46,17 +47,16 @@ header {
 
 .title {
   height: 100%;
-  margin-left: 30px;
   font-size: 48px;
   letter-spacing: 3px;
   font-weight: bold;
-  color: #225522;
+  color: #447744;
   color: white;
 }
 
 .select {
   color: white;
-  margin: 15px 0 0 80px;
+  margin: 10px 0 0 20px;
   padding-top: 10px;
   font-size: 24px;
 }
@@ -70,7 +70,7 @@ header {
 
 .main-container {
   width: 1000px;
-  min-height: calc(100vh - 80px);
+  min-height: calc(100vh - 80px - 40px);
   margin-left: auto;
   margin-right: auto;
   padding: 10px 0;
@@ -105,12 +105,12 @@ header {
   font-weight: bold;
 }
 
-.red {
-  color: red;
+.green {
+  color: #447744;
 }
 
 .black {
-  color: #888;
+  color: #aaa;
 }
 
 .timer {
@@ -149,7 +149,7 @@ header {
   height: 40px;
   padding: 7px;
   font-weight: bold;
-  color: red;
+  color: #447744;
 }
 
 .result {
@@ -171,7 +171,7 @@ header {
 #correct, #failure, #complete, #percentage {
   font-size: 32px;
   font-weight: bold;
-  color: #ff5555;
+  color: #447744;
   background-color: #ccffcc;
   margin: -20px 2px 0;
   padding: 2px;
@@ -222,7 +222,7 @@ header {
   padding: 20px;
 }
 .count-down-number {
-  color: red;
+  color: #447744;
   font-size: 140px;
 }
 
@@ -239,7 +239,7 @@ header {
   height: 64px;
   width: 100%;
   color: white;
-  background-color: #225522;
+  background-color: #447744;
   margin-bottom: 20px;
 }
 
@@ -268,6 +268,22 @@ header {
   opacity: 0.7;
 }
 
+.fa-twitter {
+  color: white;
+  margin-left: 10px;
+  transform: translateY(2px);
+}
+
 .hidden {
   display: none;
+}
+
+footer {
+  text-align: center;
+  color: white;
+  letter-spacing: 1px;
+  line-height: 40px;
+  height: 40px;
+  background-color: #447744;
+  width: 100vw;
 }

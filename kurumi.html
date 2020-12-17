@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>くるみタイピング</title>
+  <title>くるみタイピング瞑想</title>
   <link rel="stylesheet" href="kurumi.css">
+  <link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" rel="stylesheet">
   <script type="text/javascript" src="kurumi.js"></script>
 </head>
 <body>
@@ -14,14 +15,16 @@
         <img src="kurumi-icon.jpg" class="icon">
       </a>
       <div class="title">
-        くるみタイピング
+        くるみタイピング瞑想
       </div>
       <div class="select">
         制限時間選択
         <select name="time" class="time" id="time">
           <option value="30">30秒</option>
           <option value="60">1分</option>
-          <option value="120">2分</option>
+          <option value="120" selected="true">2分</option>
+          <option value="180">3分</option>
+          <option value="300">5分</option>
         </select>
       </div>
     </div>
@@ -91,8 +94,11 @@
       正打率<div id="percentage-score">0</div>％
     </div>
     <a href="https://twitter.com/share?text=くるみタイピング実施結果%0a30秒コース%20成功回数5回%20正打率90％%0a&url=https://office-diet.github.io/kurumi.html&hashtags=くるみタイピング" target="_blank" id="tweet-link">
-      <div class="tweet-button">結果をツイート</div>
-    </a> 
+      <div class="tweet-button">結果をツイート<i class="fab fa-twitter"></i></div>
+    </a>
   </div>
+  <footer>
+    <a href="https://twitter.com/office_diet" target="_blank">Powered by office-diet</a>
+  </footer>
 </body>
 </html>
