@@ -1,8 +1,20 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
+<head prefix="og: http://ogp.me/ns#">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- https://kaikoku.blam.co.jp/client/digimaguild/knowledge/sns-pr/498 参照 -->
+  <meta property="og:url" content="https://office-diet.github.io/kurumi.html" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="くるみタイピング瞑想" />
+  <meta property="og:description" content="タイピング瞑想を継続しましょう" />
+  <meta property="og:site_name" content="くるみタイピング瞑想" />
+  <meta property="og:image" content="https://office-diet.github.io/kurumi-icon.jpg" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@kurumimo22" />
+  <!-- https://kaikoku.blam.co.jp/client/digimaguild/knowledge/sns-pr/498 参照 -->
+
   <title>くるみタイピング瞑想</title>
   <link rel="stylesheet" href="kurumi.css">
   <link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" rel="stylesheet">
@@ -32,11 +44,10 @@
   <main>
     <div class="main-container">
       <div class="description">
-        １．制限時間を選択〇〇〇〇〇全角５０文字程度入力可能〇〇〇〇〇〇〇〇〇〇〇〇〇〇〇〇〇〇〇〇〇〇〇〇</br>
-        ２．スペースキーでタイピングスタート</br>
-        ３．ゆっくり落ち着いてミスの無いようタイピングしましょう</br>
-        ４．制限時間終了後スコアが表示されます</br>
-        ５．ツイッターで仲間と共有し、毎日継続しましょう</br>
+        ✦ スペースキーを押してタイピングを開始。落ち着いてミスをしないようにタイピングをしましょう</br>
+        ✦「うまくいっていて嬉しい！」の部分は、実際に喜んでいる場面を想像して、この感情を味わいましょう</br>
+        ✦ 制限時間終了後、スコアが表示されます。結果をTwitterでシェアして、毎日続ける励みにしてください</br>
+        ✦ 気持ちが落ち着かないときは、この《くるみタイピング瞑想》をお役立てください</br>
       </div>
       <div class="theme">
         <div class="japanese">
@@ -50,7 +61,7 @@
           </div>
           <div class="timer-bar" id="timer-bar"></div>
           <div class="timer-text" id="timer-text">
-            スペースキーでタイピング開始
+            深呼吸して､スペースキーを押して タイピングを開始
           </div>
         </div>
         <div class="result">
@@ -93,7 +104,7 @@
     <div class="percentage-score">
       正打率<div id="percentage-score">0</div>％
     </div>
-    <a href="https://twitter.com/share?text=くるみタイピング実施結果%0a30秒コース%20成功回数5回%20正打率90％%0a&url=https://office-diet.github.io/kurumi.html&hashtags=くるみタイピング" target="_blank" id="tweet-link">
+    <a href="https://twitter.com/share?text=%23くるみタイピング瞑想%0aくるみタイピング瞑想実施結果%0a30秒コース%20成功回数5回%20正打率90％%0a&url=https://office-diet.github.io/kurumi.html" target="_blank" id="tweet-button">
       <div class="tweet-button">結果をツイート<i class="fab fa-twitter"></i></div>
     </a>
   </div>

@@ -8,6 +8,7 @@ window.addEventListener("load", () => {
   const countDownNumber = document.getElementById("count-down-number");
   const scoreBoard = document.getElementById("score-board");
   const scoreBoardBack = document.getElementById("score-board-back");
+  
   const timer = new Timer(timerBar, timerText, timeSelect, countDown, countDownBack, countDownNumber, scoreBoard, scoreBoardBack);
 
   const alphabet = document.getElementById("alphabet");
@@ -19,10 +20,12 @@ window.addEventListener("load", () => {
   const failureScore = document.getElementById("failure-score");
   const completeScore = document.getElementById("complete-score");
   const percentageScore = document.getElementById("percentage-score");
+  const scoreTweetButton = document.getElementById("tweet-button");
 
   const typing = new Typing(alphabet, 
                             correct, failure, complete, percentage, 
-                            correctScore, failureScore, completeScore, percentageScore);
+                            correctScore, failureScore, completeScore, percentageScore,
+                            scoreTweetButton, timeSelect);
 
   document.addEventListener('keydown',event => {
     if (event.keyCode === 32) {
@@ -120,7 +123,8 @@ class Timer {
 class Typing {
   constructor(alphabet, 
               correct, failure, complete, percentage,
-              correctScore, failureScore, completeScore, percentageScore){
+              correctScore, failureScore, completeScore, percentageScore,
+              scoreTweetButton, timeSelect){
     this.goodSound = new Audio("good.mp3")
     this.badSound = new Audio("bad.mp3")
     this.completeSound = new Audio("complete.mp3")
@@ -150,7 +154,9 @@ class Typing {
     this.failureScore = failureScore;
     this.completeScore = completeScore;
     this.percentageScore = percentageScore;
-    
+    this.scoreTweetButton = scoreTweetButton;
+    this.timeSelect = timeSelect;
+
     this.refreshHtml(this.count);
   }
   
@@ -241,6 +247,7 @@ class Typing {
     let per = Math.round((this.correctCount / (this.correctCount + this.failureCount)) * 1000) / 10;
     this.percentage.textContent = per;
     this.percentageScore.textContent = per;
+    this.scoreTweetButton.href = "https://twitter.com/share?text=%23くるみタイピング瞑想%0aくるみタイピング瞑想実施結果%0a" + this.timeSelect.textContent[this.timeSelect.selectedIndex] + "コース%20成功回数" + this.completeCount + "回%20正打率" + per + "％%0a&url=https://office-diet.github.io/kurumi.html"
   }
 
   refreshHtml(num){
