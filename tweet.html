@@ -158,7 +158,8 @@
 
     function setPageContents(intPage){
       let strHTML = "";
-      moments_cut[intPage].forEach(function( moment ) {
+      // moments_cut[intPage].forEach(function( moment ) {
+      moments_all.forEach(function( moment ) {
         strHTML = "<li>" +
                     "<div class='content'>" + 
                       "<a href=" + moment[1] + ">" + 
@@ -171,6 +172,7 @@
                       "</a>" +
                     "</div>";
                   "</li>"
+        // contents.insertAdjacentHTML("beforeend", strHTML);
         contents.insertAdjacentHTML("afterbegin", strHTML);
       });
     }
