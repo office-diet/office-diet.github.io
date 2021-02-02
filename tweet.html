@@ -25,9 +25,10 @@
         </ul>
       </div>
       <div class="buttons">
-        <ul class="pages">
+        <ul class="pages" id="buttons">
+          <li class="page-button prev-button">< 前の</li>
           <li class="page-button now-button">1</li>
-          <li class="page-button">2</li>
+          <li class="page-button" onclick="setPageContents(1)">2</li>
           <li class="page-button">3</li>
           <li class="page-button">4</li>
           <li class="page-button">5</li>
@@ -189,29 +190,69 @@
     }
 
     const contents = document.getElementById("contents");
+    const buttons = document.getElementById("buttons")
 
     function setPageContents(intPage){
-      let strHTML = "";
-      // moments_cut[intPage].forEach(function( moment ) {
-      moments_all.forEach(function( moment ) {
-        strHTML = "<li>" +
-                    "<div class='content'>" + 
-                      "<a href=" + moment[1] + ">" + 
-                        "<div class='img-container'>" +
-                          "<img src=" + moment[4] + " class='content-img'>" + 
-                          "<div class='content-date'>" + moment[0] + "</div>" +
-                        "</div>" +
-                        "<div class='content-title'>【個人撮影・無修正】" + moment[2] + "</div>" +
-                        "<div class='played-count'>" + moment[3] + " 歩行距離 <i class='fas fa-thumbs-up'></i> 24%</div>" +
-                      "</a>" +
-                    "</div>";
-                  "</li>"
-        // contents.insertAdjacentHTML("beforeend", strHTML);
-        contents.insertAdjacentHTML("afterbegin", strHTML);
+      let strMoments = "";
+      let strButtons = "";
+      let intLastPage = moments_cut.length - 1;
+      scrollTo(0, 0);
+      contents.innerHTML = strMoments;
+      buttons.innerHTML = strButtons;
+      moments_cut[intPage].forEach(function( moment ) {
+        strMoments = '<li>' +
+                      '<div class="content">' + 
+                        '<a href=' + moment[1] + '>' + 
+                          '<div class="img-container">' +
+                            '<img src=' + moment[4] + ' class="content-img">' + 
+                            '<div class="content-date">' + moment[0] + '</div>' +
+                          '</div>' +
+                          '<div class="content-title">【個人撮影・無修正】' + moment[2] + '</div>' +
+                          '<div class="played-count">' + moment[3] + ' 歩行距離 <i class="fas fa-thumbs-up"></i> 24%</div>' +
+                        '</a>' +
+                      '</div>';
+                    '</li>'
+        contents.insertAdjacentHTML("beforeend", strMoments);
       });
+
+      let intStart = 0;
+      let intEnd = 0;
+      if (intPage + 4 >= intLastPage) {
+        intStart = intLastPage - 3;
+        intEnd = intLastPage + 1;
+      } else {
+        intStart = intPage + 1;
+        intEnd = intPage + 5;
+      }
+
+      for (i = intStart; i <= intEnd; i++) {
+        const intNum = i - 1;
+        if (i == intPage + 1) {
+          strButtons = '<li class="page-button now-button" id="page-button-' + (intNum) + '">' + i + '</li>'
+        } else {
+          strButtons = '<li class="page-button" id="page-button-' + (intNum) + '">' + i + '</li>'
+        }
+        buttons.insertAdjacentHTML("beforeend", strButtons);
+        const button = document.getElementById("page-button-" + (intNum));
+        button.addEventListener("click", function(){setPageContents(intNum)});
+      }
+      if (intPage != 0) {
+        strButtons = '<li class="page-button prev-button" id="page-button-prev">< 前の</li>'
+        buttons.insertAdjacentHTML("afterbegin", strButtons);
+        const buttonPrev = document.getElementById("page-button-prev");
+        buttonPrev.addEventListener("click", function(){setPageContents(intPage - 1)});
+      }
+      if (intPage != intLastPage) {
+        strButtons = '<li class="page-button next-button" id="page-button-next">次へ ></li>'
+        buttons.insertAdjacentHTML("beforeend", strButtons);
+        const buttonNext = document.getElementById("page-button-next");
+        buttonNext.addEventListener("click", function(){setPageContents(intPage + 1)});
+      }
     }
 
     setPageContents(0);
+
+    console.log(moments_cut.length);
 
 
   </script>

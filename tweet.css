@@ -147,6 +147,11 @@ main {
   line-height: 60px;
   background-color: #1f1f1f;
   border-radius: 5px;
+  cursor: pointer;
+}
+
+.page-button:hover{
+  background-color: #393939;
 }
 
 .now-button {
@@ -154,6 +159,11 @@ main {
   background-color: #FF9900;
 }
 
+.now-button:hover {
+  background-color: #FFaa11;
+}
+
+.prev-button, 
 .next-button {
   color: #FF9900;
   width: 120px;
