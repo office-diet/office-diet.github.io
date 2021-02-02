@@ -33,6 +33,7 @@ header {
 
 .logo {
   display: flex;
+  cursor: pointer;
 }
 
 .logo-left, .logo-right {

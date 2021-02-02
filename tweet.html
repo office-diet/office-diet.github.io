@@ -13,7 +13,9 @@
 <body>
   <header>
     <div class="header-container">
-      <div class="logo"><div class="logo-left">散porn</div><div class="logo-right">hub</div></div>
+      <a href="">
+        <div class="logo"><div class="logo-left">散porn</div><div class="logo-right">hub</div></div>
+      </a>
     </div>
   </header>
   <main>
@@ -202,7 +204,7 @@
       moments_cut[intPage].forEach(function( moment ) {
         strMoments = '<li>' +
                       '<div class="content">' + 
-                        '<a href=' + moment[1] + '>' + 
+                        '<a href=' + moment[1] + ' target="_blank">' + 
                           '<div class="img-container">' +
                             '<img src=' + moment[4] + ' class="content-img">' + 
                             '<div class="content-date">' + moment[0] + '</div>' +
