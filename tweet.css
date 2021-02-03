@@ -267,13 +267,63 @@ footer {
 
 
 @media screen and (max-width:1024px) {
+  .search {
+    width: 350px;
+  }
   .header-container,
   .main-container,
   .footer-container  {
     width: 96vw;
-  }  
+  } 
+
+  .main-container {
+    padding-left: 0;
+    padding-right: 0;
+  }
   main {
     margin: 0 2vw;
+  }
+
+  .content {
+    padding: 2vw;
+  }
+  .content-date,
+  .content-title,
+  .played-count {
+    font-size: 6px;
+    overflow: hidden;
+  }
+  
+  .content-cover, 
+  .img-container{
+    width: 20vw;
+    height: 15vw;
+  }
+  .content-img {
+    width: auto;
+    height: 15vw;
+  }
+  
+  .content-title {
+    width: 20vw;
+  }
+  
+  .buttons {
+    margin: 20px 0;
+  }
+
+  .page-button {
+    height: 30px;
+    line-height: 30px;
+    width: 30px;
+    font-size: 8px;
+    margin: 3px;
+  }
+
+  .next-button, 
+  .prev-button {
+    width: 50px;
+    line-height: 26px;
   }
 }
 
@@ -287,6 +337,10 @@ footer {
     width: 96vw;
   } 
 
+  .main-container {
+    padding-left: 0;
+    padding-right: 0;
+  }
   .footer-container {
     font-size: 8px;
   }
@@ -294,10 +348,32 @@ footer {
     margin: 0 2vw;
   }
 
+  .content {
+    padding: 2vw;
+  }
   .content-date,
-  .played-count,
-  .content-title {
+  .content-title,
+  .played-count {
     font-size: 6px;
+    overflow: hidden;
+  }
+  
+  .content-cover, 
+  .img-container{
+    width: 44vw;
+    height: 33vw;
+  }
+  .content-img {
+    width: auto;
+    height: 33vw;
+  }
+  
+  .content-title {
+    width: 44vw;
+  }
+  
+  .buttons {
+    margin: 20px 0;
   }
 
   .page-button {
@@ -305,23 +381,12 @@ footer {
     line-height: 30px;
     width: 30px;
     font-size: 8px;
-  }
-
-  .img-container{
-    width: 40vw;
-    height: 30vw;
-  }
-  .content-img {
-    width: auto;
-    height: 30vw;
-  }
-
-  .content-title {
-    width: 40vw;
+    margin: 3px;
   }
 
   .next-button, 
   .prev-button {
     width: 50px;
+    line-height: 26px;
   }
 }
