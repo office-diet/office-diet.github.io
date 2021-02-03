@@ -265,9 +265,14 @@ footer {
 
 @media screen and (max-width:1024px) {
   .search {
-    width: 320px;
+    width: 50vw;
     margin-left: 20px;
   }
+
+  .search-button {
+    width: 50px;
+  }
+
   .header-container,
   .main-container,
   .footer-container  {
