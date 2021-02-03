@@ -142,7 +142,7 @@ window.addEventListener("load", function(){
   const formSearch = document.getElementById("search-form");
   const inputSearch = document.getElementById("search");
   const btnSearch = document.getElementById("search-button");
-  inputSearch.placeholder = contents_all.length + "回の散歩から検索 ※複合条件検索不可";
+  inputSearch.placeholder = contents_all.length + "回の散歩から検索 ※複合条件不可";
   formSearch.addEventListener("submit", function(e){
     e.preventDefault();
     buildPage(1, inputSearch.value);
