@@ -137,6 +137,7 @@ window.addEventListener("load", function(){
     ["2021/02/01", "https://twitter.com/i/events/1356099435869073411", "江東区塩浜⇒南砂⇒砂町銀座商店街周辺", "7.23km", "https://pbs.twimg.com/media/EtF9H7FU4AEddtD?format=jpg&name=small"], 
     ["2021/02/02", "https://twitter.com/i/events/1356391854850273281", "江東区塩浜⇒門前仲町⇒永代橋", "5.67km", "https://pbs.twimg.com/media/EtK538nVoAIm33Z?format=jpg&name=small"], 
     ["2021/02/03", "https://twitter.com/i/events/1356780849383968769", "江東区塩浜⇒江戸資料館⇒日本橋⇒ハローワーク木場", "11.08km", "https://pbs.twimg.com/media/EtQWb_rVkAAE_uS?format=jpg&name=small"], 
+    ["2021/02/04", "https://twitter.com/i/events/1357112213232709633", "江東区塩浜⇒北砂⇒小名木川⇒菊川", "9.38km", "https://pbs.twimg.com/media/EtVY4V_UUAAC3AK?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
