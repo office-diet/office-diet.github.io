@@ -1,3 +1,7 @@
+html {
+  width: 100vw;
+}
+
 body {
   margin:0;
   padding:0;
@@ -248,4 +252,76 @@ footer {
   margin: 0 auto;
   width: 1220px;
   text-align: center;
+}
+
+@media screen and (max-width:1220px) {
+  .header-container,
+  .main-container,
+  .footer-container  {
+    width: 980px;
+  }
+  main {
+    margin: 0 (100vw - 980px);
+  }
+}
+
+
+@media screen and (max-width:1024px) {
+  .header-container,
+  .main-container,
+  .footer-container  {
+    width: 96vw;
+  }  
+  main {
+    margin: 0 2vw;
+  }
+}
+
+@media screen and (max-width:599px) {
+  .search-form {
+    display: none;
+  }
+  .header-container,
+  .main-container,
+  .footer-container  {
+    width: 96vw;
+  } 
+
+  .footer-container {
+    font-size: 8px;
+  }
+  main {
+    margin: 0 2vw;
+  }
+
+  .content-date,
+  .played-count,
+  .content-title {
+    font-size: 6px;
+  }
+
+  .page-button {
+    height: 30px;
+    line-height: 30px;
+    width: 30px;
+    font-size: 8px;
+  }
+
+  .img-container{
+    width: 40vw;
+    height: 30vw;
+  }
+  .content-img {
+    width: auto;
+    height: 30vw;
+  }
+
+  .content-title {
+    width: 40vw;
+  }
+
+  .next-button, 
+  .prev-button {
+    width: 50px;
+  }
 }
