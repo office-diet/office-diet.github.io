@@ -1,6 +1,6 @@
 window.addEventListener("load", function(){
 
-  const moments_all = [
+  const contents_all = [
     ["2020/09/26", "https://twitter.com/i/events/1337327415551397888", "江東区塩浜⇒豊洲⇒お台場⇒有明⇒東雲⇒辰巳", "17.51km", "https://pbs.twimg.com/media/Ei0sXZZUMAI6CKM?format=jpg&name=small"], 
     ["2020/09/27", "https://twitter.com/i/events/1337329063313121284", "塩浜⇒葛西⇒ディズニーランド", "28.33km", "https://pbs.twimg.com/media/Eo8mLr-VoAAh6YF?format=png&name=small"], 
     ["2020/09/28", "https://twitter.com/i/events/1337330422351503361", "塩浜⇒枝川⇒豊洲⇒月島⇒門前仲町⇒塩浜", "8.48km", "https://pbs.twimg.com/media/Eo8nIFLU8AAFNgO?format=png&name=small"], 
@@ -136,44 +136,48 @@ window.addEventListener("load", function(){
     ["2021/01/30", "https://twitter.com/i/moments/1356058605661814785", "江東区塩浜⇒大久保⇒玉川上水⇒あきる野市⇒立川⇒千歳烏山⇒代々木公園⇒東京", "114.62km", "https://pbs.twimg.com/media/EtG3BPaUcAc8RWu?format=jpg&name=small"], 
     ["2021/02/01", "https://twitter.com/i/events/1356099435869073411", "江東区塩浜⇒南砂⇒砂町銀座商店街周辺", "7.23km", "https://pbs.twimg.com/media/EtF9H7FU4AEddtD?format=jpg&name=small"], 
     ["2021/02/02", "https://twitter.com/i/events/1356391854850273281", "江東区塩浜⇒門前仲町⇒永代橋", "5.67km", "https://pbs.twimg.com/media/EtK538nVoAIm33Z?format=jpg&name=small"], 
+    ["2021/02/03", "https://twitter.com/i/events/1356780849383968769", "江東区塩浜⇒江戸資料館⇒日本橋⇒ハローワーク木場", "11.08km", "https://pbs.twimg.com/media/EtQWb_rVkAAE_uS?format=jpg&name=small"], 
   ];
   
+  const formSearch = document.getElementById("search-form");
   const inputSearch = document.getElementById("search");
   const btnSearch = document.getElementById("search-button");
-  inputSearch.placeholder = moments_all.length + "回の散歩から検索";
-  btnSearch.addEventListener("click", function(){window.alert("検索機能はまだ実装されていません by サンパー")});
+  inputSearch.placeholder = contents_all.length + "回の散歩から検索 ※複合条件検索不可";
+  formSearch.addEventListener("submit", function(e){
+    e.preventDefault();
+    buildPage(1, inputSearch.value);
+  });
+  btnSearch.addEventListener("click", function(){buildPage(1, inputSearch.value)});
 
-  let moments_cut = [];
-  let tempCutArray = [];
-  let intPageCount = 0;
+  let contentsPageCut = [];
 
   function searchContents(strKey) {
-    moments_cut = [];
-    tempCutArray = [];
-    if (strKey == "" || strKey == none) {
-      for (i = moments_all.length - 1; i >= 0; i -= 20 ){
-        for (j = i; j > i - 20; j-- ){
-          tempCutArray.push(moments_all[j]) 
-          if (j == 0){
-            break;
-          }
+    contentsPageCut = [];
+    let contentsReverse = [];
+    let tempCutArray = [];
+    if (strKey == "") {
+      contents_all.forEach(function (content){
+        contentsReverse.unshift(content);
+      });
+    } else {
+      contents_all.forEach(function (content){
+        if (content[2].indexOf(strKey) != -1) {
+          contentsReverse.unshift(content);
         }
-        moments_cut.push(tempCutArray);
+      });
+    }
+    let intContentCount = 0;
+    contentsReverse.forEach(function(content) {
+      tempCutArray.push(content);
+      intContentCount++;
+      if (intContentCount % 20 == 0 || intContentCount == contentsReverse.length) {
+        contentsPageCut.push(tempCutArray);
         tempCutArray = [];
       }
-    } else {
-      let intFindCount = 0;
-      moments_all.forEach( function( moment ){
-        if (moment[2].indexOf(strKey) != -1) {
-          tempCutArray.unshift(moment);
-          intFindCount++;
-        }
-        if (intFindCount ==20) {
-          moments_cut.unshift(tempCutArray)
-          intFindCount = 0;
-          tempCutArray = [];
-        }
-      }); 
+    });
+    if (contentsPageCut.length == 0) {
+      window.alert(  '"' + strKey + '"の検索結果は0件でしたから、全件表示しろいたします。');
+      searchContents("");
     }
   }
 
@@ -181,42 +185,49 @@ window.addEventListener("load", function(){
   const buttons = document.getElementById("buttons")
 
   function setPageContents(intPage){
-    let strMoments = "";
+    let strContent = "";
     let strButtons = "";
-    let intLastPage = moments_cut.length - 1;
     scrollTo(0, 0);
-    contents.innerHTML = strMoments;
+    contents.innerHTML = strContent;
     buttons.innerHTML = strButtons;
-    moments_cut[intPage].forEach(function( moment ) {
-      strMoments = '<li>' +
+    contentsPageCut[intPage - 1].forEach(function( content ) {
+      strContent = '<li>' +
                     '<div class="content">' + 
-                      '<a href=' + moment[1] + ' target="_blank">' + 
+                      '<a href=' + content[1] + ' target="_blank">' + 
                         '<div class="img-container">' +
-                          '<img src=' + moment[4] + ' class="content-img">' + 
+                          '<img src=' + content[4] + ' class="content-img">' + 
                           '<div class="content-cover"></div>' +
-                          '<div class="content-date">' + moment[0] + '</div>' +
+                          '<div class="content-date">' + content[0] + '</div>' +
                         '</div>' +
-                        '<div class="content-title">【個人撮影・無修正】' + moment[2] + '</div>' +
+                        '<div class="content-title">【個人撮影・無修正】' + content[2] + '</div>' +
                         '</a>' +
-                        '<div class="played-count">' + moment[3] + ' 歩行距離 <i class="fas fa-thumbs-up"></i> 100%</div>' +
+                        '<div class="played-count">' + content[3] + ' 歩行距離 <i class="fas fa-thumbs-up"></i> 100%</div>' +
                     '</div>';
                   '</li>'
-      contents.insertAdjacentHTML("beforeend", strMoments);
+      contents.insertAdjacentHTML("beforeend", strContent);
     });
 
+    const intLastPage = contentsPageCut.length;
     let intStart = 0;
     let intEnd = 0;
-    if (intPage + 4 >= intLastPage) {
-      intStart = intLastPage - 3;
-      intEnd = intLastPage + 1;
+    let intButtonCount = 0;
+    if ( intLastPage >= 5 ){
+      intButtonCount = 5;
     } else {
-      intStart = intPage + 1;
-      intEnd = intPage + 5;
+      intButtonCount = intLastPage;
+    }
+
+    if (intPage + intButtonCount - 1 >= intLastPage) {
+      intStart = intLastPage - intButtonCount + 1;
+      intEnd = intLastPage;
+    } else {
+      intStart = intPage;
+      intEnd = intPage + intButtonCount - 1;
     }
 
     for (i = intStart; i <= intEnd; i++) {
-      const intNum = i - 1;
-      if (i == intPage + 1) {
+      const intNum = i;
+      if (i == intPage) {
         strButtons = '<li class="page-button now-button" id="page-button-' + (intNum) + '">' + i + '</li>'
       } else {
         strButtons = '<li class="page-button" id="page-button-' + (intNum) + '">' + i + '</li>'
@@ -225,7 +236,7 @@ window.addEventListener("load", function(){
       const button = document.getElementById("page-button-" + (intNum));
       button.addEventListener("click", function(){setPageContents(intNum)});
     }
-    if (intPage != 0) {
+    if (intPage != 1) {
       strButtons = '<li class="page-button prev-button" id="page-button-prev">< 前の</li>'
       buttons.insertAdjacentHTML("afterbegin", strButtons);
       const buttonPrev = document.getElementById("page-button-prev");
@@ -239,7 +250,11 @@ window.addEventListener("load", function(){
     }
   }
 
-  searchContents("");
-  setPageContents(0);
+  function buildPage( intPage, strKey) {
+    searchContents(strKey);
+    setPageContents(intPage);
+  }
+
+  buildPage(1, "");
 
 })
