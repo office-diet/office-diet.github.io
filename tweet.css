@@ -59,10 +59,6 @@ header {
   line-height: 40px;
 }
 
-main {
-  min-height: calc(100vh - 120px);
-}
-
 .search-form {
   display: flex;
 }
@@ -103,6 +99,7 @@ main {
 }
 
 main {
+  min-height: calc(100vh - 120px);
   margin: 0 (100vw - 1220px ) / 2;
 }
 
@@ -268,7 +265,8 @@ footer {
 
 @media screen and (max-width:1024px) {
   .search {
-    width: 350px;
+    width: 320px;
+    margin-left: 20px;
   }
   .header-container,
   .main-container,
@@ -290,7 +288,7 @@ footer {
   .content-date,
   .content-title,
   .played-count {
-    font-size: 6px;
+    font-size: 10px;
     overflow: hidden;
   }
   
