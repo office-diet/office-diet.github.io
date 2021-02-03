@@ -288,8 +288,7 @@ footer {
   .content-date,
   .content-title,
   .played-count {
-    font-size: 10px;
-    overflow: hidden;
+    font-size: 12px;
   }
   
   .content-cover, 
@@ -302,7 +301,8 @@ footer {
     height: 15vw;
   }
   
-  .content-title {
+  .content-title,
+  .played-count {
     width: 20vw;
   }
   
@@ -352,8 +352,7 @@ footer {
   .content-date,
   .content-title,
   .played-count {
-    font-size: 6px;
-    overflow: hidden;
+    font-size: 10px;
   }
   
   .content-cover, 
@@ -366,7 +365,8 @@ footer {
     height: 33vw;
   }
   
-  .content-title {
+  .content-title,
+  .played-count {
     width: 44vw;
   }
   
