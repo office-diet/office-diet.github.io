@@ -85,7 +85,8 @@ body {
 main {
   background-color: blue;
   width: 83vw;
-  margin:0 auto ;
+  margin:0 auto;
+  padding-bottom: 3vw;
 }
 .map  {
   margin:0 auto ;
@@ -154,7 +155,6 @@ main {
   margin: 0 auto;
   width: 73vw;
   height: 20vw;
-  /* background-color: white; */
 }
 
 .selected {
@@ -164,6 +164,7 @@ main {
 }
 
 .charactors {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   margin: 0 1.5vw;
@@ -176,6 +177,10 @@ main {
   width: 10vw;
   height: 10vw;
   border: 0.1vw solid gray;
+  color: white ;
+  font-weight: bold;
+  font-size: 3.5vw;
+  text-align: center;
 }
 
 .p-1,
@@ -195,7 +200,50 @@ main {
   color: #3af;
 }
 
+.active {
+  position: absolute;
+  display: flex;
+  flex-wrap: wrap;
+  width: 10vw;
+  height: 10vw;
+  top: 0;
+  left: 0;
+  color: red;
+  font-weight: bold;
+  font-size: 2vw;
+  text-align: center;
+  text-shadow: 0.1vw 0.1vw white;
+  line-height: 0.5vw;
+}
 
+.left, .right {
+  width: 3vw;
+}
+.center {
+  width: 4vw;
+}
+.top, .bottom {
+  height: 3vw;
+}
+.mid {
+  height: 4vw;
+}
+.left {
+  border-left: 0.5vw solid red;
+}
+.right {
+  border-right: 0.5vw solid red;
+}
+.top {
+  border-top: 0.5vw solid red;
+}
+.bottom {
+  border-bottom: 0.5vw solid red;
+}
+
+.center, .mid {
+  border: none;
+}
 .charactor-name {
   text-align: center;
   font-size: 3vw;
@@ -212,3 +260,61 @@ main {
   width: auto;
   transform: translate( -8.5vw, -4vw);
 }
+
+.modal-back {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal {
+  position: fixed;
+  top: 5vw;
+  left: calc(30vw / 2);
+  right: auto;
+  width: 70vw;
+  height: 40vw;
+  background-color: rgb(10, 10, 10);
+  border-radius: 1vw;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.modal-head {
+  height: 3vw;
+  line-height: 3vw;
+  font-size: 2vw;
+  padding: 0.3vw 0 0 2vw;
+  background-color: #222;
+}
+
+.modal-container  {
+  display: flex;
+  justify-content: space-between;
+  align-items:flex-start;
+  flex-wrap: wrap;
+  width: 70vw;
+  height: 37vw;
+  padding: 0 2vw 2vw;
+}
+
+.img {
+  width: 20vw;
+  height: auto;
+  margin-top: 2vw;
+}
+.content {
+  width: 44vw;
+  color: #999;
+  margin-top: 2vw;
+  font-size: 2vw;
+}
+
+.hidden {
+  display: none;
+}
+
