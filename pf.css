@@ -12,6 +12,9 @@ body {
   color: #666;
 }
 
+header {
+  user-select: none;
+}
 .title-display {
   position: absolute;
   margin: 2vw 25vw;
@@ -155,6 +158,7 @@ main {
   margin: 0 auto;
   width: 73vw;
   height: 20vw;
+  user-select: none;
 }
 
 .selected {
@@ -174,13 +178,16 @@ main {
 }
 
 .charactor {
+  padding-top: 1.2vw ;
   width: 10vw;
+  line-height: 4vw;
   height: 10vw;
   border: 0.1vw solid gray;
   color: white ;
   font-weight: bold;
   font-size: 3.5vw;
   text-align: center;
+  cursor: pointer;
 }
 
 .p-1,
@@ -214,6 +221,7 @@ main {
   text-align: center;
   text-shadow: 0.1vw 0.1vw white;
   line-height: 0.5vw;
+  cursor: pointer;
 }
 
 .left, .right {
