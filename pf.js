@@ -32,18 +32,7 @@ window.addEventListener("load", function () {
     });
   });
 
-  modalBack.addEventListener("click", function(){
-    aryContent.forEach(function(strContentName){
-      document.getElementById("modal-" + strContentName).classList.add("hidden");
-      if (strContentName != strNowActive) {
-        document.getElementById("active-" + strContentName).classList.add("hidden");
-      }
-    });
-    modalBack.classList.add("hidden");
-    modalSponsor.classList.add("hidden");
-  });
-
-  closeButtons.forEach(function(closeButton){
+  [modalBack, ...closeButtons].forEach(function(closeButton){
     closeButton.addEventListener("click", function(){
       aryContent.forEach(function(strContentName){
         document.getElementById("modal-" + strContentName).classList.add("hidden");

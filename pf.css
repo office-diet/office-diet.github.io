@@ -320,7 +320,7 @@ main {
   right: 0;
   bottom: 0;
   z-index: 1;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.7);
 }
 
 .modal {
@@ -382,13 +382,27 @@ main {
 }
 .content {
   width: 44vw;
-  /* line-height: 1.9vw; */
   color: #111;
   margin-top: 2vw;
   font-size: 1.2vw;
+}
+
+.content-sponsor {
+  width: unset;
 }
 
 .hidden {
   display: none;
 }
 
+/* ---- footer ---- */
+footer {
+  width: 83vw;
+  margin: 0 auto;
+  background-color: #333;
+  text-align: center;
+  height: 3vw;
+  line-height: 3vw;
+  font-size: 1vw;
+  color: #ddd;
+}
