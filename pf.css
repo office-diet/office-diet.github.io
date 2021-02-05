@@ -360,7 +360,7 @@ main {
 }
 
 .close:hover {
-  background-color: #888;
+  background-color: red;
 }
 
 .modal-container  {
@@ -387,8 +387,13 @@ main {
   font-size: 1.2vw;
 }
 
+
+#modal-sponsor {
+  left: 25vw;
+  width: 50vw;
+}
 .content-sponsor {
-  width: unset;
+  width: 46vw;
 }
 
 .hidden {
