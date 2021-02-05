@@ -34,16 +34,39 @@ header {
   text-align: center;
   width: 48vw;
   height: 23vw;
+  transform:translateY( -1vw) ;
 }
 
 .title-span {
   display: inline-block;
-  color: #FF8C00;
+  color: orange;
   background: -webkit-linear-gradient(top,yellow 0%, yellow 45%, orange 46%, orange 54%, red 65%, red 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   transform: rotate(-5deg);
   -webkit-text-stroke: 0.05vw #555;
+}
+
+.sponsor {
+  margin: 0 auto;
+  text-align: center;
+  width: 40vw;
+  height: 3vw;
+  font-weight: bold;
+  font-size: 2vw;
+  text-align: center;
+  color: skyblue;
+  background: -webkit-linear-gradient(top, skyblue 0%, skyblue 25%, white 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  /* background-color: yellow; */
+  transform: translateY( -4.5vw );
+  cursor: pointer;
+  border-radius: 0.5vw;
+  border: 0.2vw solid skyblue;
+}
+.sponsor:hover {
+  border: 0.2vw solid red;
 }
 
 .building {
@@ -224,6 +247,27 @@ main {
   cursor: pointer;
 }
 
+.apps,
+.walking {
+  left: 10vw;
+}
+.qualification,
+.twitter {
+  left: 20vw;
+}
+.tech,
+.youtube {
+  left: 30vw;
+}
+
+.lifestyle,
+.walking, 
+.twitter,
+.youtube {
+  top: 10vw;
+}
+
+
 .left, .right {
   width: 3vw;
 }
@@ -285,7 +329,7 @@ main {
   left: calc(30vw / 2);
   right: auto;
   width: 70vw;
-  height: 40vw;
+  /* height: 40vw; */
   background-color: rgb(10, 10, 10);
   border-radius: 1vw;
   z-index: 2;
@@ -295,6 +339,7 @@ main {
 .modal-head {
   height: 3vw;
   line-height: 3vw;
+  color: #999;
   font-size: 2vw;
   padding: 0.3vw 0 0 2vw;
   background-color: #222;
@@ -306,8 +351,9 @@ main {
   align-items:flex-start;
   flex-wrap: wrap;
   width: 70vw;
-  height: 37vw;
+  /* height: 37vw; */
   padding: 0 2vw 2vw;
+  /* background-color: white; */
 }
 
 .img {
@@ -317,9 +363,10 @@ main {
 }
 .content {
   width: 44vw;
+  /* line-height: 1.9vw; */
   color: #999;
   margin-top: 2vw;
-  font-size: 2vw;
+  font-size: 1.2vw;
 }
 
 .hidden {

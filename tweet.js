@@ -138,6 +138,7 @@ window.addEventListener("load", function(){
     ["2021/02/02", "https://twitter.com/i/events/1356391854850273281", "江東区塩浜⇒門前仲町⇒永代橋", "5.67km", "https://pbs.twimg.com/media/EtK538nVoAIm33Z?format=jpg&name=small"], 
     ["2021/02/03", "https://twitter.com/i/events/1356780849383968769", "江東区塩浜⇒江戸資料館⇒日本橋⇒ハローワーク木場", "11.08km", "https://pbs.twimg.com/media/EtQWb_rVkAAE_uS?format=jpg&name=small"], 
     ["2021/02/04", "https://twitter.com/i/events/1357112213232709633", "江東区塩浜⇒北砂⇒小名木川⇒菊川", "9.38km", "https://pbs.twimg.com/media/EtVY4V_UUAAC3AK?format=jpg&name=small"], 
+    ["2021/02/05", "https://twitter.com/i/events/1357502095126007808", "江東区塩浜⇒夢の島マリーナ⇒若洲海浜公園", "13.38km", "https://pbs.twimg.com/media/Etak_PpVkAAEJph?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
