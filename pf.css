@@ -190,7 +190,7 @@ main {
   overflow: hidden;
 }
 
-.charactors {
+.characters {
   position: relative;
   display: flex;
   flex-wrap: wrap;
@@ -200,7 +200,7 @@ main {
   background-color: black;
 }
 
-.charactor {
+.character {
   padding-top: 1.2vw ;
   width: 10vw;
   line-height: 4vw;
@@ -296,7 +296,7 @@ main {
 .center, .mid {
   border: none;
 }
-.charactor-name {
+.character-name {
   text-align: center;
   font-size: 3vw;
   font-weight: bold;
@@ -330,19 +330,37 @@ main {
   right: auto;
   width: 70vw;
   /* height: 40vw; */
-  background-color: rgb(10, 10, 10);
+  /* background-color: rgb(10, 10, 10); */
+  background-color: white;
   border-radius: 1vw;
   z-index: 2;
   overflow: hidden;
+  box-shadow: 0 0 1vw black;
 }
 
 .modal-head {
+  display: flex;
+  justify-content: space-between;
   height: 3vw;
   line-height: 3vw;
-  color: #999;
+  color: #ddd;
   font-size: 2vw;
   padding: 0.3vw 0 0 2vw;
-  background-color: #222;
+  background-color: #333;
+  user-select: none;
+  overflow: hidden;
+}
+
+.close {
+  text-align: center;
+  width: 5vw;
+  height: 3vw;
+  background-color: #666;
+  transform: translateY(-0.3vw) ;
+}
+
+.close:hover {
+  background-color: #888;
 }
 
 .modal-container  {
@@ -360,11 +378,12 @@ main {
   width: 20vw;
   height: auto;
   margin-top: 2vw;
+  box-shadow: 0 0 1vw black;
 }
 .content {
   width: 44vw;
   /* line-height: 1.9vw; */
-  color: #999;
+  color: #111;
   margin-top: 2vw;
   font-size: 1.2vw;
 }

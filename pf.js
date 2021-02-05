@@ -1,9 +1,10 @@
 window.addEventListener("load", function () {
 
-  const charactors = document.querySelectorAll(".charactor");
+  const characters = document.querySelectorAll(".character");
   const modalBack = document.getElementById("modal-back");
   const modalSponsor = document.getElementById("modal-sponsor");
-  let strNowActive = "";
+  const closeButtons = document.querySelectorAll(".close");
+  let strNowActive = "about";
   const aryContent = ["about", "apps", "qualification", "tech", "lifestyle", "walking", "twitter", "youtube" ];
 
   function hideActiveFrame(){
@@ -22,12 +23,12 @@ window.addEventListener("load", function () {
     modalContent.classList.remove("hidden");
   }
 
-  charactors.forEach(function(charactor) {
-    charactor.addEventListener("click", function(){
-      clickModalShow(charactor.id);
+  characters.forEach(function(character) {
+    character.addEventListener("click", function(){
+      clickModalShow(character.id);
     });
-    document.getElementById("active-" + charactor.id).addEventListener("click", function(){
-      clickModalShow(charactor.id);
+    document.getElementById("active-" + character.id).addEventListener("click", function(){
+      clickModalShow(character.id);
     });
   });
 
@@ -41,6 +42,21 @@ window.addEventListener("load", function () {
     modalBack.classList.add("hidden");
     modalSponsor.classList.add("hidden");
   });
+
+  closeButtons.forEach(function(closeButton){
+    closeButton.addEventListener("click", function(){
+      aryContent.forEach(function(strContentName){
+        document.getElementById("modal-" + strContentName).classList.add("hidden");
+        if (strContentName != strNowActive) {
+          document.getElementById("active-" + strContentName).classList.add("hidden");
+        }
+      });
+      modalBack.classList.add("hidden");
+      modalSponsor.classList.add("hidden");
+    });
+  });
+
+
 
   const sponsor = document.getElementById("sponsor");
   sponsor.addEventListener("click", function(){
