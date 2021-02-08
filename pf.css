@@ -374,19 +374,36 @@ main {
   /* background-color: white; */
 }
 
-.img {
-  width: 20vw;
-  height: auto;
-  margin-top: 2vw;
-  box-shadow: 0 0 1vw black;
-}
 .content {
-  width: 44vw;
   color: #111;
   margin-top: 2vw;
   font-size: 1.2vw;
 }
 
+
+.about-content {
+  width: 44vw;
+}
+
+.img {
+  width: 20vw;
+  height: auto;
+  margin-top: 2vw;
+  box-shadow: 0 0 1vw rgba(0, 0, 0, 0.8);
+}
+
+.time-table-container {
+  max-width: 66vw;
+  max-height: 40vw;
+  overflow: auto;
+}
+
+.time-table {
+  width: 1188.5px;
+  height: 703.5px;
+  overflow: hidden;
+  border: 2px solid black;
+}
 
 #modal-sponsor {
   left: 25vw;
