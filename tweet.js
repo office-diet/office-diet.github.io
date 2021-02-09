@@ -142,6 +142,7 @@ window.addEventListener("load", function(){
     ["2021/02/05", "https://twitter.com/i/events/1357808250062737408", "辰巳周辺の夜景散歩", "--km", "https://pbs.twimg.com/media/Etd2_IUVEAA5yST?format=jpg&name=small"], 
     ["2021/02/06", "https://twitter.com/i/events/1358584591376732162", "江東区塩浜⇒江戸川区⇒八潮⇒流山⇒野田⇒春日部⇒足立区⇒中央区", "121.62km", "https://pbs.twimg.com/media/EtqtvBBVoAI3bMB?format=jpg&name=small"], 
     ["2021/02/08", "https://twitter.com/i/events/1358590962352590848", "江東区塩浜⇒越中島発着所⇒隅田川テラス⇒木場親水公園", "9.99km", "https://pbs.twimg.com/media/EtqHhyhVkAA1l4w?format=jpg&name=small"], 
+    ["2021/02/09", "https://twitter.com/i/events/1359019551430639621", "若葉台⇒多摩センター⇒長池見附橋⇒小山田⇒南大沢", "20.22km", "https://pbs.twimg.com/media/EtvNrreUYAEMNKv?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
