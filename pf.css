@@ -377,7 +377,7 @@ main {
 .content {
   color: #111;
   margin-top: 2vw;
-  font-size: 1.2vw;
+  font-size: 1vw;
 }
 
 .content-head {
@@ -391,6 +391,9 @@ main {
 /* 自己紹介モーダル */
 .about-content {
   width: 44vw;
+  border-radius: 0.5vw;
+  overflow: hidden;
+  box-shadow: 0 0 0.5vw rgba(0, 0, 0, 0.3);
 }
 
 .img {
@@ -398,6 +401,11 @@ main {
   height: auto;
   margin-top: 2vw;
   box-shadow: 0 0 1vw rgba(0, 0, 0, 0.8);
+}
+
+.description {
+  font-size: 1vw;
+  padding: 0.5vw;
 }
 
 /* 作品紹介モーダル */
