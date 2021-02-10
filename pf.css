@@ -381,6 +381,7 @@ main {
 }
 
 
+/* 自己紹介モーダル */
 .about-content {
   width: 44vw;
 }
@@ -392,6 +393,64 @@ main {
   box-shadow: 0 0 1vw rgba(0, 0, 0, 0.8);
 }
 
+/* 作品紹介モーダル */
+.apps-content {
+  margin-top: 1vw;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.app-content {
+  margin-top: 1vw;
+  width: 16vw;
+  padding: 0.5vw;
+  display: flex;
+  flex-direction: column;
+  font-size: 0.8vw;
+  word-wrap: break-word;
+  background-color: #ddd;
+  border-radius: 0.5vw;
+  box-shadow: 0 0 0.5vw rgba(0, 0, 0, 0.5);
+}
+.app-img {
+  width: 15vw;
+  height: auto;
+  border-radius: 0.3vw;
+  box-shadow: 0 0 0.5vw rgba(0, 0, 0, 0.3);
+  transition: all 0.2s;
+}
+.app-img:hover {
+  transform: scale(1.03);
+  opacity: 0.8;
+}
+
+.languages {
+  display: flex;
+  flex-wrap: wrap;
+  user-select: none;
+}
+.language {
+  border-radius: 0.2vw;
+  padding: 0 0.3vw;
+  margin-right: 0.2vw;
+  margin-bottom: 0.5vw;
+  color: white;
+  font-weight: bold;
+}
+.ruby {
+  background-color: darkred;
+}
+.html {
+  background-color: orangered;
+}
+.css {
+  background-color: skyblue;
+}
+.javascript {
+  background-color: goldenrod;
+}
+
+/* 日常生活モーダル */
 .time-table-container {
   max-width: 66vw;
   max-height: 40vw;
@@ -405,6 +464,51 @@ main {
   border: 2px solid black;
 }
 
+
+/* 散歩記録モーダル */
+.ph-img {
+  width: 40vw;
+  height: auto;
+  border-radius: 0.5vw;
+  box-shadow: 0 0 1vw rgba(0, 0, 0, 0.8);
+}
+
+.ph-content {
+  width: 24vw;
+}
+
+/* Twitterモーダル */
+.twitter-head {
+  background-color: #333;
+  font-weight: bold;
+  color: white;
+  padding: 0.5vw;
+  font-size: 1vw;
+}
+
+.twitter-content {
+  height: 37vw;
+  width: 32vw;
+  overflow: auto;
+}
+
+/* YouTubeモーダル */
+.youtube-movie {
+  margin-top: 2vw;
+  display: block;
+  width: calc(16vw * 3);
+  height: calc(9vw * 3);
+  box-shadow: 0 0 1vw rgba(0, 0, 0, 0.8);
+}
+
+.youtube-content {
+  margin-top: 2vw;
+  width: calc(70vw - 6vw - (16vw * 3) );
+}
+
+
+
+/* スポンサーモーダル */
 #modal-sponsor {
   left: 25vw;
   width: 50vw;
