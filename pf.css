@@ -450,6 +450,63 @@ main {
   background-color: goldenrod;
 }
 
+/* 技術紹介モーダル */
+.tech-contents {
+  user-select: none;
+  margin-top: 2vw;
+  display: flex;
+  flex-direction: column;
+  border-radius: 0.3vw;
+  overflow: hidden;
+  box-shadow: 0 0 0.5vw rgba(0, 0, 0, 0.3);
+}
+.tech-head {
+  font-size: 1vw;
+  color: white;
+  font-weight: bold;
+  background-color: #666;
+  padding: 0.2vw 0.5vw;
+}
+.tech-content .languages {
+  background-color: #ddd;
+}
+.tech-language {
+  color: white;
+  font-weight: bold;
+  font-size: 1vw;
+  padding: 0.2vw 0.5vw;
+}
+.content.tech-content {
+  width: 32vw;
+  padding-bottom: 0;
+}
+.tech-content {
+  margin-top: 0;
+  padding: 0.5vw 0.5vw;
+  font-size: 1vw;
+  margin-bottom: 0.5vw;
+}
+.excel {
+  background-color: seagreen;
+}
+.access {
+  background-color: darkred;
+}
+.sql {
+  background-color: lightskyblue;
+}
+.vbs {
+  background-color: steelblue;
+}
+.applescript {
+  background-color: #666;
+}
+.php {
+  background-color: darkslateblue;
+}
+.python, .r {
+  background-color: steelblue;
+}
 /* 日常生活モーダル */
 .time-table-container {
   max-width: 66vw;
@@ -471,6 +528,11 @@ main {
   height: auto;
   border-radius: 0.5vw;
   box-shadow: 0 0 1vw rgba(0, 0, 0, 0.8);
+  transition: all 0.2s;
+}
+.ph-img:hover {
+  transform: scale(1.02);
+  opacity: 0.9;
 }
 
 .ph-content {
