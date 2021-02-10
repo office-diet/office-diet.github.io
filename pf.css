@@ -380,6 +380,13 @@ main {
   font-size: 1.2vw;
 }
 
+.content-head {
+  font-size: 1vw;
+  color: white;
+  font-weight: bold;
+  background-color: #666;
+  padding: 0.2vw 0.5vw;
+}
 
 /* 自己紹介モーダル */
 .about-content {
@@ -460,13 +467,6 @@ main {
   overflow: hidden;
   box-shadow: 0 0 0.5vw rgba(0, 0, 0, 0.3);
 }
-.tech-head {
-  font-size: 1vw;
-  color: white;
-  font-weight: bold;
-  background-color: #666;
-  padding: 0.2vw 0.5vw;
-}
 .tech-content .languages {
   background-color: #ddd;
 }
@@ -507,6 +507,27 @@ main {
 .python, .r {
   background-color: steelblue;
 }
+/* 資格紹介モーダル */
+.qualification-contents {
+  width: 70vw;
+  display: flex;
+  justify-content: space-between;
+}
+.qualification-content {
+  width: 32vw;
+  user-select: none;
+  margin-top: 2vw;
+  display: flex;
+  flex-direction: column;
+  border-radius: 0.3vw;
+  overflow: hidden;
+  box-shadow: 0 0 0.5vw rgba(0, 0, 0, 0.3);
+}
+.qualification-description {
+  font-size: 1vw;
+  padding: 0.5vw;
+}
+
 /* 日常生活モーダル */
 .time-table-container {
   max-width: 66vw;
