@@ -763,4 +763,12 @@ footer {
     width: 80vw;
     height: calc( 80vw / 16 * 9);
   }
+  .content-head {
+    font-size: 3vw;
+  }
+  .description,
+  .tech-content,
+  .app-content {
+    font-size: 2.5vw;
+  }
 }
