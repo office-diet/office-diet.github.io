@@ -113,11 +113,11 @@ main {
   width: 83vw;
   margin:0 auto;
   padding-bottom: 3vw;
+  overflow: hidden;
 }
 .map  {
   margin:0 auto ;
   width: 53vw;
-  /* height: 50vw; */
   display: flex;
   flex-wrap: wrap; 
   justify-content: center;
@@ -368,7 +368,7 @@ main {
   justify-content: space-between;
   align-items:flex-start;
   flex-wrap: wrap;
-  width: 70vw;
+  /* width: 70vw; */
   padding: 0 2vw 2vw;
   user-select: none;
 }
@@ -646,4 +646,66 @@ footer {
   line-height: 3vw;
   font-size: 1vw;
   color: #ddd;
+}
+
+@media screen and (max-width:1024px) {
+  #modal-sponsor {
+    left: unset;
+    width: 83vw;
+  }
+  .modal-back {
+    display: none;
+  }
+  .modal,
+  .modal.hidden {
+    /* background-color: red; */
+    width: 83vw;
+    position: relative;
+    display: block;
+    left: unset;
+    border-radius: unset;
+  }
+  .close {
+    display: none;
+  }
+  .content-sponsor,
+  .qualification-contents,
+  .lifestyle-content,
+  .time-table-container {
+    max-width: unset;
+    width: 80vw;
+  }
+  .about-content {
+    width: 57vw
+  }
+  .app-content {
+    width: 19vw;
+  }
+  .app-img {
+    width: 18vw;
+  }
+  .tech-contents {
+    width: 38vw;
+  }
+  .tech-content {
+    width: 37.5vw;
+  }
+  .qualification-content,
+  .twitter-content {
+    width: 38vw;
+  }
+  .ph-img {
+    width: 52vw;
+  }
+  .youtube-movie {
+    width: calc(16vw * 3.7);
+    height: calc((9vw * 3.7));
+  }
+  .youtube-content {
+    width: 17vw;
+  }
+
+}
+
+@media screen and (max-width:599px) {
 }
