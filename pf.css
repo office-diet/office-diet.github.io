@@ -19,7 +19,7 @@ header {
   position: absolute;
   margin: 2vw 25vw;
   width: 50vw;
-  height: 25vw;
+  height: 28vw;
   background-color: black;
   border: 1vw solid darkgrey;
 }
@@ -64,9 +64,38 @@ header {
   cursor: pointer;
   border-radius: 0.5vw;
   border: 0.2vw solid skyblue;
+  transition: all 0.2s;
 }
 .sponsor:hover {
   border: 0.2vw solid red;
+  font-size: 2.05vw;
+  width: 41vw;
+  height: 3.05vw;
+}
+
+.what-is {
+  position: absolute;
+  width: 40vw;
+  height: 3vw;
+  top: 22vw;
+  margin: 0 auto;
+  left: 0;
+  right: 0;
+  background-color:red;
+  color: white;
+  text-align: center;
+  font-size: 2vw;
+  font-weight: bold;
+  padding: 0.2vw 0.5vw 0 1vw;
+  border-radius: 0.5vw;
+  box-shadow: 0 0 0.5vw rgba(0, 0, 0, 0.5);
+  user-select: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.what-is:hover {
+  background-color:orangered;
+  transform: scale(1.02);
 }
 
 .building {
@@ -115,6 +144,7 @@ main {
   padding-bottom: 3vw;
   overflow: hidden;
 }
+
 .map  {
   margin:0 auto ;
   width: 53vw;
@@ -620,11 +650,13 @@ main {
 
 
 /* スポンサーモーダル */
-#modal-sponsor {
+.sponsor-modal,
+.what-is-modal {
   left: 25vw;
   width: 50vw;
 }
-.content-sponsor {
+.content-sponsor,
+.content-what-is {
   box-shadow: none;
   border-radius: unset;
   margin-top: 1vw;
@@ -649,7 +681,8 @@ footer {
 }
 
 @media screen and (max-width:1024px) {
-  #modal-sponsor {
+  .modal-sponsor,
+  .modal-what-is {
     left: unset;
     width: 83vw;
   }
@@ -674,6 +707,7 @@ footer {
     display: none;
   }
   .content-sponsor,
+  .content-what-is,
   .qualification-contents,
   .lifestyle-content,
   .time-table-container {

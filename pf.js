@@ -3,6 +3,7 @@ window.addEventListener("load", function () {
   const characters = document.querySelectorAll(".character");
   const modalBack = document.getElementById("modal-back");
   const modalSponsor = document.getElementById("modal-sponsor");
+  const modalWhatIs = document.getElementById("modal-what-is");
   const closeButtons = document.querySelectorAll(".close");
   let strNowActive = "about";
   const aryContent = ["about", "apps", "qualification", "tech", "lifestyle", "walking", "twitter", "youtube" ];
@@ -42,6 +43,7 @@ window.addEventListener("load", function () {
       });
       modalBack.classList.add("hidden");
       modalSponsor.classList.add("hidden");
+      modalWhatIs.classList.add("hidden");
     });
   });
 
@@ -51,5 +53,10 @@ window.addEventListener("load", function () {
   sponsor.addEventListener("click", function(){
     modalBack.classList.remove("hidden");
     modalSponsor.classList.remove("hidden");
+  })
+  const whatIs = document.getElementById("what-is");
+  whatIs.addEventListener("click", function(){
+    modalBack.classList.remove("hidden");
+    modalWhatIs.classList.remove("hidden");
   })
 })
