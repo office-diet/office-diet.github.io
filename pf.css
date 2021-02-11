@@ -665,6 +665,11 @@ footer {
     left: unset;
     border-radius: unset;
   }
+  .modal-head {
+    font-size: 4vw;
+    line-height: 6vw;
+    height: 6vw;
+  }
   .close {
     display: none;
   }
@@ -698,11 +703,19 @@ footer {
     width: 52vw;
   }
   .youtube-movie {
-    width: calc(16vw * 3.7);
-    height: calc((9vw * 3.7));
+    width: calc(16vw * 3.2);
+    height: calc((9vw * 3.2));
   }
   .youtube-content {
-    width: 17vw;
+    width: 24vw;
+  }
+  .content-head {
+    font-size: 2vw;
+  }
+  .description,
+  .tech-content,
+  .app-content {
+    font-size: 1.5vw;
   }
 
 }
