@@ -721,4 +721,46 @@ footer {
 }
 
 @media screen and (max-width:599px) {
+  .img {
+    display: none;
+  }
+  .about-content,
+  .tech-contents,
+  .qualification-content,
+  .ph-content,
+  .twitter-head,
+  .twitter-content,
+  .youtube-content {
+    width: 80vw;
+  }
+  .twitter-content {
+    height: 100vw;
+  }
+  .qualification {
+    max-height: unset;
+  }
+  .qualification-contents {
+    flex-direction: column;
+  }
+  .tech-content {
+    width: 79vw;
+  }
+  .apps-content {
+    max-height: unset;
+    height: 100vw;
+  }
+  .app-content {
+    width: 38vw;
+  }
+  .ph-img {
+    display: unset;
+    width: 80vw;
+  }
+  .app-img {
+    width: 37vw;
+  }
+  .youtube-movie {
+    width: 80vw;
+    height: calc( 80vw / 16 * 9);
+  }
 }
