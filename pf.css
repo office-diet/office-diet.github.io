@@ -325,7 +325,7 @@ main {
 
 .modal {
   position: fixed;
-  top: 5vw;
+  top: 3vw;
   left: calc(30vw / 2);
   right: auto;
   width: 70vw;
@@ -369,15 +369,24 @@ main {
   align-items:flex-start;
   flex-wrap: wrap;
   width: 70vw;
-  /* height: 37vw; */
   padding: 0 2vw 2vw;
-  /* background-color: white; */
+  user-select: none;
 }
 
+/* モーダル基本パーツ */
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
 .content {
-  color: #111;
   margin-top: 2vw;
-  font-size: 1vw;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 0.5vw;
+  box-shadow: 0 0 0.5vw rgba(0, 0, 0, 0.5);
+  overflow: hidden;
 }
 
 .content-head {
@@ -385,8 +394,15 @@ main {
   color: white;
   font-weight: bold;
   background-color: #666;
-  padding: 0.2vw 0.5vw;
+  padding: 0.3vw 0.5vw 0.1vw;
 }
+
+.description {
+  color: #333;
+  font-size: 1vw;
+  padding: 0.5vw;
+}
+
 
 /* 自己紹介モーダル */
 .about-content {
@@ -403,21 +419,21 @@ main {
   box-shadow: 0 0 1vw rgba(0, 0, 0, 0.8);
 }
 
-.description {
-  font-size: 1vw;
-  padding: 0.5vw;
-}
 
 /* 作品紹介モーダル */
 .apps-content {
   margin-top: 1vw;
+  max-height: 40vw;
+  overflow: auto;
   display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
   justify-content: space-between;
+  box-shadow: none;
 }
 .app-content {
   margin-top: 1vw;
-  width: 16vw;
+  width: 15.5vw;
   padding: 0.5vw;
   display: flex;
   flex-direction: column;
@@ -428,7 +444,7 @@ main {
   box-shadow: 0 0 0.5vw rgba(0, 0, 0, 0.5);
 }
 .app-img {
-  width: 15vw;
+  width: 14.5vw;
   height: auto;
   border-radius: 0.3vw;
   box-shadow: 0 0 0.5vw rgba(0, 0, 0, 0.3);
@@ -437,6 +453,9 @@ main {
 .app-img:hover {
   transform: scale(1.03);
   opacity: 0.8;
+}
+.app-description {
+  display: inline;
 }
 
 .languages {
@@ -461,8 +480,11 @@ main {
 .css {
   background-color: skyblue;
 }
-.javascript {
+.javascript, .blender {
   background-color: goldenrod;
+}
+.powerdirector {
+  background-color: rebeccapurple;
 }
 
 /* 技術紹介モーダル */
@@ -484,13 +506,10 @@ main {
   font-size: 1vw;
   padding: 0.2vw 0.5vw;
 }
-.content.tech-content {
-  width: 32vw;
-  padding-bottom: 0;
-}
 .tech-content {
+  width: 32vw;
   margin-top: 0;
-  padding: 0.5vw 0.5vw;
+  padding: 0.5vw 0.5vw 0;
   font-size: 1vw;
   margin-bottom: 0.5vw;
 }
@@ -515,6 +534,13 @@ main {
 .python, .r {
   background-color: steelblue;
 }
+.progate {
+  background-color: mediumaquamarine;
+
+}
+.dotinstall {
+  background-color: coral;
+}
 /* 資格紹介モーダル */
 .qualification-contents {
   width: 70vw;
@@ -523,17 +549,6 @@ main {
 }
 .qualification-content {
   width: 32vw;
-  user-select: none;
-  margin-top: 2vw;
-  display: flex;
-  flex-direction: column;
-  border-radius: 0.3vw;
-  overflow: hidden;
-  box-shadow: 0 0 0.5vw rgba(0, 0, 0, 0.3);
-}
-.qualification-description {
-  font-size: 1vw;
-  padding: 0.5vw;
 }
 
 /* 日常生活モーダル */
@@ -570,17 +585,22 @@ main {
 
 /* Twitterモーダル */
 .twitter-head {
+  margin-top: 2vw;
   background-color: #333;
   font-weight: bold;
   color: white;
   padding: 0.5vw;
   font-size: 1vw;
+  border-radius: 0.5vw 0.5vw 0 0;
+  box-shadow: 0 0 0.5vw rgba(0, 0, 0, 0.5);
 }
 
 .twitter-content {
-  height: 37vw;
+  height: 33vw;
   width: 32vw;
   overflow: auto;
+  border-radius: 0 0 0.5vw 0.5vw;
+  box-shadow: 0 0 0.5vw rgba(0, 0, 0, 0.5);
 }
 
 /* YouTubeモーダル */
@@ -605,6 +625,10 @@ main {
   width: 50vw;
 }
 .content-sponsor {
+  box-shadow: none;
+  border-radius: unset;
+  margin-top: 1vw;
+  margin-bottom: 0;
   width: 46vw;
 }
 
