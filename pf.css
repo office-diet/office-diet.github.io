@@ -582,19 +582,35 @@ main {
 }
 
 /* 日常生活モーダル */
-.time-table-container {
-  max-width: 66vw;
-  max-height: 40vw;
-  overflow: auto;
+.time-table-container,
+.money-container {
+  display: block;
+  width: 66vw;
+  height: 703.5px;
+  overflow: hidden;
+}
+.money-container {
+  height: 930px;
 }
 
-.time-table {
+.time-table,
+.money {
   width: 1188.5px;
   height: 703.5px;
   overflow: hidden;
   border: 2px solid black;
 }
+.money {
+  height: 930px;
+}
 
+.lifestyle-content {
+  display: unset;
+  border-radius: unset;
+  box-shadow: unset;  
+  height: 37vw;
+  overflow: auto;
+}
 
 /* 散歩記録モーダル */
 .ph-img {
@@ -710,10 +726,30 @@ footer {
   .content-what-is,
   .qualification-contents,
   .lifestyle-content,
-  .time-table-container {
+  .time-table-container,
+  .money-container {
     max-width: unset;
     width: 80vw;
   }
+  .lifestyle-content {
+    height: 80vw;
+  }
+  .time-table-container,
+  .money-container {
+    height: vw;
+  }
+
+  .time-table-container {
+    width: 1188.5px;
+    height: 703.5px;
+  }
+  .money-container {
+    width: 1240px;
+    height: 950px;
+  }
+  
+
+
   .about-content {
     width: 57vw
   }
