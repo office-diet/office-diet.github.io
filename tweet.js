@@ -145,6 +145,7 @@ window.addEventListener("load", function(){
     ["2021/02/09", "https://twitter.com/i/events/1359019551430639621", "若葉台⇒多摩センター⇒長池見附橋⇒小山田⇒南大沢", "20.22km", "https://pbs.twimg.com/media/EtvNrreUYAEMNKv?format=jpg&name=small"], 
     ["2021/02/10", "https://twitter.com/i/events/1359312918836174852", "江東区塩浜⇒豊洲⇒有明⇒お台場", "15.15km", "https://pbs.twimg.com/media/Et0U1BoVIAIPElP?format=jpg&name=small"], 
     ["2021/02/11", "https://twitter.com/i/events/1359649836706926593", "江東区塩浜⇒茅場町⇒日本橋⇒東京", "12.38km", "https://pbs.twimg.com/media/Et5cIphU0AE5NcS?format=jpg&name=small"], 
+    ["2021/02/12", "https://twitter.com/i/events/1360039608810000384", "江東区塩浜⇒西大島⇒住吉", "10.56km", "https://pbs.twimg.com/media/Et-mWZDVoAI2VKL?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
