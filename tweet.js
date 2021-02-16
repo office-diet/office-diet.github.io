@@ -148,7 +148,8 @@ window.addEventListener("load", function(){
     ["2021/02/12", "https://twitter.com/i/events/1360039608810000384", "江東区塩浜⇒西大島⇒住吉", "10.56km", "https://pbs.twimg.com/media/Et-mWZDVoAI2VKL?format=jpg&name=small"],
     ["2021/02/12", "https://twitter.com/i/events/1361262467842674688", "荒川・清砂大橋周辺の夜景散歩", "--km", "https://pbs.twimg.com/media/EuB6QbRVkAUHX_I?format=jpg&name=small"], 
     ["2021/02/13", "https://twitter.com/i/events/1361263661231210499", "江東区塩浜⇒旧東海道⇒横浜⇒停電⇒中華街⇒浮島", "113.82km", "https://pbs.twimg.com/media/EuQ3eiqVgAAs3bl?format=jpg&name=small"], 
-    ["2021/02/15", "https://twitter.com/i/events/1361274426914787328", "江東区塩浜⇒潮見⇒辰巳", "9.56km", "https://pbs.twimg.com/media/EuN1faZVEAA1GE_?format=jpg&name=small"],  
+    ["2021/02/15", "https://twitter.com/i/events/1361274426914787328", "江東区塩浜⇒潮見⇒辰巳", "9.56km", "https://pbs.twimg.com/media/EuN1faZVEAA1GE_?format=jpg&name=small"], 
+    ["2021/02/16", "https://twitter.com/i/events/1361462212720664576", "江東区塩浜⇒荒川河川敷", "11.45km", "https://pbs.twimg.com/media/EuTI1_xVcAIBHa2?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
