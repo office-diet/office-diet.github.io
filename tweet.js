@@ -150,6 +150,8 @@ window.addEventListener("load", function(){
     ["2021/02/13", "https://twitter.com/i/events/1361263661231210499", "江東区塩浜⇒旧東海道⇒横浜⇒停電⇒中華街⇒浮島", "113.82km", "https://pbs.twimg.com/media/EuQ3eiqVgAAs3bl?format=jpg&name=small"], 
     ["2021/02/15", "https://twitter.com/i/events/1361274426914787328", "江東区塩浜⇒潮見⇒辰巳", "9.56km", "https://pbs.twimg.com/media/EuN1faZVEAA1GE_?format=jpg&name=small"], 
     ["2021/02/16", "https://twitter.com/i/events/1361462212720664576", "江東区塩浜⇒荒川河川敷", "11.45km", "https://pbs.twimg.com/media/EuTI1_xVcAIBHa2?format=jpg&name=small"], 
+    ["2021/02/17", "https://twitter.com/i/events/1362009386768420864", "江東区塩浜⇒葛西臨海公園⇒ディズニーランド", "11.97km", "https://pbs.twimg.com/media/EuYg6anVgAIdfHm?format=jpg&name=small"], 
+    ["2021/02/17", "https://twitter.com/i/events/1362011653529690118", "新木場・潮見周辺の夜景散歩", "--km", "https://pbs.twimg.com/media/Eua2TRVUUAIDSlk?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
