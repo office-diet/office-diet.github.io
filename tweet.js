@@ -152,7 +152,8 @@ window.addEventListener("load", function(){
     ["2021/02/16", "https://twitter.com/i/events/1361462212720664576", "江東区塩浜⇒荒川河川敷", "11.45km", "https://pbs.twimg.com/media/EuTI1_xVcAIBHa2?format=jpg&name=small"], 
     ["2021/02/17", "https://twitter.com/i/events/1362009386768420864", "江東区塩浜⇒葛西臨海公園⇒ディズニーランド", "11.97km", "https://pbs.twimg.com/media/EuYg6anVgAIdfHm?format=jpg&name=small"], 
     ["2021/02/17", "https://twitter.com/i/events/1362011653529690118", "新木場・潮見周辺の夜景散歩", "--km", "https://pbs.twimg.com/media/Eua2TRVUUAIDSlk?format=jpg&name=small"], 
-    ["2021/02/18", "https://twitter.com/i/events/1362179418060320768", "江東区塩浜⇒木場公園⇒清洲白川⇒猿江恩賜公園", "10.37km", "https://pbs.twimg.com/media/Euder8kVoAEXXnn?format=jpg&name=small"], 
+    ["2021/02/18", "https://twitter.com/i/events/1362179418060320768", "江東区塩浜⇒木場公園⇒清洲白川⇒猿江恩賜公園", "10.37km", "https://pbs.twimg.com/media/Euder8kVoAEXXnn?format=jpg&name=small"],
+    ["2021/02/19", "https://twitter.com/i/events/1362563447364313089", "江東区塩浜⇒豊洲⇒築地⇒佃島", "11.05km", "https://pbs.twimg.com/media/Euirz2KU4AIRB1k?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
