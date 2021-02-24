@@ -159,7 +159,7 @@ window.addEventListener("load", function(){
     ["2021/02/20", "https://twitter.com/i/events/1363676956512849920", "江東区塩浜⇒幕張⇒京葉工業地域【1】", "128.68km", "https://pbs.twimg.com/media/EuzCwVpVIAIugCl?format=jpg&name=small"], 
     ["2021/02/20", "https://twitter.com/i/events/1363679170090336257", "江東区塩浜⇒幕張⇒京葉工業地域【2】", "128.68km", "https://pbs.twimg.com/media/EuzEk6eVIAMzb_h?format=jpg&name=small"], 
     ["2021/02/22", "https://twitter.com/i/events/1363684220200099840", "江東区塩浜⇒東京スカイツリー", "11.98km", "https://pbs.twimg.com/media/EuyCBxvVcAE11U1?format=jpg&name=small"], 
-    ["2021/02/23", "https://twitter.com/i/events/1364083795910008839", "江東区塩浜⇒東京駅", "13.58km", "https://pbs.twimg.com/media/Eu3O6DtUUAEhaEl?format=jpg&name=small"], 
+    ["2021/02/23", "https://twitter.com/i/events/1364083795910008839", "江東区塩浜⇒東京駅⇒門前仲町", "13.58km", "https://pbs.twimg.com/media/Eu3O6DtUUAEhaEl?format=jpg&name=small"], 
     ["2021/02/24", "https://twitter.com/i/events/1364351975945433090", "江東区塩浜⇒豊洲ぐるり公園", "11.42km", "https://pbs.twimg.com/media/Eu8alAJVcAM70CY?format=jpg&name=small"], 
   ];
   
