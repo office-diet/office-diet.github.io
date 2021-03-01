@@ -166,6 +166,7 @@ window.addEventListener("load", function(){
     ["2021/02/27", "https://twitter.com/i/events/1366281719385522182", "つくば駅⇒筑波山⇒つくば市内観光", "23.09km", "https://pbs.twimg.com/media/EvYF1EwU4AERx6C?format=jpg&name=small"], 
     ["2021/02/28", "https://twitter.com/i/events/1366286788046688256", "江東区塩浜⇒門前仲町⇒浅草⇒東京スカイツリー", "24.48km", "https://pbs.twimg.com/media/EvYMcbOVcAA2i8i?format=jpg&name=small"], 
     ["2021/03/01", "https://twitter.com/i/events/1366295478422265860", "江東区塩浜⇒晴海⇒豊海⇒築地⇒銀座⇒国税局", "19.31km", "https://pbs.twimg.com/media/EvWiQ4HU4AAlFM2?format=jpg&name=small"], 
+    ["2021/03/02", "https://twitter.com/i/events/1366524892888240133", "江東区塩浜⇒木場公園⇒十間川親水公園", "8.96km", "https://pbs.twimg.com/media/EvbW7sMVEAAnU0s?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
