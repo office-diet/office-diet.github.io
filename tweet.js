@@ -177,6 +177,8 @@ window.addEventListener("load", function(){
     ["2021/03/09", "https://twitter.com/i/events/1369445971109638144", "築地⇒月島⇒豊洲⇒お台場", "28.33km", "https://pbs.twimg.com/media/EwFClk2WEAUQ8Qu?format=jpg&name=small"], 
     ["2021/03/10", "https://twitter.com/i/events/1369449593440722947", "江東区塩浜⇒夢の島マリーナ⇒新木場緑道公園", "10.22km", "https://pbs.twimg.com/media/EwEfEX0WYAE-HOD?format=jpg&name=small"], 
     ["2021/03/11", "https://twitter.com/i/events/1369785244275023874", "江東区塩浜⇒砂町銀座商店街⇒南砂", "9.45km", "https://pbs.twimg.com/media/EwJpXodUYAYcZhn?format=jpg&name=small"], 
+    ["2021/03/12", "https://twitter.com/i/events/1370253652099694593", "江東区塩浜⇒豊洲ぐるり公園", "12.92km", "https://pbs.twimg.com/media/EwOpi5dVIAI49pt?format=jpg&name=small"], 
+    ["2021/03/12", "https://twitter.com/i/events/1370255964356571136", "江東区塩浜⇒東京⇒秋葉原⇒日本橋", "--km", "https://pbs.twimg.com/media/EwPKuynVEAAxEzf?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
