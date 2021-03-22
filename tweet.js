@@ -191,6 +191,7 @@ window.addEventListener("load", function(){
     ["2021/03/20", "https://twitter.com/i/events/1373799147094962177", "江東区塩浜⇒平井⇒八広⇒山谷⇒東京ドーム⇒赤坂⇒六本木⇒東京タワー⇒虎ノ門⇒両国", "86.98km", "https://pbs.twimg.com/media/ExC9W6PVkAE1vtR?format=jpg&name=small"], 
     ["2021/03/20", "https://twitter.com/i/events/1373806607956545536", "江東区塩浜⇒平井⇒八広⇒山谷⇒東京ドーム⇒赤坂⇒六本木⇒東京タワー⇒虎ノ門⇒両国", "86.98km", "https://pbs.twimg.com/media/ExDAAgYVIAAHlB7?format=jpg&name=small"], 
     ["2021/03/22", "https://twitter.com/i/events/1373822587956981764", "江東区塩浜⇒清砂大橋", "11.53km", "https://pbs.twimg.com/media/ExCJ2dsUcAA223j?format=jpg&name=small"], 
+    ["2021/03/23", "https://twitter.com/i/events/1374128173709848578", "江東区塩浜⇒洲崎⇒木場⇒千石", "9.13km", "https://pbs.twimg.com/media/ExHFQz_U8AIsm1c?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
