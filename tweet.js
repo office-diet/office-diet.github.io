@@ -192,6 +192,9 @@ window.addEventListener("load", function(){
     ["2021/03/20", "https://twitter.com/i/events/1373806607956545536", "江東区塩浜⇒平井⇒八広⇒山谷⇒東京ドーム⇒赤坂⇒六本木⇒東京タワー⇒虎ノ門⇒両国", "86.98km", "https://pbs.twimg.com/media/ExDAAgYVIAAHlB7?format=jpg&name=small"], 
     ["2021/03/22", "https://twitter.com/i/events/1373822587956981764", "江東区塩浜⇒清砂大橋", "11.53km", "https://pbs.twimg.com/media/ExCJ2dsUcAA223j?format=jpg&name=small"], 
     ["2021/03/23", "https://twitter.com/i/events/1374128173709848578", "江東区塩浜⇒洲崎⇒木場⇒千石", "9.13km", "https://pbs.twimg.com/media/ExHFQz_U8AIsm1c?format=jpg&name=small"], 
+    ["2021/03/24", "https://twitter.com/i/events/1374861743155908608", "江東区塩浜⇒夢の島マリーナ⇒新木場緑道公園", "12.63km", "https://pbs.twimg.com/media/ExMSpYSVcAUZQ9O?format=jpg&name=small"], 
+    ["2021/03/24", "https://twitter.com/i/events/1374863632253612034", "江東区塩浜⇒東京スカイツリー⇒錦糸町⇒東陽町", "--km", "https://pbs.twimg.com/media/ExNkHx1VEAMmqEh?format=jpg&name=small"], 
+    ["2021/03/25", "https://twitter.com/i/events/1374866061472923648", "江東区塩浜⇒門前仲町周辺", "8.33km", "https://pbs.twimg.com/media/ExRWC2vU8AELgHb?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
