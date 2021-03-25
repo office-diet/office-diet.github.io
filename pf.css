@@ -456,6 +456,7 @@ main {
   max-height: 40vw;
   overflow: auto;
   display: flex;
+  padding-bottom: 0.5vw;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: space-between;
