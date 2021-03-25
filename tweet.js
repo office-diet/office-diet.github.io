@@ -195,6 +195,7 @@ window.addEventListener("load", function(){
     ["2021/03/24", "https://twitter.com/i/events/1374861743155908608", "江東区塩浜⇒夢の島マリーナ⇒新木場緑道公園", "12.63km", "https://pbs.twimg.com/media/ExMSpYSVcAUZQ9O?format=jpg&name=small"], 
     ["2021/03/24", "https://twitter.com/i/events/1374863632253612034", "江東区塩浜⇒東京スカイツリー⇒錦糸町⇒東陽町", "--km", "https://pbs.twimg.com/media/ExNkHx1VEAMmqEh?format=jpg&name=small"], 
     ["2021/03/25", "https://twitter.com/i/events/1374866061472923648", "江東区塩浜⇒門前仲町周辺", "8.33km", "https://pbs.twimg.com/media/ExRWC2vU8AELgHb?format=jpg&name=small"], 
+    ["2021/03/26", "https://twitter.com/i/events/1375219740591845382", "江東区塩浜⇒豊洲⇒東雲⇒辰巳", "11.17km", "https://pbs.twimg.com/media/ExWmNjrVcAMlz6j?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
