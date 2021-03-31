@@ -200,6 +200,8 @@ window.addEventListener("load", function(){
     ["2021/03/27", "https://twitter.com/i/events/1376330056587374596", "江東区塩浜⇒鎌ヶ谷⇒船橋⇒印西⇒白井", "122.52km", "https://pbs.twimg.com/media/Exm70cNVoAER1L9?format=jpg&name=small"], 
     ["2021/03/29", "https://twitter.com/i/events/1376338009486807045", "江東区塩浜⇒豊洲", "7.76km", "https://pbs.twimg.com/media/ExmDg-3VcAUmYJc?format=jpg&name=small"], 
     ["2021/03/30", "https://twitter.com/i/events/1376667714689794050", "江東区塩浜⇒横十間川親水公園⇒亀戸⇒西大島", "10.98km", "https://pbs.twimg.com/media/ExrYvTvUcAMuN2H?format=jpg&name=small"], 
+    ["2021/03/31", "https://twitter.com/i/events/1377082811320918016", "江東区塩浜⇒豊洲⇒有明⇒お台場⇒ハローワーク木場", "19.29km", "https://pbs.twimg.com/media/Exwl_ztUUAIie2g?format=jpg&name=small"], 
+    ["2021/04/01", "https://twitter.com/i/events/1377380036773244930", "江東区塩浜⇒木場⇒門前仲町⇒隅田川", "8.76km", "https://pbs.twimg.com/media/Ex1YQ4kUUAIOACO?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
