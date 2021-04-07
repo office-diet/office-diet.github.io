@@ -209,6 +209,7 @@ window.addEventListener("load", function(){
     ["2021/04/03", "https://twitter.com/i/events/1378886889055252482", "江東区塩浜⇒東大周辺⇒巣鴨⇒王子⇒川口⇒大宮⇒荒川⇒板橋", "116km", "https://pbs.twimg.com/media/EyLMC0DU8AMGCKa?format=jpg&name=small"], 
     ["2021/04/05", "https://twitter.com/i/events/1378901466971168768", "江東区塩浜⇒豊洲", "10.09km", "https://pbs.twimg.com/media/EyJ_WD-UYAAHDyc?format=jpg&name=small"], 
     ["2021/04/06", "https://twitter.com/i/events/1379202030477090819", "江東区塩浜⇒夢の島マリーナ⇒若洲海浜公園", "16.03km", "https://pbs.twimg.com/media/EyPSIu_UYAAasSp?format=jpg&name=small"], 
+    ["2021/04/07", "https://twitter.com/i/events/1379735120593133568", "笹塚⇒京王線沿線⇒千歳烏山", "10.98km", "https://pbs.twimg.com/media/EyUwAheVoAIRRp6?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
