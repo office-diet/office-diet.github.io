@@ -211,6 +211,7 @@ window.addEventListener("load", function(){
     ["2021/04/06", "https://twitter.com/i/events/1379202030477090819", "江東区塩浜⇒夢の島マリーナ⇒若洲海浜公園", "16.03km", "https://pbs.twimg.com/media/EyPSIu_UYAAasSp?format=jpg&name=small"], 
     ["2021/04/07", "https://twitter.com/i/events/1379735120593133568", "笹塚⇒京王線沿線⇒千歳烏山", "10.98km", "https://pbs.twimg.com/media/EyUwAheVoAIRRp6?format=jpg&name=small"], 
     ["2021/04/08", "https://twitter.com/i/events/1379923007397761027", "江東区塩浜⇒晴海埠頭⇒豊洲市場", "11.53km", "https://pbs.twimg.com/media/EyZxKn5UUAQWL5X?format=jpg&name=small"], 
+    ["2021/04/09", "https://twitter.com/i/events/1380314734281428995", "江東区塩浜⇒東陽町⇒南砂周辺", "8.97km", "https://pbs.twimg.com/media/Eyeu3tOUcAIwEDr?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
