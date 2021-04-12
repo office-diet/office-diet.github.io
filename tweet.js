@@ -215,7 +215,8 @@ window.addEventListener("load", function(){
     ["2021/04/09", "https://twitter.com/i/events/1381408232292241415", "木場公園周辺の夜景散歩", "--km", "https://pbs.twimg.com/media/EyiGnhEVoAYzvh4?format=jpg&name=small"], 
     ["2021/04/10", "https://twitter.com/i/events/1381418340015435777", "江東区塩浜⇒夢の島⇒ディズニーランド周辺⇒竹島桟橋⇒お台場⇒上野", "107.03km", "https://pbs.twimg.com/media/EyvR1M3U4AMs7vk?format=jpg&name=small"], 
     ["2021/04/10", "https://twitter.com/i/events/1381428772075794433", "江東区塩浜⇒夢の島⇒ディズニーランド周辺⇒竹島桟橋⇒お台場⇒上野", "107.03km", "https://pbs.twimg.com/media/EyvSNOHVEAExzma?format=jpg&name=small"], 
-    ["2021/04/11", "https://twitter.com/i/events/1381434546978103297", "江東区塩浜⇒荒川⇒南砂", "9.67km", "https://pbs.twimg.com/media/EyuC2H0VoAQp0wU?format=jpg&name=small"], 
+    ["2021/04/12", "https://twitter.com/i/events/1381434546978103297", "江東区塩浜⇒荒川⇒南砂", "9.67km", "https://pbs.twimg.com/media/EyuC2H0VoAQp0wU?format=jpg&name=small"], 
+    ["2021/04/13", "https://twitter.com/i/events/1381735141404381184", "江東区塩浜⇒大門通⇒石原⇒墨田本所", "11.12km", "https://pbs.twimg.com/media/EyzSa3zVcAMiDvM?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
