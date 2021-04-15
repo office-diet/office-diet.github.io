@@ -218,6 +218,8 @@ window.addEventListener("load", function(){
     ["2021/04/12", "https://twitter.com/i/events/1381434546978103297", "江東区塩浜⇒荒川⇒南砂", "9.67km", "https://pbs.twimg.com/media/EyuC2H0VoAQp0wU?format=jpg&name=small"], 
     ["2021/04/13", "https://twitter.com/i/events/1381735141404381184", "江東区塩浜⇒大門通⇒石原⇒墨田本所", "11.12km", "https://pbs.twimg.com/media/EyzSa3zVcAMiDvM?format=jpg&name=small"], 
     ["2021/04/14", "https://twitter.com/i/events/1382092735197323265", "江東区塩浜⇒越中島公園⇒永代公園⇒石川島公園", "11.7km", "https://pbs.twimg.com/media/Ey4g59KVIAEO5ue?format=jpg&name=small"], 
+    ["2021/04/15", "https://twitter.com/i/events/1382636375879536643", "聖蹟桜ヶ丘⇒多摩丘陵⇒南大沢⇒京王堀之内", "24.51km", "https://pbs.twimg.com/media/EzAhvruVIAQZQY7?format=jpg&name=small"], 
+    ["2021/04/16", "https://twitter.com/i/events/1382826452396109828", "江東区塩浜⇒東陽町⇒南砂周辺", "9.55km", "https://pbs.twimg.com/media/EzCrfcQUUAE4vzC?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
