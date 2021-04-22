@@ -227,6 +227,7 @@ window.addEventListener("load", function(){
     ["2021/04/20", "https://twitter.com/i/events/1384269710745767947", "江東区塩浜⇒月島⇒湊⇒石川島公園", "11.75km", "https://pbs.twimg.com/media/EzXXJ7uVcAkI-uw?format=jpg&name=small"], 
     ["2021/04/21", "https://twitter.com/i/events/1384627230060421125", "江東区塩浜⇒南砂⇒東砂⇒荒川河川敷", "9.68km", "https://pbs.twimg.com/media/Ezcf469VEAU91AO?format=jpg&name=small"], 
     ["2021/04/22", "https://twitter.com/i/events/1384985151801724928", "江東区塩浜⇒豊洲ぐるり公園", "13.25km", "https://pbs.twimg.com/media/EzhbURHUcAE0SEP?format=jpg&name=small"], 
+    ["2021/04/23", "https://twitter.com/i/events/1385346329514110976", "江東区塩浜⇒門前仲町⇒江戸資料館通り⇒木場公園", "9.8km", "https://pbs.twimg.com/media/Ezmz167VcAgECcX?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
