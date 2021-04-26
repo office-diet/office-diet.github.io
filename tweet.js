@@ -228,6 +228,10 @@ window.addEventListener("load", function(){
     ["2021/04/21", "https://twitter.com/i/events/1384627230060421125", "江東区塩浜⇒南砂⇒東砂⇒荒川河川敷", "9.68km", "https://pbs.twimg.com/media/Ezcf469VEAU91AO?format=jpg&name=small"], 
     ["2021/04/22", "https://twitter.com/i/events/1384985151801724928", "江東区塩浜⇒豊洲ぐるり公園", "13.25km", "https://pbs.twimg.com/media/EzhbURHUcAE0SEP?format=jpg&name=small"], 
     ["2021/04/23", "https://twitter.com/i/events/1385346329514110976", "江東区塩浜⇒門前仲町⇒江戸資料館通り⇒木場公園", "9.8km", "https://pbs.twimg.com/media/Ezmz167VcAgECcX?format=jpg&name=small"], 
+    ["2021/04/23", "https://twitter.com/i/events/1386445125107142657", "永代橋周辺の夜景散歩", "--km", "https://pbs.twimg.com/media/EzqbQASVUAcMgoM?format=jpg&name=small"], 
+    ["2021/04/24", "https://twitter.com/i/events/1386537349551513601", "江東区塩浜⇒墨田区⇒埼玉県志木市⇒清瀬市⇒練馬区", "109.71km", "https://pbs.twimg.com/media/Ez3-jX6VIAAtOYW?format=jpg&name=small"], 
+    ["2021/04/24", "https://twitter.com/i/events/1386547669867192322", "江東区塩浜⇒墨田区⇒埼玉県志木市⇒清瀬市⇒練馬区", "109.71km", "https://pbs.twimg.com/media/Ez4EGhaVUAQ9Dhs?format=jpg&name=small"], 
+    ["2021/04/26", "https://twitter.com/i/events/1386552700192452622", "江東区塩浜⇒晴海⇒築地⇒佃島", "11.33km", "https://pbs.twimg.com/media/Ez2EeIEVoAMzYMy?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
