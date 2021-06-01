@@ -273,6 +273,7 @@ window.addEventListener("load", function(){
     ["2021/05/29", "https://twitter.com/i/events/1399169986413797376", "江東区塩浜⇒大井ふ頭⇒羽田⇒川崎大師⇒千鳥⇒夜光町⇒二子玉川⇒等々力渓谷⇒自由が丘【1】", "103.03km", "https://pbs.twimg.com/media/E2rvW7RVkAMBEYe?format=jpg&name=small"], 
     ["2021/05/29", "https://twitter.com/i/events/1399172360863768576", "江東区塩浜⇒大井ふ頭⇒羽田⇒川崎大師⇒千鳥⇒夜光町⇒二子玉川⇒等々力渓谷⇒自由が丘【2】", "103.03km", "https://pbs.twimg.com/media/E2rvW7RVkAMBEYe?format=jpg&name=small"], 
     ["2021/05/31", "https://twitter.com/i/events/1399178086197858305", "江東区塩浜⇒越中島⇒月島⇒豊洲", "9.27km", "https://pbs.twimg.com/media/E2qQavlVcAE5HHQ?format=jpg&name=small"], 
+    ["2021/06/01", "https://twitter.com/i/events/1399637443586891776", "高幡不動⇒長沼公園⇒南大沢⇒京王堀之内", "23.72km", "https://pbs.twimg.com/media/E2v9oGtUcAIiTQZ?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
