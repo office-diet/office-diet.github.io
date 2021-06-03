@@ -276,6 +276,7 @@ window.addEventListener("load", function(){
     ["2021/06/01", "https://twitter.com/i/events/1399637443586891776", "高幡不動⇒長沼公園⇒南大沢⇒京王堀之内", "23.72km", "https://pbs.twimg.com/media/E23RE7YVgAQRoBH?format=jpg&name=small"], 
     ["2021/06/02", "https://twitter.com/i/events/1399833441282101249", "江東区塩浜⇒南砂⇒東砂⇒荒川", "9.35km", "https://pbs.twimg.com/media/E20lUlLVIAEuAbg?format=jpg&name=small"], 
     ["2021/06/03", "https://twitter.com/i/events/1400197649425256448", "江東区塩浜⇒潮見運動公園⇒辰巳の森海浜公園", "10.17km", "https://pbs.twimg.com/media/E25wZTnUYAEZZhF?format=jpg&name=smalll"], 
+    ["2021/06/04", "https://twitter.com/i/events/1400560696929046529", "江東区塩浜⇒東陽町⇒千石・扇橋・石島周辺", "8.84km", "https://pbs.twimg.com/media/E2-zC5CUcAA5NSr?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
