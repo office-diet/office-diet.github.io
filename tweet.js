@@ -275,8 +275,11 @@ window.addEventListener("load", function(){
     ["2021/05/31", "https://twitter.com/i/events/1399178086197858305", "江東区塩浜⇒越中島⇒月島⇒豊洲", "9.27km", "https://pbs.twimg.com/media/E2qQavlVcAE5HHQ?format=jpg&name=small"], 
     ["2021/06/01", "https://twitter.com/i/events/1399637443586891776", "高幡不動⇒長沼公園⇒南大沢⇒京王堀之内", "23.72km", "https://pbs.twimg.com/media/E23RE7YVgAQRoBH?format=jpg&name=small"], 
     ["2021/06/02", "https://twitter.com/i/events/1399833441282101249", "江東区塩浜⇒南砂⇒東砂⇒荒川", "9.35km", "https://pbs.twimg.com/media/E20lUlLVIAEuAbg?format=jpg&name=small"], 
-    ["2021/06/03", "https://twitter.com/i/events/1400197649425256448", "江東区塩浜⇒潮見運動公園⇒辰巳の森海浜公園", "10.17km", "https://pbs.twimg.com/media/E25wZTnUYAEZZhF?format=jpg&name=smalll"], 
+    ["2021/06/03", "https://twitter.com/i/events/1400197649425256448", "江東区塩浜⇒潮見運動公園⇒辰巳の森海浜公園", "10.17km", "https://pbs.twimg.com/media/E25wZTnUYAEZZhF?format=jpg&name=small"], 
     ["2021/06/04", "https://twitter.com/i/events/1400560696929046529", "江東区塩浜⇒東陽町⇒千石・扇橋・石島周辺", "8.84km", "https://pbs.twimg.com/media/E2-zC5CUcAA5NSr?format=jpg&name=small"], 
+    ["2021/06/04", "https://twitter.com/i/events/1401693671733350402", "砂町銀座商店街周辺の夜景散歩", "--km", "https://pbs.twimg.com/media/E3Cw0H9VUAcoSE9?format=jpg&name=small"], 
+    ["2021/06/05", "https://twitter.com/i/events/1401696183106428931", "江東区塩浜⇒荒川登り⇒入間川", "131.33km", "https://pbs.twimg.com/media/E3HEpaQVUAUxFtp?format=jpg&name=small"], 
+    ["2021/06/07", "https://twitter.com/i/events/1401703995563921410", "江東区塩浜⇒門前仲町⇒隅田川テラス⇒清澄公園", "9.36km", "https://pbs.twimg.com/media/E3ObDOSVgAIpl41?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
