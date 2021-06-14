@@ -290,6 +290,7 @@ window.addEventListener("load", function(){
     ["2021/06/12", "https://twitter.com/i/events/1404236581825699841", "江東区塩浜⇒大宮公園⇒さいたま新都心⇒別所沼公園⇒高島平団地【1】", "103.05km", "https://pbs.twimg.com/media/E3zsOX7VUAAGXdT?format=jpg&name=small"], 
     ["2021/06/12", "https://twitter.com/i/events/1404238892849504261", "江東区塩浜⇒大宮公園⇒さいたま新都心⇒別所沼公園⇒高島平団地【2】", "103.05km", "https://pbs.twimg.com/media/E3zsOX7VUAAGXdT?format=jpg&name=small"], 
     ["2021/06/14", "https://twitter.com/i/events/1404247915485224960", "江東区塩浜⇒木場公園⇒扇橋・住吉周辺", "8.52km", "https://pbs.twimg.com/media/E3yVTOIVEAMOh5i?format=jpg&name=small"], 
+    ["2021/06/15", "https://twitter.com/i/events/1404543584158699524", "江東区塩浜⇒荒川⇒西葛西", "10.39km", "https://pbs.twimg.com/media/E33VgUzVUAEapYz?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
