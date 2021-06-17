@@ -293,6 +293,7 @@ window.addEventListener("load", function(){
     ["2021/06/15", "https://twitter.com/i/events/1404543584158699524", "江東区塩浜⇒荒川⇒西葛西", "10.39km", "https://pbs.twimg.com/media/E33VgUzVUAEapYz?format=jpg&name=small"], 
     ["2021/06/16", "https://twitter.com/i/events/1404909926447648768", "江東区塩浜⇒豊洲⇒東雲", "10.92km", "https://pbs.twimg.com/media/E38yvZTVcAE-sd1?format=jpg&name=small"], 
     ["2021/06/17", "https://twitter.com/i/events/1405267204564684807", "東区塩浜⇒門前仲町周辺", "7.13km", "https://pbs.twimg.com/media/E4BqpGfUYAEjmZ5?format=jpg&name=small"], 
+    ["2021/06/18", "https://twitter.com/i/events/1405640919211077633", "江東区塩浜⇒東陽町⇒南砂⇒東砂", "10.11km", "https://pbs.twimg.com/media/E4G1tbaVgAEfNc7?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
