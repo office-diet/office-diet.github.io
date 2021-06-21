@@ -298,6 +298,7 @@ window.addEventListener("load", function(){
     ["2021/06/19", "https://twitter.com/i/events/1406770515717414916", "江東区塩浜⇒武蔵小山⇒東急電鉄沿線⇒川崎⇒町田⇒三軒茶屋【1】", "103.04km", "https://pbs.twimg.com/media/E4XputUVoAAHP8F?format=jpg&name=small"], 
     ["2021/06/19", "https://twitter.com/i/events/1406774270428995584", "江東区塩浜⇒武蔵小山⇒東急電鉄沿線⇒川崎⇒町田⇒三軒茶屋【2】", "103.04km", "https://pbs.twimg.com/media/E4XputUVoAAHP8F?format=jpg&name=small"], 
     ["2021/06/21", "https://twitter.com/i/events/1406777955603214337", "江東区塩浜⇒門前仲町⇒水天宮前", "9.87km", "https://pbs.twimg.com/media/E4WPOw5VkAIpQbN?format=jpg&name=small"], 
+    ["2021/06/22", "https://twitter.com/i/events/1407090649459924995", "江東区塩浜⇒東京スカイツリー", "12.49km", "https://pbs.twimg.com/media/E4bmZF3XIAAjzbf?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
