@@ -300,6 +300,7 @@ window.addEventListener("load", function(){
     ["2021/06/21", "https://twitter.com/i/events/1406777955603214337", "江東区塩浜⇒門前仲町⇒水天宮前", "9.87km", "https://pbs.twimg.com/media/E4WPOw5VkAIpQbN?format=jpg&name=small"], 
     ["2021/06/22", "https://twitter.com/i/events/1407090649459924995", "江東区塩浜⇒東京スカイツリー", "12.49km", "https://pbs.twimg.com/media/E4bmZF3XIAAjzbf?format=jpg&name=small"], 
     ["2021/06/23", "https://twitter.com/i/events/1407521431991160840", "江東区塩浜⇒お台場⇒辰巳⇒ハローワーク木場", "23.86km", "https://pbs.twimg.com/media/E4gzMv1UUAEkJvC?format=jpg&name=small"], 
+    ["2021/06/24", "https://twitter.com/i/events/1407807100613316616", "江東区塩浜⇒荒川河川敷", "9.92km", "https://pbs.twimg.com/media/E4l7YuoVgAks3pr?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
