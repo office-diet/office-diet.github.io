@@ -302,6 +302,9 @@ window.addEventListener("load", function(){
     ["2021/06/23", "https://twitter.com/i/events/1407521431991160840", "江東区塩浜⇒お台場⇒辰巳⇒ハローワーク木場", "23.86km", "https://pbs.twimg.com/media/E4gzMv1UUAEkJvC?format=jpg&name=small"], 
     ["2021/06/24", "https://twitter.com/i/events/1407807100613316616", "江東区塩浜⇒荒川河川敷", "9.92km", "https://pbs.twimg.com/media/E4l7YuoVgAks3pr?format=jpg&name=small"], 
     ["2021/06/25", "https://twitter.com/i/events/1408199379068997634", "江東区塩浜⇒中の島公園⇒石川島公園⇒佃島", "8.61km", "https://pbs.twimg.com/media/E4q78VkVoAAGstP?format=jpg&name=small"], 
+    ["2021/06/25", "https://twitter.com/i/events/1409395686466998274", "江東区塩浜の夜景散歩", "--km", "https://pbs.twimg.com/media/E4uxBxqVEAQWP72?format=jpg&name=small"], 
+    ["2021/06/26", "https://twitter.com/i/events/1409397050089775105", "江東区塩浜⇒荒川区町屋⇒人形町⇒新宿⇒吉祥寺", "98.74km", "https://pbs.twimg.com/media/E49Ft-zUcAMcv1y?format=jpg&name=small"], 
+    ["2021/06/26", "https://twitter.com/i/events/1409406533440466947", "江東区塩浜⇒荒川区町屋⇒人形町⇒新宿⇒吉祥寺", "98.74km", "https://pbs.twimg.com/media/E49Ft-zUcAMcv1y?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
