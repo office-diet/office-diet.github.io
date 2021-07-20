@@ -50,8 +50,8 @@ function move(row, col, me){
     }
   }
 
-  job += 1 + Math.abs(row + col)
-  document.getElementById("score").innerHTML = job + "<div class='jobs'>jobs</div>"
+  job += 1 + Math.abs(row + col);
+  document.getElementById("score").innerHTML = job + "<div class='jobs'>jobs</div>";
 }
 
 function makeCourse() {
@@ -75,10 +75,12 @@ function makeCourse() {
         }
       }
     }
-    rowHtml += "</div>"
+    rowHtml += "</div>";
   }
-  rowHtml += "<div class='cell here'></div>"
+  rowHtml += "<div class='cell here'></div>";
   course.innerHTML = rowHtml;
+  course.style.width = (60 * (count + 2)) + "px";
+  course.style.height = (35 * (count + 2)) + "px";
 }
 
 function setCourse() {
