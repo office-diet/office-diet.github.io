@@ -1,0 +1,121 @@
+* {
+  box-sizing: border-box;
+}
+
+.course {
+  user-select: none;
+  position: relative;
+}
+
+.header, .row {
+  display: flex;
+}
+
+.head, .cell{
+  width: 60px;
+  border:1px solid black ;
+  text-align: center;
+  height: 35px;
+  line-height: 35px;
+}
+
+.here {
+  background-color: rgba(0, 0, 255, 0.4);
+  border-color: blue;
+  border-width: 2px;
+  border-style: dotted;
+  position: absolute;
+  top: 35px;
+  left: 60px;
+}
+
+.wall {
+  background-color: grey;
+  color: white;
+  font-weight: bold;
+}
+
+.block {
+  background-color: darkorange;
+}
+
+.route {
+  background-color: skyblue;
+}
+
+.start, .goal {
+  background-color: red;
+  color: white;
+  font-weight: bold;
+}
+
+.controll {
+  display: flex;
+}
+
+.cards {
+  margin-top: 20px;
+  display: flex;
+  user-select: none;
+
+}
+
+.card {
+  width: 60px;
+  border: 1px solid black;
+  text-align: center;
+  cursor: pointer;
+}
+
+.card:not(.used):hover  {
+  color: white;
+  font-weight: bold;
+  background-color: red;
+}
+
+.used {
+  background-color: black;
+  color: white;
+}
+
+#score {
+  display: flex;
+  position: relative;
+  justify-content: center;
+  margin: 20px 0 0 20px;
+  border: 1px solid orange;
+  background-color: yellow;
+  width: 300px;
+  height: 120px;
+  line-height: 120px;
+  text-align: center;
+  font-size: 60px;
+}
+
+.jobs {
+  font-size: 30px;
+}
+
+#retry {
+  user-select: none;
+  cursor: pointer;
+  margin: 20px 0 0 20px;
+  width: 300px;
+  height: 80px;
+  line-height: 80px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 60px;
+  background-color: skyblue;
+  border-radius: 10px;
+  box-shadow: 0 6px 0 steelblue;
+}
+
+#retry:hover {
+  opacity: 0.8;
+}
+
+#retry:active {
+  box-shadow: 0 3px 0 steelblue;
+  transform: translateY(3px);
+}
