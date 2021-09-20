@@ -12099,13 +12099,13 @@ function viewSlide() {
   "<div class='image-container'>" + 
     "<img src='" + backImage[0] + "'>" + 
     "<a href='" + backImage[1] + "' target='_blank'>" + 
-      "<div class='url'>" + backImage[1] + "</div>" + 
+      "<div class='url'>この日のツイートを見る！</div>" + 
     "</a>" +
   "</div>" +
   "<div class='image-container' id='top'>" + 
     "<img src='" + topImage[0] + "'>" +
     "<a href='" + topImage[1] + "' target='_blank'>" +
-      "<div class='url'>" + topImage[1] + "</div>" + 
+      "<div class='url'>この日のツイートを見る！</div>" + 
     "</a>" + 
   "</div>";
 
@@ -12130,14 +12130,14 @@ function slideChange (slideContainer, topImage, backImage) {
     "<div class='image-container'>" + 
       "<img src='" + backImage[0] + "'>" + 
       "<a href='" + backImage[1] + "' target='_blank'>" + 
-        "<div class='url'>" + backImage[1] + "</div>" + 
+        "<div class='url'>この日のツイートを見る！</div>" + 
       "</a>" +
     "</div>" +
     "<div class='image-container' id='top'>" + 
       "<img src='" + topImage[0] + "'>" +
       "<a href='" + topImage[1] + "' target='_blank'>" +
-        "<div class='url'>" + topImage[1] + "</div>" + 
+        "<div class='url'>この日のツイートを見る！</div>" + 
       "</a>" + 
     "</div>";  
-  }, 3000);
+  }, 2000);
 }
