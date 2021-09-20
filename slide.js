@@ -2168,7 +2168,6 @@ const images_all = [
 ['https://pbs.twimg.com/media/E2l437_VkAAh6LQ?format=jpg&name=4096x4096',  'https://twitter.com/i/events/1399172360863768576'],
 ['https://pbs.twimg.com/media/E2l4gP9VUAA8D6s?format=jpg&name=4096x4096',  'https://twitter.com/i/events/1399172360863768576'],
 ['https://pbs.twimg.com/media/E2l6k3RVcAE52Bh?format=jpg&name=4096x4096',  'https://twitter.com/i/events/1399172360863768576'],
-['https://pbs.twimg.com/media/E2l6kYtVoAITVS0?format=jpg&name=4096x4096',  'https://twitter.com/i/events/1399172360863768576'],
 ['https://pbs.twimg.com/media/E2lAG0ZVgAMhQ16?format=jpg&name=4096x4096',  'https://twitter.com/i/events/1399172360863768576'],
 ['https://pbs.twimg.com/media/E2lagOfVkAA9_5J?format=jpg&name=4096x4096',  'https://twitter.com/i/events/1399172360863768576'],
 ['https://pbs.twimg.com/media/E2lb8MzVkAIow1O?format=jpg&name=4096x4096',  'https://twitter.com/i/events/1399172360863768576'],
