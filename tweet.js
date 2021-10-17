@@ -310,6 +310,7 @@ window.addEventListener("load", function(){
     ["2021/10/09", "https://twitter.com/i/events/1449191019715575814", "江東区塩浜⇒夢の島マリーナ⇒夢の島緑道公園", "--km", "https://pbs.twimg.com/media/FBNfDpTVIAARQsy?format=jpg&name=small"], 
     ["2021/10/10", "https://twitter.com/i/events/1449193871255093254", "江東区塩浜⇒豊洲⇒枝川", "--km", "https://pbs.twimg.com/media/FBVuMIXVkAMvLIf?format=jpg&name=small"], 
     ["2021/10/16", "https://twitter.com/i/events/1449195050202664963", "江東区塩浜⇒東陽町⇒荒川清砂大橋", "--km", "https://pbs.twimg.com/media/FBxlIZgUcAEcw9C?format=jpg&name=small"], 
+    ["2021/10/17", "https://twitter.com/i/events/1449545465616240642", "江東区塩浜⇒越中島⇒石川島公園⇒中央大橋⇒永代橋", "--km", "https://pbs.twimg.com/media/FB2z2aPVkAA4HFY?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
