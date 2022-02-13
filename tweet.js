@@ -344,6 +344,9 @@ window.addEventListener("load", function(){
     ["2022/01/15", "https://twitter.com/i/events/1482621846470086656", "江東区塩浜⇒豊洲⇒京王堀之内⇒長池見附橋⇒多摩丘陵", "--km", "https://pbs.twimg.com/media/FJGH1cuaMAEKivv?format=jpg&name=small"], 
     ["2022/01/16", "https://twitter.com/i/events/1482624235516293122", "江東区塩浜⇒東陽町", "--km", "https://pbs.twimg.com/media/FJKxkRsaAAAHwO_?format=jpg&name=small"], 
     ["2022/01/22", "https://twitter.com/i/events/1485055195344035847", "江東区塩浜⇒東砂⇒小松川⇒荒川⇒末広通り商店街", "--km", "https://pbs.twimg.com/media/FJqH9U1aAAAsZ9K?format=jpg&name=small"], 
+    ["2022/01/29", "https://twitter.com/i/events/1487227107289841667", "江東区塩浜⇒豊洲⇒晴海⇒豊海", "--km", "https://pbs.twimg.com/media/FKN4sb1agAA5wSs?format=jpg&name=small"], 
+    ["2022/02/05", "https://twitter.com/i/events/1489839869681876993", "江東区塩浜⇒豊洲⇒若葉台⇒小野路⇒関谷の切り通し⇒南大沢", "--km", "https://pbs.twimg.com/media/FKyku_SacAA1TSo?format=jpg&name=small"], 
+    ["2022/02/13", "https://twitter.com/i/events/1492728469129625602", "江東区塩浜⇒木場", "--km", "https://pbs.twimg.com/media/FLcjb59aMAESXNF?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
