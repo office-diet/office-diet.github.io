@@ -347,6 +347,11 @@ window.addEventListener("load", function(){
     ["2022/01/29", "https://twitter.com/i/events/1487227107289841667", "江東区塩浜⇒豊洲⇒晴海⇒豊海", "--km", "https://pbs.twimg.com/media/FKN4sb1agAA5wSs?format=jpg&name=small"], 
     ["2022/02/05", "https://twitter.com/i/events/1489839869681876993", "江東区塩浜⇒豊洲⇒若葉台⇒小野路⇒関谷の切り通し⇒南大沢", "--km", "https://pbs.twimg.com/media/FKyku_SacAA1TSo?format=jpg&name=small"], 
     ["2022/02/13", "https://twitter.com/i/events/1492728469129625602", "江東区塩浜⇒木場", "--km", "https://pbs.twimg.com/media/FLcjb59aMAESXNF?format=jpg&name=small"], 
+    ["2022/02/26", "https://twitter.com/i/events/1497387316960440320", "江東区塩浜⇒荒川⇒新川⇒旧江戸川⇒浦安", "--km", "https://pbs.twimg.com/media/FMeRA5BakAQHNcv?format=jpg&name=small"], 
+    ["2022/03/06", "https://twitter.com/i/events/1502529417444495360", "江東区塩浜⇒豊洲⇒台場公園⇒有明", "--km", "https://pbs.twimg.com/media/FNHP0KcakAEeJEV?format=jpg&name=small"], 
+    ["2022/03/09", "https://twitter.com/i/events/1502531161633193985", "江東区塩浜⇒木場公園、明大前⇒千歳烏山", "--km", "https://pbs.twimg.com/media/FNW10JmVQAQG6Ex?format=jpg&name=small"], 
+    ["2022/03/12", "https://twitter.com/i/events/1502532854269755396", "江東区塩浜⇒木場⇒南大沢⇒多摩丘陵⇒京王堀之内", "--km", "https://pbs.twimg.com/media/FNm5lHcaUAET070?format=jpg&name=small"], 
+    ["2022/03/19", "https://twitter.com/i/events/1505002552836132867", "江東区塩浜⇒浅草⇒山谷⇒隅田川", "--km", "https://pbs.twimg.com/media/FOJoB7maIAAljQ5?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
