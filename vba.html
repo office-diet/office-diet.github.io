@@ -1,0 +1,2086 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="vba.css">
+
+    <title>24時間散歩おじさん～VBA汎用コード置き場～</title>
+    <meta property="og:url" content="https://office-diet.github.io/vba.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="24時間散歩おじさん～VBA汎用コード置き場～" />
+    <meta property="og:description" content="24時間散歩おじさん～VBA汎用コード置き場～" />
+    <meta property="og:site_name" content="24時間散歩おじさん～VBA汎用コード置き場～" />
+    <meta property="og:image" content="https://office-diet.github.io/vba.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:creator" content="@office_diet" />  
+</head>
+<body>
+    <header>
+        <div class="container">
+            24時間散歩おじさん VBA汎用コード置き場
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <div class="code-body">
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 最終行・列を取得
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+    Function GetLastRow(ByVal ws As Worksheet, ByVal strColumn As String) As Long
+
+        GetLastRow = ws.Cells(ws.Rows.Count, strColumn).End(xlUp).Row
+
+    End Function
+
+    Function GetLastColumn(ByVal ws As Worksheet, ByVal lngRow As Long) As Long
+
+        GetLastColumn = ws.Cells(lngRow, ws.Columns.Count).End(xlToLeft).Column
+
+    End Function
+
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+                    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' MIN・MAX関数をラップ・機能拡張
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    '「Min（エクセル関数）」
+    Function Min(ParamArray aryValues() As Variant) As Variant
+        Min = Application.WorksheetFunction.Min(aryValues)
+    End Function
+    
+    '「Max（エクセル関数）」
+    Function Max(ParamArray aryValues() As Variant) As Variant
+        Max = Application.WorksheetFunction.Max(aryValues)
+    End Function
+    
+    '絶対値の最小値
+    Function MinAbs(ParamArray aryValues() As Variant) As Variant
+        
+        Dim vntValue As Variant
+        Dim vntMin As Variant
+        
+        vntMin = aryValues(0)
+        For Each vntValue In aryValues
+            If Abs(vntMin) > Abs(vntValue) Then
+                vntMin = vntValue
+            End If
+        Next
+        MinAbs = vntMin
+        
+    End Function
+    
+    '絶対値の最大値
+    Function MaxAbs(ParamArray aryValues() As Variant) As Variant
+        
+        Dim vntValue As Variant
+        Dim vntMax As Variant
+        
+        vntMax = aryValues(0)
+        For Each vntValue In aryValues
+            If Abs(vntMax) < Abs(vntValue) Then
+                vntMax = vntValue
+            End If
+        Next
+        MaxAbs = vntMax
+        
+    End Function
+
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' VLOOKUP関数をラップ・機能拡張
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+    '文字列・数値の不一致による検索失敗・エラーを回避
+    Function VlookUp(ByVal vntKey As Variant, ByVal rngTable As Range, lngColumn As Long) As Variant
+        
+        Dim vntFindValue As Variant
+        
+        '引数そのまま検索
+        On Error Resume Next
+        vntFindValue = Application.WorksheetFunction.VlookUp(vntKey, rngTable, lngColumn, False)
+        If Err.Number = 0 Then
+            VlookUp = vntFindValue
+            Exit Function
+        End If
+        On Error GoTo 0
+        
+        '引数を文字列に変換
+        On Error Resume Next
+        vntFindValue = Application.WorksheetFunction.VlookUp("" & vntKey, rngTable, lngColumn, False)
+        If Err.Number = 0 Then
+            VlookUp = vntFindValue
+            Exit Function
+        End If
+        On Error GoTo 0
+        
+        '引数を数値に変換
+        On Error Resume Next
+        vntFindValue = Application.WorksheetFunction.VlookUp(vntKey * 1, rngTable, lngColumn, False)
+        If Err.Number = 0 Then
+            VlookUp = vntFindValue
+            Exit Function
+        End If
+        On Error GoTo 0
+                
+        VlookUp = ""
+        
+    End Function
+
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' MATCH関数をラップ・機能拡張（検索に活用）
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+    '「Match（エクセル関数）」の拡張
+    '※文字列・数値の不一致による検索失敗・エラーを回避
+    Function Match(ByVal vntSearchKey As Variant, ByVal rngSearchRange As Range) As Long
+        
+        Dim lngResult As Long
+        
+        '引数そのまま検索
+        On Error Resume Next
+        lngResult = Application.WorksheetFunction.Match(vntSearchKey, rngSearchRange, False)
+        If Err.Number = 0 Then
+            Match = lngResult
+            Exit Function
+        End If
+        On Error GoTo 0
+        
+        '引数を文字列変換して検索
+        On Error Resume Next
+        lngResult = Application.WorksheetFunction.Match("" & vntSearchKey, rngSearchRange, False)
+        If Err.Number = 0 Then
+            Match = lngResult
+            Exit Function
+        End If
+        On Error GoTo 0
+            
+        '引数を数値変換して検索
+        On Error Resume Next
+        lngResult = Application.WorksheetFunction.Match(vntSearchKey * 1, rngSearchRange, False)
+        If Err.Number = 0 Then
+            Match = lngResult
+            Exit Function
+        End If
+        On Error GoTo 0
+            
+        Match = 0
+        
+    End Function
+    
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+'　空白なのに、謎の値が入っているセルの中身を削除
+'　※空白なのにCtrl+方向キーで停止しないセル
+'　※SQLや各種マクロのエラーの原因
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function ClearGhostCell(wsGhostCellCheck)
+        
+        Dim rngCell As Range
+        
+        For Each rngCell In wsGhostCellCheck.UsedRange.Cells
+            
+            If rngCell.Value = "" Then
+                rngCell.ClearContents
+            End If
+            
+        Next
+        
+    End Function
+    
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' Keyとなるコードに【数値】【文字列】が混在した場合の補助関数
+' ※「数値 or 文字列判定」未実装。すべて数値に変換する前提で作成。
+' ※「数値 or 文字列判定」を実装する場合には、WorksheetFunction.IsNumber関数を使用する！
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    '*****************************************
+    'セル範囲を一気に「文字列⇒数値」変換
+    '*****************************************
+    Function RangeTextToNumber(rng As Range)
+        rng.TextToColumns FieldInfo:=Array(1, xlGeneralFormat)
+    End Function
+    
+    '*****************************************
+    'セル範囲を一気に「数値⇒文字列」変換
+    '*****************************************
+    Function RangeNumberToText(rng As Range)
+        rng.TextToColumns FieldInfo:=Array(1, xlTextFormat)
+    End Function
+
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+'　OutlookMail操作
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    '構造体でデータをまとめる
+    Type MailSettings
+        From As String
+        To As String
+        Cc As String
+        Bcc As String
+        Subject As String
+        Body As String
+        HtmlBody As String
+    End Type
+
+    '構造体でデータを受け取り、メール作成・保存を行う
+    Sub MakeAndSaveMail(typMailSettings As MailSettings)
+        
+        Const olMailItem As Integer = 0
+        Const olFormatHTML As Integer = 2
+        
+        'Outlookオブジェクト生成
+        Dim objOutlook As Object
+        Dim objMailItem As Object
+        Set objOutlook = CreateObject("Outlook.Application")
+        Set objMailItem = objOutlook.CreateItem(olMailItem)   '【定数】olMailItem = 0
+        
+        With typMailSettings
+            
+            'メール各設定
+            objMailItem.SendUsingAccount = .From
+            objMailItem.SentOnBehalfOfName = .From
+            objMailItem.To = .To
+            objMailItem.Cc = .Cc
+            objMailItem.Bcc = .Bcc
+            objMailItem.Subject = .Subject
+            
+            '本文
+            objMailItem.Body = .Body
+'            objMailItem.BodyFormat = olFormatHTML
+'            objMailItem.HtmlBody = .HtmlBody
+            
+            
+            'メール保存
+            objMailItem.Save
+            
+        End With
+        
+        'オブジェクト解放
+        Set objOutlook = Nothing
+        Set objMailItem = Nothing
+        
+    End Sub                    
+
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+'　WebAPIを使用したスクレイピング・クローリング備忘録
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Sub WebApiSample()
+        
+        'シンプルなWebApiリクエスト
+        Dim objHttpRequest As Object
+        Set objHttpRequest = CreateObject("MSXML2.XMLHTTP")
+        
+        With objHttpRequest
+            .Open "GET", "https://sample.sample.jp", False
+            .Send
+            
+            Do While .readyState < 4
+                Application.Wait Now + TimeValue("00:00:01")
+                DoEvents
+            Loop
+            
+        End With
+        
+        '取得したHTMLファイルを直接操作
+        '※ブラウザ不要
+        Dim objHtmlDoc As Object
+        Set objHtmlDoc = CreateObject("htmlfile")
+        objHtmlDoc.write objHttpRequest.responseText
+        
+        '原因不明のエラーが起こるので実行速度調整
+        Application.Wait Now + TimeValue("00:00:01")
+        DoEvents
+        
+        'HTMLから必要なデータを抽出
+        If InStr(objHtmlDoc.Title, "404エラー") = 0 Then
+            Debug.Print objHtmlDoc.Title
+            Debug.Print objHtmlDoc.querySelector(".titleLink a").innerText
+        End If
+        
+        '連続データ収集を実行する際は必ずメモリを開放する
+        '※メモリを大量に消費します！！
+        Set objHttpRequest = Nothing
+        Set objHtmlDoc = Nothing
+        
+    End Sub
+
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 10進数を2進数に変換
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+    Function ChangeDecimalToBinary(ByVal lngOriginNumber As Long, Optional ByVal intBaseNumber As Integer = 2) As Long
+
+        Dim strDecimal As String
+        Dim lngDividedNumber As Long
+        Dim lngMod As Long
+        lngMod = -1
+        
+        lngDividedNumber = lngOriginNumber
+        lngMod = 0
+        
+        Do While lngDividedNumber <> 0
+            
+            lngMod = lngDividedNumber Mod intBaseNumber
+            lngDividedNumber = Int(lngDividedNumber / intBaseNumber)
+            strDecimal = lngMod & strDecimal
+            
+        Loop
+        
+        ChangeDecimalToBinary = Int(strDecimal)
+        
+    End Function                
+
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+
+
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 文字列をベクトル化してあいまい検索（未完成）
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    '******************************************************
+    ' あいまい検索使用方法のサンプル
+    '******************************************************
+    Sub FuzzySearchSample()
+        
+        Dim wsStaffMst As Worksheet
+        Set wsStaffMst = ThisWorkbook.Worksheets("社員名簿")
+        
+        Dim lngLastRow As Long
+        Dim vntReturn As Variant
+        
+        '検索対象となる表（重複の無いセル範囲）から
+        '文字列をベクトル変換するためのDictionaryを生成
+        With wsStaffMst
+            lngLastRow = .Cells(.Rows.Count, "A").End(xlUp).Row
+            vntReturn = MakeWordVecDict(.Range(.Cells(2, "B"), .Cells(lngLastRow, "B")))
+        End With
+        
+        Dim dctStaffName As Object  '検索対象となる「文字列&ベクトル」
+        Dim dctWordToVec As Object  '文字をベクトルに変換するための読替表
+        Dim dctVecToWord As Object  'ベクトルを文字に変換するための読替表
+        
+        '配列で返却されるため用途に応じて切り分ける
+        Set dctStaffName = vntReturn(0)
+        Set dctWordToVec = vntReturn(1)
+        Set dctVecToWord = vntReturn(2)
+        
+        'あいまい検索でArray("検索結果文字列", index)が返却される
+        MsgBox FuzzySearch("山田 花子（旧姓：佐藤）", dctStaffName, dctWordToVec)(0)
+        
+    End Sub
+
+    
+    '******************************************************
+    ' セル範囲から文字列を収集しベクトルを生成し
+    ' 下記3個のDictionaryを返却
+    '******************************************************
+    '　■dctWords
+    '　　「文字列」「ベクトル」ペアのDictionary
+    '　　{"文章" : (1, 1, 0), "文学": (1, 0, 1)}
+    '******************************************************
+    '　■dctWordToVec
+    '　　「文字」「インデックス」ペアのDictionary
+    '　　{"文" : 0, "章": 1, "学" : 2}
+    '******************************************************
+    '　■dctVecToWord
+    '　　「インデックス」「文字」ペアのDictionary
+    '　　{0 : "文", 1 : "章", 2 : "学"}
+    '******************************************************
+    '　文章ベクトルのイメージ
+    '　--------------------------
+    '　　　｜あ｜い｜う｜え｜お｜
+    '　--------------------------
+    '　あい｜１｜１｜０｜０｜０｜
+    '　あお｜１｜０｜０｜０｜１｜
+    '　うい｜０｜１｜１｜０｜０｜
+    '　--------------------------
+    '******************************************************
+    Function MakeWordVecDict(ByVal rngWords As Range) As Variant
+            
+        Dim rngCell As Range
+        Dim dctWords As Object
+        Set dctWords = CreateObject("Scripting.Dictionary")
+        
+        
+        '*************************************
+        ' セル範囲のユニークな文字列を収集
+        '*************************************
+        For Each rngCell In rngWords
+            If dctWords.Exists(rngCell.Value) = False Then
+                '「無変換」「全角変換」で格納
+                dctWords.Add rngCell.Value, Replace(StrConv(rngCell.Value, vbWide), "　", "")
+            End If
+        Next
+        
+        'Dictionaryを準備
+        Dim dctWordToVec As Object
+        Dim dctVecToWord As Object
+        Set dctWordToVec = CreateObject("Scripting.Dictionary")
+        Set dctVecToWord = CreateObject("Scripting.Dictionary")
+        
+        Dim lngIndex As Long
+        Dim lngChar As Long
+        Dim strWords As String
+        Dim strChar As String
+        
+        
+        '*************************************
+        ' 全ての文字にインデックス番号を付与
+        '*************************************
+        For lngIndex = 0 To dctWords.Count - 1
+            
+            '全角変換した文字列をもとにベクトル作成
+            strWords = dctWords(dctWords.Keys()(lngIndex))
+            
+            For lngChar = 1 To Len(strWords)
+                
+                '一文字ずつ取り出す
+                strChar = Mid(strWords, lngChar, 1)
+                
+                'Dictionaryに未格納の文字だったら・・・
+                If dctWordToVec.Exists(strChar) = False Then
+                    
+                    '「文字：インデックス」
+                    dctWordToVec.Add strChar, dctWordToVec.Count
+                    
+                    '「インデックス：文字」
+                    dctVecToWord.Add dctVecToWord.Count, strChar
+                    
+                End If
+            Next
+        Next
+        
+        
+        '*************************************
+        ' 文字列をベクトル化
+        '*************************************
+        For lngIndex = 0 To dctWords.Count - 1
+            
+            '※必ず全角変換後文字列を使用する
+            strWords = dctWords(dctWords.Keys()(lngIndex))
+            
+            '「存在する文字数の長さ」の配列になる
+            ReDim aryTmp(dctWordToVec.Count - 1) As Variant
+            
+            '配列をいったん0で初期化
+            For lngChar = 0 To UBound(aryTmp)
+                aryTmp(lngChar) = 0
+            Next
+            
+            '文字列を一文字ずつ処理
+            For lngChar = 1 To Len(strWords)
+                
+                '対象の一文字
+                strChar = Mid(strWords, lngChar, 1)
+                
+                '「文字；インデックス」変換
+                If dctWordToVec.Exists(strChar) Then
+                    
+                    '配列内の「インデックス位置」に1を設定
+                    '※複数同一文字があっても1
+                    aryTmp(dctWordToVec(strChar)) = 1
+                End If
+            Next
+            
+            '「文字列：ベクトル」Dictionaryに格納
+            dctWords(dctWords.Keys()(lngIndex)) = aryTmp
+        Next
+        
+        '3個のDictionaryを返却
+        MakeWordVecDict = Array(dctWords, dctWordToVec, dctVecToWord)
+        
+    End Function
+    
+    '******************************************************
+    ' 文字の一致数・不一致数から「似ている」文字列を検索する
+    ' 下記2つのDictionaryが必要
+    '******************************************************
+    '　■dctWords
+    '　　「文字列」「ベクトル」ペアのDictionary
+    '　　{"文章" : (1, 1, 0), "文学": (1, 0, 1)}
+    '******************************************************
+    '　■dctWordToVec
+    '　　「文字」「インデックス」ペアのDictionary
+    '　　{"文" : 0, "章": 1, "学" : 2}
+    '******************************************************
+    Function FuzzySearch(ByVal strKeyword As String, ByVal dctWords As Object, ByVal dctWordToVec As Object) As Variant
+                
+        '検索キーワード用ベクトル
+        ReDim aryKeywordVec(dctWordToVec.Count - 1) As Variant
+        
+        Dim strKeywordWide As String
+        Dim lngChar As Long
+        Dim strChar As String
+        
+        '検索キーワードは必ず全角変換
+        strKeywordWide = Replace(StrConv(strKeyword, vbWide), "　", "")
+        
+        '検索キーワード用ベクトルを0で初期化
+        For lngChar = 0 To UBound(aryKeywordVec)
+            aryKeywordVec(lngChar) = aryKeywordVec(lngChar) + 0
+        Next
+        
+        '検索キーワードをベクトル変換
+        '※この際作成済みDictionaryに存在しない文字は無視されます
+        '　道の文字に対する対応は検討の余地あり
+        For lngChar = 1 To Len(strKeywordWide)
+            strChar = Mid(strKeywordWide, lngChar, 1)
+            
+            '検索キーワード内の文字が既知の文字だったら・・・
+            If dctWordToVec.Exists(strChar) Then
+                
+                'ベクトルの対象インデクス位置をカウントアップ
+                '複数同一文字があったらカウントアップ
+                aryKeywordVec(dctWordToVec(strChar)) = aryKeywordVec(dctWordToVec(strChar)) + 1
+            End If
+        Next
+            
+        Dim lngIndex As Long
+        Dim dblDistance As Double
+        Dim dblDistanceTmp As Double
+        Dim intDiff As Integer
+        Dim intSame As Integer
+        
+        Dim strResultWord As String
+        Dim lngResultIndex As Long
+        
+        '********************************
+        ' 「一致」「不一致」計算の定数
+        '********************************
+        Const dblDiffPenalty As Double = 2  '完全不一致のペナルティ（乗数）
+        Const dblSameReward As Double = 0.5 '部分完全一致の報酬（倍）
+
+        
+        For lngIndex = 0 To dctWords.Count - 1
+            
+            '偏差の2乗の総和で「不一致」を測定
+            intDiff = Application.WorksheetFunction.SumXMY2(aryKeywordVec, dctWords(dctWords.Keys()(lngIndex)))
+            
+            '一致数をカウント
+            intSame = Application.WorksheetFunction.SumProduct(aryKeywordVec, dctWords(dctWords.Keys()(lngIndex)))
+            
+            '一致数・不一致数から距離を計算する
+            '※下記計算のパラメータは検討の余地あり
+            If intSame = 0 Then
+            
+                '完全不一致はペナルティ2乗
+                dblDistanceTmp = intDiff ^ dblDiffPenalty
+                
+            ElseIf InStr(StrConv(dctWords.Keys()(lngIndex), vbWide), strKeywordWide) > 0 Then
+                
+                '部分完全一致は不一致半分
+                dblDistanceTmp = intDiff * dblSameReward / (intSame * 2) ^ 2
+            
+            Else
+                
+                '個別文字一致
+                dblDistanceTmp = intDiff / (intSame * 2) ^ 2
+            
+            End If
+            
+            '最小距離の文字列とインデックスを格納
+            If dblDistance = 0 Or dblDistance > dblDistanceTmp Then
+                dblDistance = dblDistanceTmp
+                strResultWord = dctWords.Keys()(lngIndex)
+                lngResultIndex = lngIndex
+            End If
+        Next
+        
+        '最小距離の文字列とDictionary内の位置を返却
+        FuzzySearch = Array(strResultWord, lngResultIndex)
+        
+    End Function
+
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+'　数列を生成
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+    Function MakePermutation(ByVal intNumberCount As Integer, ByVal intPickupCount As Integer, Optional ByVal aryReplaceNumbers As Variant) As Variant
+        
+        Dim lngPatternCount As Long
+        Dim intCountDown As Integer
+        
+        lngPatternCount = 1
+        For intCountDown = intNumberCount To (intNumberCount - intPickupCount + 1) Step -1
+            lngPatternCount = lngPatternCount * intCountDown
+        Next
+        
+        Dim aryNumbers() As Integer
+        ReDim aryNumbers(1 To lngPatternCount, 1 To intPickupCount)
+        Dim intIndex As Integer
+        
+        For intIndex = 1 To intPickupCount
+            aryNumbers(1, intIndex) = intIndex
+        Next
+        
+        Dim intTargetNumberLow As Integer
+        Dim intTargetNumberHigh As Integer
+        Dim lngCompleteRowsCount As Long
+        Dim lngNowMakigRow As Long
+        
+        Dim lngRow As Long
+        Dim lngColumn As Long
+        Dim blnChanged As Boolean
+        
+        lngCompleteRowsCount = 1
+        lngNowMakigRow = 1
+        
+        For intTargetNumberLow = intNumberCount - 1 To 1 Step -1
+            For intTargetNumberHigh = intTargetNumberLow + 1 To intNumberCount
+                For lngRow = 1 To lngCompleteRowsCount
+                    lngNowMakigRow = lngNowMakigRow + 1
+                    blnChanged = False
+                    
+                    For lngColumn = 1 To intPickupCount
+                        
+                        If aryNumbers(lngRow, lngColumn) = intTargetNumberLow Then
+                            aryNumbers(lngNowMakigRow, lngColumn) = intTargetNumberHigh
+                            blnChanged = True
+                        ElseIf aryNumbers(lngRow, lngColumn) = intTargetNumberHigh Then
+                            aryNumbers(lngNowMakigRow, lngColumn) = intTargetNumberLow
+                            blnChanged = True
+                        Else
+                            aryNumbers(lngNowMakigRow, lngColumn) = aryNumbers(lngRow, lngColumn)
+                        End If
+                                        
+                    Next
+                    
+                    If blnChanged = False Then
+                        lngNowMakigRow = lngNowMakigRow - 1
+                    End If
+                Next
+            Next
+            lngCompleteRowsCount = lngNowMakigRow
+        Next
+        
+        If IsMissing(aryReplaceNumbers) = False Then
+            Dim dctChangeNumbers As Object
+            Set dctChangeNumbers = CreateObject("Scripting.Dictionary")
+            
+            lngRow = 1
+            For intIndex = LBound(aryReplaceNumbers) To UBound(aryReplaceNumbers)
+                dctChangeNumbers.Add lngRow, aryReplaceNumbers(intIndex)
+                lngRow = lngRow + 1
+            Next
+            
+            For lngRow = LBound(aryNumbers, 1) To UBound(aryNumbers, 1)
+                For lngColumn = LBound(aryNumbers, 2) To UBound(aryNumbers, 2)
+                    aryNumbers(lngRow, lngColumn) = dctChangeNumbers(aryNumbers(lngRow, lngColumn))
+                Next
+            Next
+        End If
+        
+        MakePermutation = aryNumbers
+        
+    End Function
+
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+'　クラスタリング（K-Means）練習備忘録
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    '汎用性はないので要改造！
+    Sub Clustering()
+        
+        Dim aryVectors As Variant
+        Dim aryBeforeClustering As Variant
+        Dim aryNewClustering As Variant
+        Dim aryDistances As Variant
+        Dim aryClusterCenterPoints As Variant
+        
+        aryVectors = Range("B20:C119").Value
+        aryBeforeClustering = Range("D20:D119").Value
+        aryNewClustering = Range("D20:D119").Value
+        aryDistances = Range("E20:H119").Value
+        aryClusterCenterPoints = Range("D9:E12").Value
+        
+        Dim lngRow As Long
+        Dim intClusterIndex As Integer
+                
+        'ラベルをランダムに振り分ける
+        For lngRow = LBound(aryBeforeClustering) To UBound(aryBeforeClustering)
+            Randomize
+            aryBeforeClustering(lngRow, 1) = Application.WorksheetFunction.RandBetween(1, 4)
+        Next
+                        
+        Dim dblDistanceMin As Double
+        Dim intChangeCount As Integer
+        Dim intMemberCount(1 To 4) As Integer
+        Dim intLoopCount As Integer
+                
+        Do While True
+            
+            For lngRow = LBound(aryVectors, 1) To UBound(aryVectors, 1)
+                dblDistanceMin = Abs(aryVectors(lngRow, 1)) + Abs(aryVectors(lngRow, 2))
+                For intClusterIndex = 1 To 4
+                    aryDistances(lngRow, intClusterIndex) = GetDistance( _
+                                                        Array(aryVectors(lngRow, 1), aryVectors(lngRow, 2)), _
+                                                        Array(aryClusterCenterPoints(intClusterIndex, 1), aryClusterCenterPoints(intClusterIndex, 2)))
+                    
+                    If dblDistanceMin > aryDistances(lngRow, intClusterIndex) Then
+                        dblDistanceMin = aryDistances(lngRow, intClusterIndex)
+                        aryNewClustering(lngRow, 1) = intClusterIndex
+                    End If
+                    
+                Next
+            Next
+            
+            For intClusterIndex = LBound(aryClusterCenterPoints, 1) To UBound(aryClusterCenterPoints, 1)
+                aryClusterCenterPoints(intClusterIndex, 1) = 0
+                aryClusterCenterPoints(intClusterIndex, 2) = 0
+                intMemberCount(intClusterIndex) = 1
+            Next
+            
+            For lngRow = LBound(aryVectors, 1) To UBound(aryVectors, 1)
+                intClusterIndex = aryNewClustering(lngRow, 1)
+                aryClusterCenterPoints(intClusterIndex, 1) = aryClusterCenterPoints(intClusterIndex, 1) + aryVectors(lngRow, 1)
+                aryClusterCenterPoints(intClusterIndex, 2) = aryClusterCenterPoints(intClusterIndex, 2) + aryVectors(lngRow, 2)
+                intMemberCount(intClusterIndex) = intMemberCount(intClusterIndex) + 1
+            Next
+            
+            For intClusterIndex = LBound(aryClusterCenterPoints, 1) To UBound(aryClusterCenterPoints, 1)
+                On Error Resume Next
+                aryClusterCenterPoints(intClusterIndex, 1) = aryClusterCenterPoints(intClusterIndex, 1) / intMemberCount(intClusterIndex)
+                aryClusterCenterPoints(intClusterIndex, 2) = aryClusterCenterPoints(intClusterIndex, 2) / intMemberCount(intClusterIndex)
+                On Error GoTo 0
+            Next
+            
+            For lngRow = LBound(aryVectors, 1) To UBound(aryVectors, 1)
+                If aryBeforeClustering(lngRow, 1) <> aryNewClustering(lngRow, 1) Then
+                    intChangeCount = intChangeCount + 1
+                    aryBeforeClustering(lngRow, 1) = aryNewClustering(lngRow, 1)
+                End If
+            Next
+            
+            intLoopCount = intLoopCount + 1
+            
+            If intLoopCount = 1000 Or intChangeCount = 0 Then
+                Debug.Print intLoopCount, intChangeCount
+                Exit Do
+            End If
+            
+            intChangeCount = 0
+        Loop
+        
+        Range("D20:D119").Value = aryNewClustering
+        Range("E20:H119").Value = aryDistances
+        Range("D9:E12").Value = aryClusterCenterPoints
+        
+        MsgBox "FINISHED!"
+        
+    End Sub
+    
+    
+    'ユークリッド距離
+    Function GetDistance(ByVal aryData As Variant, ByVal aryCluster As Variant) As Double
+        
+        Dim dblAnswer As Double
+        Dim intIndex As Integer
+        
+        dblAnswer = 0
+        
+        For intIndex = LBound(aryData) To UBound(aryData)
+            
+            dblAnswer = dblAnswer + (aryData(intIndex) - aryCluster(intIndex)) ^ 2
+            
+        Next
+        
+        GetDistance = Sqr(dblAnswer)
+        
+    End Function
+
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+'　マクロ高速化クラス（画面描画・再計算・警告表示停止・復旧）
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+    '*************************************************
+    ' インスタンス作成時点で画面処理等を停止する
+    '*************************************************
+    Private Sub Class_Initialize()
+        
+        With Application
+            .ScreenUpdating = False
+            .Calculation = xlManual
+            .DisplayAlerts = False
+            .EnableEvents = True
+        End With
+        
+    End Sub
+
+    '*************************************************
+    ' インスタンスが破棄されたら自動でデフォルトに復旧
+    '*************************************************
+    Private Sub Class_Terminate()
+        
+        With Application
+            .ScreenUpdating = True
+            .Calculation = xlAutomatic
+            .DisplayAlerts = True
+            .EnableEvents = True
+            .StatusBar = False
+        End With
+    
+    End Sub
+
+    '*************************************************
+    ' 設定を個別に指定できる
+    '*************************************************
+    Sub Setting(Optional ByVal intUpdating As Integer = False, Optional ByVal intCalc As Integer = xlManual, _
+            Optional ByVal intAlert As Integer = False, Optional ByVal intEvent As Integer = True)
+        
+        Application.ScreenUpdating = intUpdating
+        Application.Calculation = intCalc
+        Application.DisplayAlerts = intAlert
+        Application.EnableEvents = intEvent
+        
+    End Sub
+
+    '*************************************************
+    ' ステータスバーへの進捗・メッセージ表示
+    '*************************************************
+    Sub StatusBar(Optional ByVal strStatusBar As String = "False")
+        
+        If strStatusBar <> "False" Then
+            Application.StatusBar = strStatusBar
+        Else
+            Application.StatusBar = False
+        End If
+        
+    End Sub
+
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+'　JsonConverterの環境依存を解消
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    Option Explicit
+
+    ''
+    ' VBA-JSON v2.3.1
+    ' (c) Tim Hall - https://github.com/VBA-tools/VBA-JSON
+    '
+    ' JSON Converter for VBA
+    '
+    ' Errors:
+    ' 10001 - JSON parse error
+    '
+    ' @class JsonConverter
+    ' @author tim.hall.engr@gmail.com
+    ' @license MIT (http://www.opensource.org/licenses/mit-license.php)
+    '' ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ '
+    '
+    ' Based originally on vba-json (with extensive changes)
+    ' BSD license included below
+    '
+    ' JSONLib, http://code.google.com/p/vba-json/
+    '
+    ' Copyright (c) 2013, Ryo Yokoyama
+    ' All rights reserved.
+    '
+    ' Redistribution and use in source and binary forms, with or without
+    ' modification, are permitted provided that the following conditions are met:
+    '     * Redistributions of source code must retain the above copyright
+    '       notice, this list of conditions and the following disclaimer.
+    '     * Redistributions in binary form must reproduce the above copyright
+    '       notice, this list of conditions and the following disclaimer in the
+    '       documentation and/or other materials provided with the distribution.
+    '     * Neither the name of the <organization> nor the
+    '       names of its contributors may be used to endorse or promote products
+    '       derived from this software without specific prior written permission.
+    '
+    ' THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+    ' ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    ' WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    ' DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+    ' DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    ' (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    ' LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ' ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    ' (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    ' SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    ' ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ '
+    
+    ' === VBA-UTC Headers
+    #If Mac Then
+    
+    #If VBA7 Then
+    
+    ' 64-bit Mac (2016)
+    Private Declare PtrSafe Function utc_popen Lib "/usr/lib/libc.dylib" Alias "popen" _
+        (ByVal utc_Command As String, ByVal utc_Mode As String) As LongPtr
+    Private Declare PtrSafe Function utc_pclose Lib "/usr/lib/libc.dylib" Alias "pclose" _
+        (ByVal utc_File As LongPtr) As LongPtr
+    Private Declare PtrSafe Function utc_fread Lib "/usr/lib/libc.dylib" Alias "fread" _
+        (ByVal utc_Buffer As String, ByVal utc_Size As LongPtr, ByVal utc_Number As LongPtr, ByVal utc_File As LongPtr) As LongPtr
+    Private Declare PtrSafe Function utc_feof Lib "/usr/lib/libc.dylib" Alias "feof" _
+        (ByVal utc_File As LongPtr) As LongPtr
+    
+    #Else
+    
+    ' 32-bit Mac
+    Private Declare Function utc_popen Lib "libc.dylib" Alias "popen" _
+        (ByVal utc_Command As String, ByVal utc_Mode As String) As Long
+    Private Declare Function utc_pclose Lib "libc.dylib" Alias "pclose" _
+        (ByVal utc_File As Long) As Long
+    Private Declare Function utc_fread Lib "libc.dylib" Alias "fread" _
+        (ByVal utc_Buffer As String, ByVal utc_Size As Long, ByVal utc_Number As Long, ByVal utc_File As Long) As Long
+    Private Declare Function utc_feof Lib "libc.dylib" Alias "feof" _
+        (ByVal utc_File As Long) As Long
+    
+    #End If
+    
+    #ElseIf VBA7 Then
+    
+    ' http://msdn.microsoft.com/en-us/library/windows/desktop/ms724421.aspx
+    ' http://msdn.microsoft.com/en-us/library/windows/desktop/ms724949.aspx
+    ' http://msdn.microsoft.com/en-us/library/windows/desktop/ms725485.aspx
+    Private Declare PtrSafe Function utc_GetTimeZoneInformation Lib "kernel32" Alias "GetTimeZoneInformation" _
+        (utc_lpTimeZoneInformation As utc_TIME_ZONE_INFORMATION) As Long
+    Private Declare PtrSafe Function utc_SystemTimeToTzSpecificLocalTime Lib "kernel32" Alias "SystemTimeToTzSpecificLocalTime" _
+        (utc_lpTimeZoneInformation As utc_TIME_ZONE_INFORMATION, utc_lpUniversalTime As utc_SYSTEMTIME, utc_lpLocalTime As utc_SYSTEMTIME) As Long
+    Private Declare PtrSafe Function utc_TzSpecificLocalTimeToSystemTime Lib "kernel32" Alias "TzSpecificLocalTimeToSystemTime" _
+        (utc_lpTimeZoneInformation As utc_TIME_ZONE_INFORMATION, utc_lpLocalTime As utc_SYSTEMTIME, utc_lpUniversalTime As utc_SYSTEMTIME) As Long
+    
+    #Else
+    
+    Private Declare Function utc_GetTimeZoneInformation Lib "kernel32" Alias "GetTimeZoneInformation" _
+        (utc_lpTimeZoneInformation As utc_TIME_ZONE_INFORMATION) As Long
+    Private Declare Function utc_SystemTimeToTzSpecificLocalTime Lib "kernel32" Alias "SystemTimeToTzSpecificLocalTime" _
+        (utc_lpTimeZoneInformation As utc_TIME_ZONE_INFORMATION, utc_lpUniversalTime As utc_SYSTEMTIME, utc_lpLocalTime As utc_SYSTEMTIME) As Long
+    Private Declare Function utc_TzSpecificLocalTimeToSystemTime Lib "kernel32" Alias "TzSpecificLocalTimeToSystemTime" _
+        (utc_lpTimeZoneInformation As utc_TIME_ZONE_INFORMATION, utc_lpLocalTime As utc_SYSTEMTIME, utc_lpUniversalTime As utc_SYSTEMTIME) As Long
+    
+    #End If
+    
+    #If Mac Then
+    
+    #If VBA7 Then
+    Private Type utc_ShellResult
+        utc_Output As String
+        utc_ExitCode As LongPtr
+    End Type
+    
+    #Else
+    
+    Private Type utc_ShellResult
+        utc_Output As String
+        utc_ExitCode As Long
+    End Type
+    
+    #End If
+    
+    #Else
+    
+    Private Type utc_SYSTEMTIME
+        utc_wYear As Integer
+        utc_wMonth As Integer
+        utc_wDayOfWeek As Integer
+        utc_wDay As Integer
+        utc_wHour As Integer
+        utc_wMinute As Integer
+        utc_wSecond As Integer
+        utc_wMilliseconds As Integer
+    End Type
+    
+    Private Type utc_TIME_ZONE_INFORMATION
+        utc_Bias As Long
+        utc_StandardName(0 To 31) As Integer
+        utc_StandardDate As utc_SYSTEMTIME
+        utc_StandardBias As Long
+        utc_DaylightName(0 To 31) As Integer
+        utc_DaylightDate As utc_SYSTEMTIME
+        utc_DaylightBias As Long
+    End Type
+    
+    #End If
+    ' === End VBA-UTC
+    
+    Private Type json_Options
+        ' VBA only stores 15 significant digits, so any numbers larger than that are truncated
+        ' This can lead to issues when BIGINT's are used (e.g. for Ids or Credit Cards), as they will be invalid above 15 digits
+        ' See: http://support.microsoft.com/kb/269370
+        '
+        ' By default, VBA-JSON will use String for numbers longer than 15 characters that contain only digits
+        ' to override set `JsonConverter.JsonOptions.UseDoubleForLargeNumbers = True`
+        UseDoubleForLargeNumbers As Boolean
+    
+        ' The JSON standard requires object keys to be quoted (" or '), use this option to allow unquoted keys
+        AllowUnquotedKeys As Boolean
+    
+        ' The solidus (/) is not required to be escaped, use this option to escape them as \/ in ConvertToJson
+        EscapeSolidus As Boolean
+    End Type
+    Public JsonOptions As json_Options
+    
+    ' ============================================= '
+    ' Public Methods
+    ' ============================================= '
+    
+    ''
+    ' Convert JSON string to object (Dictionary/Collection)
+    '
+    ' @method ParseJson
+    ' @param {String} json_String
+    ' @return {Object} (Dictionary or Collection)
+    ' @throws 10001 - JSON parse error
+    ''
+    Public Function ParseJson(ByVal JsonString As String) As Object
+        Dim json_Index As Long
+        json_Index = 1
+    
+        ' Remove vbCr, vbLf, and vbTab from json_String
+        JsonString = VBA.Replace(VBA.Replace(VBA.Replace(JsonString, VBA.vbCr, ""), VBA.vbLf, ""), VBA.vbTab, "")
+    
+        json_SkipSpaces JsonString, json_Index
+        Select Case VBA.Mid$(JsonString, json_Index, 1)
+        Case "{"
+            Set ParseJson = json_ParseObject(JsonString, json_Index)
+        Case "["
+            Set ParseJson = json_ParseArray(JsonString, json_Index)
+        Case Else
+            ' Error: Invalid JSON string
+            Err.Raise 10001, "JSONConverter", json_ParseErrorMessage(JsonString, json_Index, "Expecting '{' or '['")
+        End Select
+    End Function
+    
+    ''
+    ' Convert object (Dictionary/Collection/Array) to JSON
+    '
+    ' @method ConvertToJson
+    ' @param {Variant} JsonValue (Dictionary, Collection, or Array)
+    ' @param {Integer|String} Whitespace "Pretty" print json with given number of spaces per indentation (Integer) or given string
+    ' @return {String}
+    ''
+    Public Function ConvertToJson(ByVal JsonValue As Variant, Optional ByVal Whitespace As Variant, Optional ByVal json_CurrentIndentation As Long = 0) As String
+        Dim json_Buffer As String
+        Dim json_BufferPosition As Long
+        Dim json_BufferLength As Long
+        Dim json_Index As Long
+        Dim json_LBound As Long
+        Dim json_UBound As Long
+        Dim json_IsFirstItem As Boolean
+        Dim json_Index2D As Long
+        Dim json_LBound2D As Long
+        Dim json_UBound2D As Long
+        Dim json_IsFirstItem2D As Boolean
+        Dim json_Key As Variant
+        Dim json_Value As Variant
+        Dim json_DateStr As String
+        Dim json_Converted As String
+        Dim json_SkipItem As Boolean
+        Dim json_PrettyPrint As Boolean
+        Dim json_Indentation As String
+        Dim json_InnerIndentation As String
+    
+        json_LBound = -1
+        json_UBound = -1
+        json_IsFirstItem = True
+        json_LBound2D = -1
+        json_UBound2D = -1
+        json_IsFirstItem2D = True
+        json_PrettyPrint = Not IsMissing(Whitespace)
+    
+        Select Case VBA.VarType(JsonValue)
+        Case VBA.vbNull
+            ConvertToJson = "null"
+        Case VBA.vbDate
+            ' Date
+            json_DateStr = ConvertToIso(VBA.CDate(JsonValue))
+    
+            ConvertToJson = """" & json_DateStr & """"
+        Case VBA.vbString
+            ' String (or large number encoded as string)
+            If Not JsonOptions.UseDoubleForLargeNumbers And json_StringIsLargeNumber(JsonValue) Then
+                ConvertToJson = JsonValue
+            Else
+                ConvertToJson = """" & json_Encode(JsonValue) & """"
+            End If
+        Case VBA.vbBoolean
+            If JsonValue Then
+                ConvertToJson = "true"
+            Else
+                ConvertToJson = "false"
+            End If
+        Case VBA.vbArray To VBA.vbArray + VBA.vbByte
+            If json_PrettyPrint Then
+                If VBA.VarType(Whitespace) = VBA.vbString Then
+                    json_Indentation = VBA.String$(json_CurrentIndentation + 1, Whitespace)
+                    json_InnerIndentation = VBA.String$(json_CurrentIndentation + 2, Whitespace)
+                Else
+                    json_Indentation = VBA.Space$((json_CurrentIndentation + 1) * Whitespace)
+                    json_InnerIndentation = VBA.Space$((json_CurrentIndentation + 2) * Whitespace)
+                End If
+            End If
+    
+            ' Array
+            json_BufferAppend json_Buffer, "[", json_BufferPosition, json_BufferLength
+    
+            On Error Resume Next
+    
+            json_LBound = LBound(JsonValue, 1)
+            json_UBound = UBound(JsonValue, 1)
+            json_LBound2D = LBound(JsonValue, 2)
+            json_UBound2D = UBound(JsonValue, 2)
+    
+            If json_LBound >= 0 And json_UBound >= 0 Then
+                For json_Index = json_LBound To json_UBound
+                    If json_IsFirstItem Then
+                        json_IsFirstItem = False
+                    Else
+                        ' Append comma to previous line
+                        json_BufferAppend json_Buffer, ",", json_BufferPosition, json_BufferLength
+                    End If
+    
+                    If json_LBound2D >= 0 And json_UBound2D >= 0 Then
+                        ' 2D Array
+                        If json_PrettyPrint Then
+                            json_BufferAppend json_Buffer, vbNewLine, json_BufferPosition, json_BufferLength
+                        End If
+                        json_BufferAppend json_Buffer, json_Indentation & "[", json_BufferPosition, json_BufferLength
+    
+                        For json_Index2D = json_LBound2D To json_UBound2D
+                            If json_IsFirstItem2D Then
+                                json_IsFirstItem2D = False
+                            Else
+                                json_BufferAppend json_Buffer, ",", json_BufferPosition, json_BufferLength
+                            End If
+    
+                            json_Converted = ConvertToJson(JsonValue(json_Index, json_Index2D), Whitespace, json_CurrentIndentation + 2)
+    
+                            ' For Arrays/Collections, undefined (Empty/Nothing) is treated as null
+                            If json_Converted = "" Then
+                                ' (nest to only check if converted = "")
+                                If json_IsUndefined(JsonValue(json_Index, json_Index2D)) Then
+                                    json_Converted = "null"
+                                End If
+                            End If
+    
+                            If json_PrettyPrint Then
+                                json_Converted = vbNewLine & json_InnerIndentation & json_Converted
+                            End If
+    
+                            json_BufferAppend json_Buffer, json_Converted, json_BufferPosition, json_BufferLength
+                        Next json_Index2D
+    
+                        If json_PrettyPrint Then
+                            json_BufferAppend json_Buffer, vbNewLine, json_BufferPosition, json_BufferLength
+                        End If
+    
+                        json_BufferAppend json_Buffer, json_Indentation & "]", json_BufferPosition, json_BufferLength
+                        json_IsFirstItem2D = True
+                    Else
+                        ' 1D Array
+                        json_Converted = ConvertToJson(JsonValue(json_Index), Whitespace, json_CurrentIndentation + 1)
+    
+                        ' For Arrays/Collections, undefined (Empty/Nothing) is treated as null
+                        If json_Converted = "" Then
+                            ' (nest to only check if converted = "")
+                            If json_IsUndefined(JsonValue(json_Index)) Then
+                                json_Converted = "null"
+                            End If
+                        End If
+    
+                        If json_PrettyPrint Then
+                            json_Converted = vbNewLine & json_Indentation & json_Converted
+                        End If
+    
+                        json_BufferAppend json_Buffer, json_Converted, json_BufferPosition, json_BufferLength
+                    End If
+                Next json_Index
+            End If
+    
+            On Error GoTo 0
+    
+            If json_PrettyPrint Then
+                json_BufferAppend json_Buffer, vbNewLine, json_BufferPosition, json_BufferLength
+    
+                If VBA.VarType(Whitespace) = VBA.vbString Then
+                    json_Indentation = VBA.String$(json_CurrentIndentation, Whitespace)
+                Else
+                    json_Indentation = VBA.Space$(json_CurrentIndentation * Whitespace)
+                End If
+            End If
+    
+            json_BufferAppend json_Buffer, json_Indentation & "]", json_BufferPosition, json_BufferLength
+    
+            ConvertToJson = json_BufferToString(json_Buffer, json_BufferPosition)
+    
+        ' Dictionary or Collection
+        Case VBA.vbObject
+            If json_PrettyPrint Then
+                If VBA.VarType(Whitespace) = VBA.vbString Then
+                    json_Indentation = VBA.String$(json_CurrentIndentation + 1, Whitespace)
+                Else
+                    json_Indentation = VBA.Space$((json_CurrentIndentation + 1) * Whitespace)
+                End If
+            End If
+    
+            ' Dictionary
+            If VBA.TypeName(JsonValue) = "Dictionary" Then
+                json_BufferAppend json_Buffer, "{", json_BufferPosition, json_BufferLength
+                For Each json_Key In JsonValue.Keys
+                    ' For Objects, undefined (Empty/Nothing) is not added to object
+                    json_Converted = ConvertToJson(JsonValue(json_Key), Whitespace, json_CurrentIndentation + 1)
+                    If json_Converted = "" Then
+                        json_SkipItem = json_IsUndefined(JsonValue(json_Key))
+                    Else
+                        json_SkipItem = False
+                    End If
+    
+                    If Not json_SkipItem Then
+                        If json_IsFirstItem Then
+                            json_IsFirstItem = False
+                        Else
+                            json_BufferAppend json_Buffer, ",", json_BufferPosition, json_BufferLength
+                        End If
+    
+                        If json_PrettyPrint Then
+                            json_Converted = vbNewLine & json_Indentation & """" & json_Key & """: " & json_Converted
+                        Else
+                            json_Converted = """" & json_Key & """:" & json_Converted
+                        End If
+    
+                        json_BufferAppend json_Buffer, json_Converted, json_BufferPosition, json_BufferLength
+                    End If
+                Next json_Key
+    
+                If json_PrettyPrint Then
+                    json_BufferAppend json_Buffer, vbNewLine, json_BufferPosition, json_BufferLength
+    
+                    If VBA.VarType(Whitespace) = VBA.vbString Then
+                        json_Indentation = VBA.String$(json_CurrentIndentation, Whitespace)
+                    Else
+                        json_Indentation = VBA.Space$(json_CurrentIndentation * Whitespace)
+                    End If
+                End If
+    
+                json_BufferAppend json_Buffer, json_Indentation & "}", json_BufferPosition, json_BufferLength
+    
+            ' Collection
+            ElseIf VBA.TypeName(JsonValue) = "Collection" Then
+                json_BufferAppend json_Buffer, "[", json_BufferPosition, json_BufferLength
+                For Each json_Value In JsonValue
+                    If json_IsFirstItem Then
+                        json_IsFirstItem = False
+                    Else
+                        json_BufferAppend json_Buffer, ",", json_BufferPosition, json_BufferLength
+                    End If
+    
+                    json_Converted = ConvertToJson(json_Value, Whitespace, json_CurrentIndentation + 1)
+    
+                    ' For Arrays/Collections, undefined (Empty/Nothing) is treated as null
+                    If json_Converted = "" Then
+                        ' (nest to only check if converted = "")
+                        If json_IsUndefined(json_Value) Then
+                            json_Converted = "null"
+                        End If
+                    End If
+    
+                    If json_PrettyPrint Then
+                        json_Converted = vbNewLine & json_Indentation & json_Converted
+                    End If
+    
+                    json_BufferAppend json_Buffer, json_Converted, json_BufferPosition, json_BufferLength
+                Next json_Value
+    
+                If json_PrettyPrint Then
+                    json_BufferAppend json_Buffer, vbNewLine, json_BufferPosition, json_BufferLength
+    
+                    If VBA.VarType(Whitespace) = VBA.vbString Then
+                        json_Indentation = VBA.String$(json_CurrentIndentation, Whitespace)
+                    Else
+                        json_Indentation = VBA.Space$(json_CurrentIndentation * Whitespace)
+                    End If
+                End If
+    
+                json_BufferAppend json_Buffer, json_Indentation & "]", json_BufferPosition, json_BufferLength
+            End If
+    
+            ConvertToJson = json_BufferToString(json_Buffer, json_BufferPosition)
+        Case VBA.vbInteger, VBA.vbLong, VBA.vbSingle, VBA.vbDouble, VBA.vbCurrency, VBA.vbDecimal
+            ' Number (use decimals for numbers)
+            ConvertToJson = VBA.Replace(JsonValue, ",", ".")
+        Case Else
+            ' vbEmpty, vbError, vbDataObject, vbByte, vbUserDefinedType
+            ' Use VBA's built-in to-string
+            On Error Resume Next
+            ConvertToJson = JsonValue
+            On Error GoTo 0
+        End Select
+    End Function
+    
+    ' ============================================= '
+    ' Private Functions
+    ' ============================================= '
+    
+    Private Function json_ParseObject(json_String As String, ByRef json_Index As Long) As Object
+        Dim json_Key As String
+        Dim json_NextChar As String
+    
+        Set json_ParseObject = CreateObject("Scripting.Dictionary")
+        json_SkipSpaces json_String, json_Index
+        If VBA.Mid$(json_String, json_Index, 1) <> "{" Then
+            Err.Raise 10001, "JSONConverter", json_ParseErrorMessage(json_String, json_Index, "Expecting '{'")
+        Else
+            json_Index = json_Index + 1
+    
+            Do
+                json_SkipSpaces json_String, json_Index
+                If VBA.Mid$(json_String, json_Index, 1) = "}" Then
+                    json_Index = json_Index + 1
+                    Exit Function
+                ElseIf VBA.Mid$(json_String, json_Index, 1) = "," Then
+                    json_Index = json_Index + 1
+                    json_SkipSpaces json_String, json_Index
+                End If
+    
+                json_Key = json_ParseKey(json_String, json_Index)
+                json_NextChar = json_Peek(json_String, json_Index)
+                If json_NextChar = "[" Or json_NextChar = "{" Then
+                    Set json_ParseObject.Item(json_Key) = json_ParseValue(json_String, json_Index)
+                Else
+                    json_ParseObject.Item(json_Key) = json_ParseValue(json_String, json_Index)
+                End If
+            Loop
+        End If
+    End Function
+    
+    Private Function json_ParseArray(json_String As String, ByRef json_Index As Long) As Collection
+        Set json_ParseArray = New Collection
+    
+        json_SkipSpaces json_String, json_Index
+        If VBA.Mid$(json_String, json_Index, 1) <> "[" Then
+            Err.Raise 10001, "JSONConverter", json_ParseErrorMessage(json_String, json_Index, "Expecting '['")
+        Else
+            json_Index = json_Index + 1
+    
+            Do
+                json_SkipSpaces json_String, json_Index
+                If VBA.Mid$(json_String, json_Index, 1) = "]" Then
+                    json_Index = json_Index + 1
+                    Exit Function
+                ElseIf VBA.Mid$(json_String, json_Index, 1) = "," Then
+                    json_Index = json_Index + 1
+                    json_SkipSpaces json_String, json_Index
+                End If
+    
+                json_ParseArray.Add json_ParseValue(json_String, json_Index)
+            Loop
+        End If
+    End Function
+    
+    Private Function json_ParseValue(json_String As String, ByRef json_Index As Long) As Variant
+        json_SkipSpaces json_String, json_Index
+        Select Case VBA.Mid$(json_String, json_Index, 1)
+        Case "{"
+            Set json_ParseValue = json_ParseObject(json_String, json_Index)
+        Case "["
+            Set json_ParseValue = json_ParseArray(json_String, json_Index)
+        Case """", "'"
+            json_ParseValue = json_ParseString(json_String, json_Index)
+        Case Else
+            If VBA.Mid$(json_String, json_Index, 4) = "true" Then
+                json_ParseValue = True
+                json_Index = json_Index + 4
+            ElseIf VBA.Mid$(json_String, json_Index, 5) = "false" Then
+                json_ParseValue = False
+                json_Index = json_Index + 5
+            ElseIf VBA.Mid$(json_String, json_Index, 4) = "null" Then
+                json_ParseValue = Null
+                json_Index = json_Index + 4
+            ElseIf VBA.InStr("+-0123456789", VBA.Mid$(json_String, json_Index, 1)) Then
+                json_ParseValue = json_ParseNumber(json_String, json_Index)
+            Else
+                Err.Raise 10001, "JSONConverter", json_ParseErrorMessage(json_String, json_Index, "Expecting 'STRING', 'NUMBER', null, true, false, '{', or '['")
+            End If
+        End Select
+    End Function
+    
+    Private Function json_ParseString(json_String As String, ByRef json_Index As Long) As String
+        Dim json_Quote As String
+        Dim json_Char As String
+        Dim json_Code As String
+        Dim json_Buffer As String
+        Dim json_BufferPosition As Long
+        Dim json_BufferLength As Long
+    
+        json_SkipSpaces json_String, json_Index
+    
+        ' Store opening quote to look for matching closing quote
+        json_Quote = VBA.Mid$(json_String, json_Index, 1)
+        json_Index = json_Index + 1
+    
+        Do While json_Index > 0 And json_Index <= Len(json_String)
+            json_Char = VBA.Mid$(json_String, json_Index, 1)
+    
+            Select Case json_Char
+            Case "\"
+                ' Escaped string, \\, or \/
+                json_Index = json_Index + 1
+                json_Char = VBA.Mid$(json_String, json_Index, 1)
+    
+                Select Case json_Char
+                Case """", "\", "/", "'"
+                    json_BufferAppend json_Buffer, json_Char, json_BufferPosition, json_BufferLength
+                    json_Index = json_Index + 1
+                Case "b"
+                    json_BufferAppend json_Buffer, vbBack, json_BufferPosition, json_BufferLength
+                    json_Index = json_Index + 1
+                Case "f"
+                    json_BufferAppend json_Buffer, vbFormFeed, json_BufferPosition, json_BufferLength
+                    json_Index = json_Index + 1
+                Case "n"
+                    json_BufferAppend json_Buffer, vbCrLf, json_BufferPosition, json_BufferLength
+                    json_Index = json_Index + 1
+                Case "r"
+                    json_BufferAppend json_Buffer, vbCr, json_BufferPosition, json_BufferLength
+                    json_Index = json_Index + 1
+                Case "t"
+                    json_BufferAppend json_Buffer, vbTab, json_BufferPosition, json_BufferLength
+                    json_Index = json_Index + 1
+                Case "u"
+                    ' Unicode character escape (e.g. \u00a9 = Copyright)
+                    json_Index = json_Index + 1
+                    json_Code = VBA.Mid$(json_String, json_Index, 4)
+                    json_BufferAppend json_Buffer, VBA.ChrW(VBA.Val("&h" + json_Code)), json_BufferPosition, json_BufferLength
+                    json_Index = json_Index + 4
+                End Select
+            Case json_Quote
+                json_ParseString = json_BufferToString(json_Buffer, json_BufferPosition)
+                json_Index = json_Index + 1
+                Exit Function
+            Case Else
+                json_BufferAppend json_Buffer, json_Char, json_BufferPosition, json_BufferLength
+                json_Index = json_Index + 1
+            End Select
+        Loop
+    End Function
+    
+    Private Function json_ParseNumber(json_String As String, ByRef json_Index As Long) As Variant
+        Dim json_Char As String
+        Dim json_Value As String
+        Dim json_IsLargeNumber As Boolean
+    
+        json_SkipSpaces json_String, json_Index
+    
+        Do While json_Index > 0 And json_Index <= Len(json_String)
+            json_Char = VBA.Mid$(json_String, json_Index, 1)
+    
+            If VBA.InStr("+-0123456789.eE", json_Char) Then
+                ' Unlikely to have massive number, so use simple append rather than buffer here
+                json_Value = json_Value & json_Char
+                json_Index = json_Index + 1
+            Else
+                ' Excel only stores 15 significant digits, so any numbers larger than that are truncated
+                ' This can lead to issues when BIGINT's are used (e.g. for Ids or Credit Cards), as they will be invalid above 15 digits
+                ' See: http://support.microsoft.com/kb/269370
+                '
+                ' Fix: Parse -> String, Convert -> String longer than 15/16 characters containing only numbers and decimal points -> Number
+                ' (decimal doesn't factor into significant digit count, so if present check for 15 digits + decimal = 16)
+                json_IsLargeNumber = IIf(InStr(json_Value, "."), Len(json_Value) >= 17, Len(json_Value) >= 16)
+                If Not JsonOptions.UseDoubleForLargeNumbers And json_IsLargeNumber Then
+                    json_ParseNumber = json_Value
+                Else
+                    ' VBA.Val does not use regional settings, so guard for comma is not needed
+                    json_ParseNumber = VBA.Val(json_Value)
+                End If
+                Exit Function
+            End If
+        Loop
+    End Function
+    
+    Private Function json_ParseKey(json_String As String, ByRef json_Index As Long) As String
+        ' Parse key with single or double quotes
+        If VBA.Mid$(json_String, json_Index, 1) = """" Or VBA.Mid$(json_String, json_Index, 1) = "'" Then
+            json_ParseKey = json_ParseString(json_String, json_Index)
+        ElseIf JsonOptions.AllowUnquotedKeys Then
+            Dim json_Char As String
+            Do While json_Index > 0 And json_Index <= Len(json_String)
+                json_Char = VBA.Mid$(json_String, json_Index, 1)
+                If (json_Char <> " ") And (json_Char <> ":") Then
+                    json_ParseKey = json_ParseKey & json_Char
+                    json_Index = json_Index + 1
+                Else
+                    Exit Do
+                End If
+            Loop
+        Else
+            Err.Raise 10001, "JSONConverter", json_ParseErrorMessage(json_String, json_Index, "Expecting '""' or '''")
+        End If
+    
+        ' Check for colon and skip if present or throw if not present
+        json_SkipSpaces json_String, json_Index
+        If VBA.Mid$(json_String, json_Index, 1) <> ":" Then
+            Err.Raise 10001, "JSONConverter", json_ParseErrorMessage(json_String, json_Index, "Expecting ':'")
+        Else
+            json_Index = json_Index + 1
+        End If
+    End Function
+    
+    Private Function json_IsUndefined(ByVal json_Value As Variant) As Boolean
+        ' Empty / Nothing -> undefined
+        Select Case VBA.VarType(json_Value)
+        Case VBA.vbEmpty
+            json_IsUndefined = True
+        Case VBA.vbObject
+            Select Case VBA.TypeName(json_Value)
+            Case "Empty", "Nothing"
+                json_IsUndefined = True
+            End Select
+        End Select
+    End Function
+    
+    Private Function json_Encode(ByVal json_Text As Variant) As String
+        ' Reference: http://www.ietf.org/rfc/rfc4627.txt
+        ' Escape: ", \, /, backspace, form feed, line feed, carriage return, tab
+        Dim json_Index As Long
+        Dim json_Char As String
+        Dim json_AscCode As Long
+        Dim json_Buffer As String
+        Dim json_BufferPosition As Long
+        Dim json_BufferLength As Long
+    
+        For json_Index = 1 To VBA.Len(json_Text)
+            json_Char = VBA.Mid$(json_Text, json_Index, 1)
+            json_AscCode = VBA.AscW(json_Char)
+    
+            ' When AscW returns a negative number, it returns the twos complement form of that number.
+            ' To convert the twos complement notation into normal binary notation, add 0xFFF to the return result.
+            ' https://support.microsoft.com/en-us/kb/272138
+            If json_AscCode < 0 Then
+                json_AscCode = json_AscCode + 65536
+            End If
+    
+            ' From spec, ", \, and control characters must be escaped (solidus is optional)
+    
+            Select Case json_AscCode
+            Case 34
+                ' " -> 34 -> \"
+                json_Char = "\"""
+            Case 92
+                ' \ -> 92 -> \\
+                json_Char = "\\"
+            Case 47
+                ' / -> 47 -> \/ (optional)
+                If JsonOptions.EscapeSolidus Then
+                    json_Char = "\/"
+                End If
+            Case 8
+                ' backspace -> 8 -> \b
+                json_Char = "\b"
+            Case 12
+                ' form feed -> 12 -> \f
+                json_Char = "\f"
+            Case 10
+                ' line feed -> 10 -> \n
+                json_Char = "\n"
+            Case 13
+                ' carriage return -> 13 -> \r
+                json_Char = "\r"
+            Case 9
+                ' tab -> 9 -> \t
+                json_Char = "\t"
+            Case 0 To 31, 127 To 65535
+                ' Non-ascii characters -> convert to 4-digit hex
+                json_Char = "\u" & VBA.Right$("0000" & VBA.Hex$(json_AscCode), 4)
+            End Select
+    
+            json_BufferAppend json_Buffer, json_Char, json_BufferPosition, json_BufferLength
+        Next json_Index
+    
+        json_Encode = json_BufferToString(json_Buffer, json_BufferPosition)
+    End Function
+    
+    Private Function json_Peek(json_String As String, ByVal json_Index As Long, Optional json_NumberOfCharacters As Long = 1) As String
+        ' "Peek" at the next number of characters without incrementing json_Index (ByVal instead of ByRef)
+        json_SkipSpaces json_String, json_Index
+        json_Peek = VBA.Mid$(json_String, json_Index, json_NumberOfCharacters)
+    End Function
+    
+    Private Sub json_SkipSpaces(json_String As String, ByRef json_Index As Long)
+        ' Increment index to skip over spaces
+        Do While json_Index > 0 And json_Index <= VBA.Len(json_String) And VBA.Mid$(json_String, json_Index, 1) = " "
+            json_Index = json_Index + 1
+        Loop
+    End Sub
+    
+    Private Function json_StringIsLargeNumber(json_String As Variant) As Boolean
+        ' Check if the given string is considered a "large number"
+        ' (See json_ParseNumber)
+    
+        Dim json_Length As Long
+        Dim json_CharIndex As Long
+        json_Length = VBA.Len(json_String)
+    
+        ' Length with be at least 16 characters and assume will be less than 100 characters
+        If json_Length >= 16 And json_Length <= 100 Then
+            Dim json_CharCode As String
+    
+            json_StringIsLargeNumber = True
+    
+            For json_CharIndex = 1 To json_Length
+                json_CharCode = VBA.Asc(VBA.Mid$(json_String, json_CharIndex, 1))
+                Select Case json_CharCode
+                ' Look for .|0-9|E|e
+                Case 46, 48 To 57, 69, 101
+                    ' Continue through characters
+                Case Else
+                    json_StringIsLargeNumber = False
+                    Exit Function
+                End Select
+            Next json_CharIndex
+        End If
+    End Function
+    
+    Private Function json_ParseErrorMessage(json_String As String, ByRef json_Index As Long, ErrorMessage As String)
+        ' Provide detailed parse error message, including details of where and what occurred
+        '
+        ' Example:
+        ' Error parsing JSON:
+        ' {"abcde":True}
+        '          ^
+        ' Expecting 'STRING', 'NUMBER', null, true, false, '{', or '['
+    
+        Dim json_StartIndex As Long
+        Dim json_StopIndex As Long
+    
+        ' Include 10 characters before and after error (if possible)
+        json_StartIndex = json_Index - 10
+        json_StopIndex = json_Index + 10
+        If json_StartIndex <= 0 Then
+            json_StartIndex = 1
+        End If
+        If json_StopIndex > VBA.Len(json_String) Then
+            json_StopIndex = VBA.Len(json_String)
+        End If
+    
+        json_ParseErrorMessage = "Error parsing JSON:" & VBA.vbNewLine & _
+                                    VBA.Mid$(json_String, json_StartIndex, json_StopIndex - json_StartIndex + 1) & VBA.vbNewLine & _
+                                    VBA.Space$(json_Index - json_StartIndex) & "^" & VBA.vbNewLine & _
+                                    ErrorMessage
+    End Function
+    
+    Private Sub json_BufferAppend(ByRef json_Buffer As String, _
+                                    ByRef json_Append As Variant, _
+                                    ByRef json_BufferPosition As Long, _
+                                    ByRef json_BufferLength As Long)
+        ' VBA can be slow to append strings due to allocating a new string for each append
+        ' Instead of using the traditional append, allocate a large empty string and then copy string at append position
+        '
+        ' Example:
+        ' Buffer: "abc  "
+        ' Append: "def"
+        ' Buffer Position: 3
+        ' Buffer Length: 5
+        '
+        ' Buffer position + Append length > Buffer length -> Append chunk of blank space to buffer
+        ' Buffer: "abc       "
+        ' Buffer Length: 10
+        '
+        ' Put "def" into buffer at position 3 (0-based)
+        ' Buffer: "abcdef    "
+        '
+        ' Approach based on cStringBuilder from vbAccelerator
+        ' http://www.vbaccelerator.com/home/VB/Code/Techniques/RunTime_Debug_Tracing/VB6_Tracer_Utility_zip_cStringBuilder_cls.asp
+        '
+        ' and clsStringAppend from Philip Swannell
+        ' https://github.com/VBA-tools/VBA-JSON/pull/82
+    
+        Dim json_AppendLength As Long
+        Dim json_LengthPlusPosition As Long
+    
+        json_AppendLength = VBA.Len(json_Append)
+        json_LengthPlusPosition = json_AppendLength + json_BufferPosition
+    
+        If json_LengthPlusPosition > json_BufferLength Then
+            ' Appending would overflow buffer, add chunk
+            ' (double buffer length or append length, whichever is bigger)
+            Dim json_AddedLength As Long
+            json_AddedLength = IIf(json_AppendLength > json_BufferLength, json_AppendLength, json_BufferLength)
+    
+            json_Buffer = json_Buffer & VBA.Space$(json_AddedLength)
+            json_BufferLength = json_BufferLength + json_AddedLength
+        End If
+    
+        ' Note: Namespacing with VBA.Mid$ doesn't work properly here, throwing compile error:
+        ' Function call on left-hand side of assignment must return Variant or Object
+        Mid$(json_Buffer, json_BufferPosition + 1, json_AppendLength) = CStr(json_Append)
+        json_BufferPosition = json_BufferPosition + json_AppendLength
+    End Sub
+    
+    Private Function json_BufferToString(ByRef json_Buffer As String, ByVal json_BufferPosition As Long) As String
+        If json_BufferPosition > 0 Then
+            json_BufferToString = VBA.Left$(json_Buffer, json_BufferPosition)
+        End If
+    End Function
+    
+    ''
+    ' VBA-UTC v1.0.6
+    ' (c) Tim Hall - https://github.com/VBA-tools/VBA-UtcConverter
+    '
+    ' UTC/ISO 8601 Converter for VBA
+    '
+    ' Errors:
+    ' 10011 - UTC parsing error
+    ' 10012 - UTC conversion error
+    ' 10013 - ISO 8601 parsing error
+    ' 10014 - ISO 8601 conversion error
+    '
+    ' @module UtcConverter
+    ' @author tim.hall.engr@gmail.com
+    ' @license MIT (http://www.opensource.org/licenses/mit-license.php)
+    '' ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ '
+    
+    ' (Declarations moved to top)
+    
+    ' ============================================= '
+    ' Public Methods
+    ' ============================================= '
+    
+    ''
+    ' Parse UTC date to local date
+    '
+    ' @method ParseUtc
+    ' @param {Date} UtcDate
+    ' @return {Date} Local date
+    ' @throws 10011 - UTC parsing error
+    ''
+    Public Function ParseUtc(utc_UtcDate As Date) As Date
+        On Error GoTo utc_ErrorHandling
+    
+    #If Mac Then
+        ParseUtc = utc_ConvertDate(utc_UtcDate)
+    #Else
+        Dim utc_TimeZoneInfo As utc_TIME_ZONE_INFORMATION
+        Dim utc_LocalDate As utc_SYSTEMTIME
+    
+        utc_GetTimeZoneInformation utc_TimeZoneInfo
+        utc_SystemTimeToTzSpecificLocalTime utc_TimeZoneInfo, utc_DateToSystemTime(utc_UtcDate), utc_LocalDate
+    
+        ParseUtc = utc_SystemTimeToDate(utc_LocalDate)
+    #End If
+    
+        Exit Function
+    
+    utc_ErrorHandling:
+        Err.Raise 10011, "UtcConverter.ParseUtc", "UTC parsing error: " & Err.Number & " - " & Err.Description
+    End Function
+    
+    ''
+    ' Convert local date to UTC date
+    '
+    ' @method ConvertToUrc
+    ' @param {Date} utc_LocalDate
+    ' @return {Date} UTC date
+    ' @throws 10012 - UTC conversion error
+    ''
+    Public Function ConvertToUtc(utc_LocalDate As Date) As Date
+        On Error GoTo utc_ErrorHandling
+    
+    #If Mac Then
+        ConvertToUtc = utc_ConvertDate(utc_LocalDate, utc_ConvertToUtc:=True)
+    #Else
+        Dim utc_TimeZoneInfo As utc_TIME_ZONE_INFORMATION
+        Dim utc_UtcDate As utc_SYSTEMTIME
+    
+        utc_GetTimeZoneInformation utc_TimeZoneInfo
+        utc_TzSpecificLocalTimeToSystemTime utc_TimeZoneInfo, utc_DateToSystemTime(utc_LocalDate), utc_UtcDate
+    
+        ConvertToUtc = utc_SystemTimeToDate(utc_UtcDate)
+    #End If
+    
+        Exit Function
+    
+    utc_ErrorHandling:
+        Err.Raise 10012, "UtcConverter.ConvertToUtc", "UTC conversion error: " & Err.Number & " - " & Err.Description
+    End Function
+    
+    ''
+    ' Parse ISO 8601 date string to local date
+    '
+    ' @method ParseIso
+    ' @param {Date} utc_IsoString
+    ' @return {Date} Local date
+    ' @throws 10013 - ISO 8601 parsing error
+    ''
+    Public Function ParseIso(utc_IsoString As String) As Date
+        On Error GoTo utc_ErrorHandling
+    
+        Dim utc_Parts() As String
+        Dim utc_DateParts() As String
+        Dim utc_TimeParts() As String
+        Dim utc_OffsetIndex As Long
+        Dim utc_HasOffset As Boolean
+        Dim utc_NegativeOffset As Boolean
+        Dim utc_OffsetParts() As String
+        Dim utc_Offset As Date
+    
+        utc_Parts = VBA.Split(utc_IsoString, "T")
+        utc_DateParts = VBA.Split(utc_Parts(0), "-")
+        ParseIso = VBA.DateSerial(VBA.CInt(utc_DateParts(0)), VBA.CInt(utc_DateParts(1)), VBA.CInt(utc_DateParts(2)))
+    
+        If UBound(utc_Parts) > 0 Then
+            If VBA.InStr(utc_Parts(1), "Z") Then
+                utc_TimeParts = VBA.Split(VBA.Replace(utc_Parts(1), "Z", ""), ":")
+            Else
+                utc_OffsetIndex = VBA.InStr(1, utc_Parts(1), "+")
+                If utc_OffsetIndex = 0 Then
+                    utc_NegativeOffset = True
+                    utc_OffsetIndex = VBA.InStr(1, utc_Parts(1), "-")
+                End If
+    
+                If utc_OffsetIndex > 0 Then
+                    utc_HasOffset = True
+                    utc_TimeParts = VBA.Split(VBA.Left$(utc_Parts(1), utc_OffsetIndex - 1), ":")
+                    utc_OffsetParts = VBA.Split(VBA.Right$(utc_Parts(1), Len(utc_Parts(1)) - utc_OffsetIndex), ":")
+    
+                    Select Case UBound(utc_OffsetParts)
+                    Case 0
+                        utc_Offset = TimeSerial(VBA.CInt(utc_OffsetParts(0)), 0, 0)
+                    Case 1
+                        utc_Offset = TimeSerial(VBA.CInt(utc_OffsetParts(0)), VBA.CInt(utc_OffsetParts(1)), 0)
+                    Case 2
+                        ' VBA.Val does not use regional settings, use for seconds to avoid decimal/comma issues
+                        utc_Offset = TimeSerial(VBA.CInt(utc_OffsetParts(0)), VBA.CInt(utc_OffsetParts(1)), Int(VBA.Val(utc_OffsetParts(2))))
+                    End Select
+    
+                    If utc_NegativeOffset Then: utc_Offset = -utc_Offset
+                Else
+                    utc_TimeParts = VBA.Split(utc_Parts(1), ":")
+                End If
+            End If
+    
+            Select Case UBound(utc_TimeParts)
+            Case 0
+                ParseIso = ParseIso + VBA.TimeSerial(VBA.CInt(utc_TimeParts(0)), 0, 0)
+            Case 1
+                ParseIso = ParseIso + VBA.TimeSerial(VBA.CInt(utc_TimeParts(0)), VBA.CInt(utc_TimeParts(1)), 0)
+            Case 2
+                ' VBA.Val does not use regional settings, use for seconds to avoid decimal/comma issues
+                ParseIso = ParseIso + VBA.TimeSerial(VBA.CInt(utc_TimeParts(0)), VBA.CInt(utc_TimeParts(1)), Int(VBA.Val(utc_TimeParts(2))))
+            End Select
+    
+            ParseIso = ParseUtc(ParseIso)
+    
+            If utc_HasOffset Then
+                ParseIso = ParseIso - utc_Offset
+            End If
+        End If
+    
+        Exit Function
+    
+    utc_ErrorHandling:
+        Err.Raise 10013, "UtcConverter.ParseIso", "ISO 8601 parsing error for " & utc_IsoString & ": " & Err.Number & " - " & Err.Description
+    End Function
+    
+    ''
+    ' Convert local date to ISO 8601 string
+    '
+    ' @method ConvertToIso
+    ' @param {Date} utc_LocalDate
+    ' @return {Date} ISO 8601 string
+    ' @throws 10014 - ISO 8601 conversion error
+    ''
+    Public Function ConvertToIso(utc_LocalDate As Date) As String
+        On Error GoTo utc_ErrorHandling
+    
+        ConvertToIso = VBA.Format$(ConvertToUtc(utc_LocalDate), "yyyy-mm-ddTHH:mm:ss.000Z")
+    
+        Exit Function
+    
+    utc_ErrorHandling:
+        Err.Raise 10014, "UtcConverter.ConvertToIso", "ISO 8601 conversion error: " & Err.Number & " - " & Err.Description
+    End Function
+    
+    ' ============================================= '
+    ' Private Functions
+    ' ============================================= '
+    
+    #If Mac Then
+    
+    Private Function utc_ConvertDate(utc_Value As Date, Optional utc_ConvertToUtc As Boolean = False) As Date
+        Dim utc_ShellCommand As String
+        Dim utc_Result As utc_ShellResult
+        Dim utc_Parts() As String
+        Dim utc_DateParts() As String
+        Dim utc_TimeParts() As String
+    
+        If utc_ConvertToUtc Then
+            utc_ShellCommand = "date -ur `date -jf '%Y-%m-%d %H:%M:%S' " & _
+                "'" & VBA.Format$(utc_Value, "yyyy-mm-dd HH:mm:ss") & "' " & _
+                " +'%s'` +'%Y-%m-%d %H:%M:%S'"
+        Else
+            utc_ShellCommand = "date -jf '%Y-%m-%d %H:%M:%S %z' " & _
+                "'" & VBA.Format$(utc_Value, "yyyy-mm-dd HH:mm:ss") & " +0000' " & _
+                "+'%Y-%m-%d %H:%M:%S'"
+        End If
+    
+        utc_Result = utc_ExecuteInShell(utc_ShellCommand)
+    
+        If utc_Result.utc_Output = "" Then
+            Err.Raise 10015, "UtcConverter.utc_ConvertDate", "'date' command failed"
+        Else
+            utc_Parts = Split(utc_Result.utc_Output, " ")
+            utc_DateParts = Split(utc_Parts(0), "-")
+            utc_TimeParts = Split(utc_Parts(1), ":")
+    
+            utc_ConvertDate = DateSerial(utc_DateParts(0), utc_DateParts(1), utc_DateParts(2)) + _
+                TimeSerial(utc_TimeParts(0), utc_TimeParts(1), utc_TimeParts(2))
+        End If
+    End Function
+    
+    Private Function utc_ExecuteInShell(utc_ShellCommand As String) As utc_ShellResult
+    #If VBA7 Then
+        Dim utc_File As LongPtr
+        Dim utc_Read As LongPtr
+    #Else
+        Dim utc_File As Long
+        Dim utc_Read As Long
+    #End If
+    
+        Dim utc_Chunk As String
+    
+        On Error GoTo utc_ErrorHandling
+        utc_File = utc_popen(utc_ShellCommand, "r")
+    
+        If utc_File = 0 Then: Exit Function
+    
+        Do While utc_feof(utc_File) = 0
+            utc_Chunk = VBA.Space$(50)
+            utc_Read = CLng(utc_fread(utc_Chunk, 1, Len(utc_Chunk) - 1, utc_File))
+            If utc_Read > 0 Then
+                utc_Chunk = VBA.Left$(utc_Chunk, CLng(utc_Read))
+                utc_ExecuteInShell.utc_Output = utc_ExecuteInShell.utc_Output & utc_Chunk
+            End If
+        Loop
+    
+    utc_ErrorHandling:
+        utc_ExecuteInShell.utc_ExitCode = CLng(utc_pclose(utc_File))
+    End Function
+    
+    #Else
+    
+    Private Function utc_DateToSystemTime(utc_Value As Date) As utc_SYSTEMTIME
+        utc_DateToSystemTime.utc_wYear = VBA.Year(utc_Value)
+        utc_DateToSystemTime.utc_wMonth = VBA.Month(utc_Value)
+        utc_DateToSystemTime.utc_wDay = VBA.Day(utc_Value)
+        utc_DateToSystemTime.utc_wHour = VBA.Hour(utc_Value)
+        utc_DateToSystemTime.utc_wMinute = VBA.Minute(utc_Value)
+        utc_DateToSystemTime.utc_wSecond = VBA.Second(utc_Value)
+        utc_DateToSystemTime.utc_wMilliseconds = 0
+    End Function
+    
+    Private Function utc_SystemTimeToDate(utc_Value As utc_SYSTEMTIME) As Date
+        utc_SystemTimeToDate = DateSerial(utc_Value.utc_wYear, utc_Value.utc_wMonth, utc_Value.utc_wDay) + _
+            TimeSerial(utc_Value.utc_wHour, utc_Value.utc_wMinute, utc_Value.utc_wSecond)
+    End Function
+    
+    #End If
+
+                    </pre>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <div class="container">
+            <a href="https://twitter.com/office_diet" target="_blank">all right not reserved 24時間散歩おじさん
+        </div>
+    </footer>
+    <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=vbs&skin=sons-of-obsidian"></script>
+    <script src="vba.js"></script>
+</body>
+</html>
