@@ -207,9 +207,9 @@
     
     Function ReplaceCellString(ByVal rngCell As Range, ByVal strPlaceHolder As String, ByVal strReplace As String) As Boolean
         
-        rngCell.Value = Replace(rngCell, strPlaceHolder, strReplace)
+        rngCell.Value = Replace(rngCell.Value, strPlaceHolder, strReplace)
         
-'        If InStr(rngCell, strReplace) > 0 Then
+'        If InStr(rngCell.Value, strReplace) > 0 Then
 '            ReplaceCellString = False
 '        Else
 '            ReplaceCellString = True
