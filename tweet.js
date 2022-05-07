@@ -352,6 +352,10 @@ window.addEventListener("load", function(){
     ["2022/03/09", "https://twitter.com/i/events/1502531161633193985", "江東区塩浜⇒木場公園、明大前⇒千歳烏山", "--km", "https://pbs.twimg.com/media/FNW10JmVQAQG6Ex?format=jpg&name=small"], 
     ["2022/03/12", "https://twitter.com/i/events/1502532854269755396", "江東区塩浜⇒木場⇒南大沢⇒多摩丘陵⇒京王堀之内", "--km", "https://pbs.twimg.com/media/FNm5lHcaUAET070?format=jpg&name=small"], 
     ["2022/03/19", "https://twitter.com/i/events/1505002552836132867", "江東区塩浜⇒浅草⇒山谷⇒隅田川", "--km", "https://pbs.twimg.com/media/FOJoB7maIAAljQ5?format=jpg&name=small"], 
+    ["2022/03/26", "https://twitter.com/i/events/1507517123513679872", "江東区塩浜⇒潮見運動公園⇒都営辰巳アパート⇒辰巳桜橋⇒東雲", "--km", "https://pbs.twimg.com/media/FOuBJvKaIAE_OvK?format=jpg&name=small"], 
+    ["2022/04/23", "https://twitter.com/i/events/1517961114537295872", "江東区塩浜⇒木場公園⇒南大沢⇒小山田⇒京王堀之内", "--km", "https://pbs.twimg.com/media/FQ-_GqKakAAqayZ?format=jpg&name=small"], 
+    ["2022/04/25", "https://twitter.com/i/events/1520320470163529729", "上野周辺", "--km", "https://pbs.twimg.com/media/FRLrsd-aQAA4JLR?format=jpg&name=small"], 
+    ["2022/04/30", "https://twitter.com/i/events/1520321650151292928", "江東区塩浜⇒小松川境川親水公園⇒モンチッチ公園⇒四ツ木", "--km", "https://pbs.twimg.com/media/FRjWsJoaQAENRyA?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
