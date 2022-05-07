@@ -4,14 +4,14 @@ vbaCodeDivs.forEach( function(div) {
 
     div.innerHTML = 
         '<div class="button-container">' + 
-            '<div id="copy" class="button">CopyCode</div>' +
-            '<div id="open" class="button">Open</div>' +
+            '<div class="copy button" title="くりっぷぼぉどにこぴぃ">CopyCode</div>' +
+            '<div class="open button" title="ぜんたいおひょおじ">Open</div>' +
         '</div>' + 
         div.innerHTML;
 
     let pre = div.querySelector("pre");
-    let btnCopy = div.querySelector("#copy");
-    let btnOpen = div.querySelector("#open");
+    let btnCopy = div.querySelector(".copy");
+    let btnOpen = div.querySelector(".open");
 
     btnCopy.addEventListener("click", function() {
         navigator.clipboard.writeText(pre.innerText);
@@ -25,5 +25,4 @@ vbaCodeDivs.forEach( function(div) {
             btnOpen.innerText = "Open"
         }
     })
-
 });
