@@ -201,6 +201,29 @@
 
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
+' Replaceのコーディングを簡略化
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function ReplaceCellString(ByVal rngCell As Range, ByVal strPlaceHolder As String, ByVal strReplace As String) As Boolean
+        
+        rngCell.Value = Replace(rngCell, strPlaceHolder, strReplace)
+        
+'        If InStr(rngCell, strReplace) > 0 Then
+'            ReplaceCellString = False
+'        Else
+'            ReplaceCellString = True
+'        End If
+    End Function
+
+    
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
 '　空白なのに、謎の値が入っているセルの中身を削除
 '　※空白なのにCtrl+方向キーで停止しないセル
 '　※SQLや各種マクロのエラーの原因
@@ -308,6 +331,118 @@
         Set objMailItem = Nothing
         
     End Sub                    
+
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' シートやCSVファイルに対してSQLを実行するサンプル
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' ※エクセル内でSQLを実行するためにはIDを文字列にする必要がありそう（？）
+' ※CSVファイルを直接結合する方法は不安なので
+'  「①ブック内に読み込み ⇒ ②キーを文字列に変換 ⇒ ③SQLを実行」
+' 　が安全そうではある。
+' ※エクセル内SQLは「文字列・数値」が混在した場合「列の型を勝手に定義して、不正なデータを消す」
+' 　という仕様があるので、データが消滅していないか？の確認は必須！
+' ※エクセルは「"" or Null」の判別が困難なので、下記方法で判断を行うこと！
+' 　× ⇒ IsNull(カラム名)
+' 　〇 ⇒ カラム名 & '' = ''
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' ファイル自身の各シートに対してSQLを実行する関数
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    '************************************************
+    ' 本エクセルブック内のシートに対してSQL実行
+    '************************************************
+    Function AddDataBySql(ByVal wsDataTable As Worksheet, ByVal strSql As String, Optional ByVal blnRefresh As Boolean = False, Optional ByVal blnOverWrite As Boolean)
+                
+        Dim adoConnection As Object
+        Dim adoRecordset As Object
+        Set adoConnection = AdoConnectThisBook
+        Set adoRecordset = CreateObject("ADODB.Recordset")
+        
+        Const adOpenKeyset = 1
+        Const adLockReadOnly = 1
+
+        adoRecordset.Open strSql, adoConnection, adOpenKeyset, adLockReadOnly
+        
+        With wsDataTable
+            
+            '貼り付け先シート初期化？
+            If blnRefresh = True Then
+                .Rows.Delete
+            End If
+            
+            Dim lngWriteRow As Long
+            
+            '上書きの際は2行目から転記
+            If blnOverWrite = True Then
+                lngWriteRow = 2
+            Else
+                lngWriteRow = GetLastRow(wsDataTable, "A") + 1
+            End If
+            
+            'SQLレコードセットを貼り付け
+            .Cells(lngWriteRow, 1).CopyFromRecordset adoRecordset
+            
+            'ヘッダは毎回再設定
+            .Rows(1).Clear
+            Dim intIndex As Integer
+            For intIndex = 0 To adoRecordset.Fields.Count - 1
+                .Cells(1, intIndex + 1).Value = adoRecordset.Fields(intIndex).Name
+            Next
+        End With
+        
+        'オブジェクト破棄
+        adoRecordset.Close
+        Set adoRecordset = Nothing
+        adoConnection.Close
+        Set adoConnection = Nothing
+        
+    End Function
+
+    '************************************************
+    ' 本エクセルブックにDB接続
+    '************************************************
+    Function AdoConnectThisBook() As Object
+        
+        Dim adoConnection As Object
+        
+        Set adoConnection = CreateObject("ADODB.Connection")
+        adoConnection.Provider = "Microsoft.ACE.OLEDB.12.0"
+        adoConnection.Properties("Extended Properties") = "Excel 12.0;HDR=YES;IMEX=1"
+        adoConnection.Open ThisWorkbook.FullName
+        
+        Set AdoConnectThisBook = adoConnection
+        
+    End Function
+    
+    '************************************************
+    ' CSVファイルが保存されているフォルダにDB接続
+    '************************************************
+    Function AdoConnectCsvFolder(ByVal strCsvFolder As String) As Object
+        
+        Dim adoConnection As Object
+        
+        Set adoConnection = CreateObject("ADODB.Connection")
+        adoConnection.Provider = "Microsoft.ACE.OLEDB.12.0"
+        adoConnection.Properties("Extended Properties") = "text;HDR=YES;FMT=Delimited"
+        adoConnection.Open strCsvFolder
+        
+        Set AdoConnectCsvFolder = adoConnection
+                
+    End Function
 
                     </pre>
                 </div>
