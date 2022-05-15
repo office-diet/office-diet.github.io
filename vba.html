@@ -500,6 +500,48 @@
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
 
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 国土地理院API使用方法備忘録
+' 住所文字列から「経度X」「緯度Y」情報を取得
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function GetPointApi(ByVal strAddress As String) As Variant
+            
+        Dim strAddressEncode As String
+       
+        '住所文字列をURLエンコーディング
+        strAddressEncode = Application.WorksheetFunction.EncodeURL(strAddress)
+        
+        Dim objHttpRequest As Object
+        Set objHttpRequest = CreateObject("MSXML2.XMLHTTP")
+        
+        '国土地理院のAPIを使用
+        With objHttpRequest
+            .Open "GET", "https://msearch.gsi.go.jp/address-search/AddressSearch?q=" & strAddressEncode, False
+            .Send
+            
+            Do While .readyState < 4
+                DoEvents
+            Loop
+            
+            'Json形式でレスポンスが返されます
+            Dim objJson As Object
+            Set objJson = ParseJson(.responseText)
+        End With
+        
+        '「経度X」「緯度Y」の配列を返却
+        GetPointApi = Array(objJson(1)("geometry")("coordinates")(2), objJson(1)("geometry")("coordinates")(1))
+        
+    End Function
+
+
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' 10進数を2進数に変換
@@ -526,13 +568,12 @@
         
         ChangeDecimalToBinary = Int(strDecimal)
         
-    End Function                
+    End Function
 
                     </pre>
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
-
 
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
@@ -1076,6 +1117,520 @@
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
 
+'★★★★★★★★★★★★★★★★★★★★★★★★
+' 標準Module
+'★★★★★★★★★★★★★★★★★★★★★★★★
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+' 
+' NeuralNetworkクラス使用例（多値分類未対応）
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    'Dataシートイメージ
+    'ID |  x1  |  x2  | tflag | pred |
+    ' 1 |  0.1 |  0.5 |   1   |  0.6 |
+    ' 2 |  0.9 |  0.3 |   0   |  0.3 |
+
+    Sub NeuralNetworkTest()
+        
+        '実行時間計測
+        Dim dteStart As Date
+        dteStart = Now
+        
+        'NueralNetworkクラス
+        Dim clsNN As ClassNeuralNetwork
+        Set clsNN = New ClassNeuralNetwork
+        
+        'NueralNetwork設計
+        '入力   　：x1 x2（2値の縦ベクトル）
+        '出力   　：1 　 （2種類分類）
+        'Layer数　：4層　（出力層含む）
+        'Units  　：層のユニット数（最終層は出力数に依存）
+        '学習率 　：
+        Call clsNN.Init(2, 1, 4, 10, 0.001)
+        
+        'NueralNetworkに渡すx（縦ベクトル）
+        Dim x(1 To 2, 1 To 1) As Double
+        
+        '教師データの成否
+        Dim intTeacher As Integer
+        
+        Dim wsData as Worksheet
+        set wsData = Thisworkbook.Worksheets("data")
+        Dim intLoopCount As Integer
+        Dim lngRow As Long
+        
+        
+        '********************************************
+        ' 学習ループ
+        '********************************************
+        For intLoopCount = 1 To 10  'エポック回数
+            For lngRow = 2 To 101   '教師データ数
+                
+                'x1, x2 を縦ベクトル格納（Transeposeでも良いかも？）
+                x(1, 1) = wsData.Cells(lngRow, "B").Value
+                x(2, 1) = wsData.Cells(lngRow, "C").Value
+                
+                '成否（教師データ）
+                '※多値分類未対応
+                intTeacher = wsData.Cells(lngRow, "D").Value
+                
+                '学習
+                Call clsNN.Train(x, intTeacher)
+            Next
+        Next
+        
+        '********************************************
+        ' 予測
+        '********************************************
+        For lngRow = 2 To 201
+            
+            'x1, x2 を縦ベクトル格納（Transeposeでも良いかも？）
+            x(1, 1) = wsData.Cells(lngRow, "B").Value
+            x(2, 1) = wsData.Cells(lngRow, "C").Value
+            
+            '予測
+            wsData.Cells(lngRow, "E").Value = clsNN.Predict(x)
+        Next
+        
+        MsgBox "実行時間：" & Format(Now - dteStart, "hh:mm:ss")
+        
+    End Sub
+
+'★★★★★★★★★★★★★★★★★★★★★★★★
+' ClassNeuralNetwork（ClassModule）
+'★★★★★★★★★★★★★★★★★★★★★★★★
+
+Option Explicit
+
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' クラス内プロパティ
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    'クラス内ので管理するLayerの設定等
+    Dim intInputCount As Integer
+    Dim intOutputCount As Integer
+    Dim intLayerCount As Integer
+    Dim intUnitCount As Integer
+    Dim dblLR As Double
+    
+    'クラス内でLayer・学習・予測を管理する
+    Dim aryNetworks() As Variant
+    Dim intT As Integer
+    Dim dblE As Double
+    Dim dblZ() As Double
+    Dim dblZ_B() As Double
+    
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' クラスの初期設定・Layerの管理を代行
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Public Sub Init(ByVal intInput As Integer, ByVal intOutput As Integer, ByVal intLayer As Integer, ByVal intUnits As Integer, ByVal dblLearningRate As Double)
+        
+        
+        ReDim dblZ(1 To intOutput, 1 To 1) As Double
+        ReDim dblZ_B(1 To intOutput, 1 To 1) As Double
+        
+        intInputCount = intInput
+        intOutputCount = intOutput
+        intLayerCount = intLayer
+        intUnitCount = intUnits
+        dblLR = dblLearningRate
+        
+        ReDim aryNetworks(1 To intLayerCount)
+        
+        Dim intLayerIndex As Integer
+        
+        For intLayerIndex = LBound(aryNetworks) To UBound(aryNetworks)
+            
+            Set aryNetworks(intLayerIndex) = New ClassLayer
+            
+            If intLayerIndex = LBound(aryNetworks) Then
+                Call aryNetworks(intLayerIndex).Init(intInputCount, intUnitCount, "ReLU", dblLearningRate, intLayerIndex)
+            ElseIf intLayerIndex <> UBound(aryNetworks) Then
+                Call aryNetworks(intLayerIndex).Init(intUnitCount, intUnitCount, "ReLU", dblLearningRate, intLayerIndex)
+            Else
+                Call aryNetworks(intLayerIndex).Init(intUnitCount, intOutputCount, "Sigmoid", dblLearningRate, intLayerIndex)
+            End If
+            
+        Next
+        
+    End Sub
+    
+    '********************************************
+    ' 「wx+b=y」の計算を実行
+    '********************************************
+
+    Public Sub Train(ByVal vntX As Variant, ByVal intTeach As Integer)
+        
+        Dim intLayerIndex As Integer
+        Dim vntZ As Variant
+        
+        intT = intTeach
+        vntZ = vntX
+        
+        For intLayerIndex = LBound(aryNetworks) To UBound(aryNetworks)
+            Call aryNetworks(intLayerIndex).Foward(vntZ, vntZ)
+        Next
+        
+        dblZ(1, 1) = vntZ(1, 1)
+        
+        If dblZ(1, 1) <> 0 And dblZ(1, 1) <> 1 Then
+            
+            Call CrossEntropyLoss
+            Call CrossEntropyLossBack
+            
+            Dim vntZ_B As Variant
+            vntZ_B = dblZ_B
+            
+            For intLayerIndex = UBound(aryNetworks) To LBound(aryNetworks) Step -1
+                Call aryNetworks(intLayerIndex).Backward(vntZ_B, vntZ_B)
+            Next
+        Else
+            Debug.Print "error"
+        End If
+        
+    End Sub
+
+
+    Private Sub CrossEntropyLoss()
+        If intT = 1 Then
+            dblE = (-intT) * Log(dblZ(1, 1))
+        Else
+            dblE = -(1 - intT) * Log(1 - dblZ(1, 1))
+        End If
+    End Sub
+    
+    Private Sub CrossEntropyLossBack()
+        On Error Resume Next
+        dblZ_B(1, 1) = (-intT / dblZ(1, 1)) + ((1 - intT) / (1 - dblZ(1, 1)))
+        If Err.Number <> 0 Then
+            dblZ_B(1, 1) = 0
+        End If
+        On Error GoTo 0
+    End Sub
+    
+    Public Function Predict(ByVal vntX As Variant) As Double
+        
+        Dim intLayerIndex As Integer
+        Dim vntZ As Variant
+        
+        vntZ = vntX
+        
+        For intLayerIndex = LBound(aryNetworks) To UBound(aryNetworks)
+            Call aryNetworks(intLayerIndex).Foward(vntZ, vntZ)
+        Next
+        
+        Predict = vntZ(1, 1)
+        
+    End Function
+    
+'★★★★★★★★★★★★★★★★★★★★★★★★
+' ClassLayer（ClassModule）
+'★★★★★★★★★★★★★★★★★★★★★★★★
+
+Option Explicit
+
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' クラス内プロパティ
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    'Layer設計のプロパティ
+    '内部で保持する配列のサイズなどをダイナミックに作成
+    Dim intXRowsCount As Integer
+    Dim intXColumnsCount As Integer
+    Dim intWRowsCount As Integer
+    Dim intWColumnsCount As Integer
+    
+    'アクティベート関数の選択
+    Dim blnReLU As Boolean
+    Dim blnSigmoid As Boolean
+    
+    '学習・予想の計算時に使用するパラメータ
+    Dim dblX() As Double
+    Dim dblW() As Double
+    Dim dblB() As Double
+    Dim dblY() As Double
+    Dim dblZ() As Double
+    
+    '誤差逆伝播計算に使用
+    '計算完了後「_Bなし」の変数を更新する
+    '※逆伝播は値の保存必要ないかも？
+    Dim dblX_B() As Double
+    Dim dblW_B() As Double
+    Dim dblB_B() As Double
+    Dim dblY_B() As Double
+    Dim dblZ_B() As Double
+    
+    '学習率を保持
+    Dim dblLR As Double
+    
+    'パラメータを出力できるようにするなど、
+    '拡張性のためLayerに名前を保持する
+    Dim strLayerName As String
+
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' Layerの初期設定
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Public Sub Init(ByVal intInput As Integer, ByVal intOutput As Integer, ByVal strActivateFucntion As String, ByVal dblLearningRate As Double, ByVal intLayerNumber As Integer)
+        
+        '入力データの体裁
+        intXRowsCount = intInput
+        intXColumnsCount = 1
+        
+        'Wパラメータの体裁
+        intWRowsCount = intOutput
+        intWColumnsCount = intInput
+        
+        'アクティベート関数の選択
+        If strActivateFucntion = "ReLU" Then
+            blnReLU = True
+        ElseIf strActivateFucntion = "Sigmoid" Then
+            blnSigmoid = True
+        End If
+        
+        '学習率の保持
+        dblLR = dblLearningRate
+        
+        strLayerName = "Layer" & intLayerNumber
+        
+        '入出力の体裁によって、配列のサイズを決定
+        ReDim dblX(1 To intXRowsCount, 1 To intXColumnsCount) As Double
+        ReDim dblW(1 To intWRowsCount, 1 To intWColumnsCount) As Double
+        ReDim dblB(1 To intWRowsCount, 1 To 1) As Double
+        ReDim dblY(1 To intWRowsCount, 1 To 1) As Double
+        ReDim dblZ(1 To intWRowsCount, 1 To 1) As Double
+        
+        '誤差逆伝播計算用配列は「_Bなし」と同じサイズ
+        ReDim dblX_B(1 To intXRowsCount, 1 To intXColumnsCount) As Double
+        ReDim dblW_B(1 To intWRowsCount, 1 To intWColumnsCount) As Double
+        ReDim dblB_B(1 To intWRowsCount, 1 To 1) As Double
+        ReDim dblY_B(1 To intWRowsCount, 1 To 1) As Double
+        ReDim dblZ_B(1 To intWRowsCount, 1 To 1) As Double
+        
+        Dim lngRow As Long
+        Dim lngColum As Long
+        
+        'Wをランダム（正規分布）な数値で埋める
+        For lngRow = LBound(dblW, 1) To UBound(dblW, 1)
+            For lngColum = LBound(dblW, 2) To UBound(dblW, 2)
+                Randomize
+                dblW(lngRow, lngColum) = Application.WorksheetFunction.Norm_Inv(Rnd(), 0, 1)
+            Next
+        Next
+        
+        'Bをランダム（正規分布）な数値で埋める
+        For lngRow = LBound(dblB, 1) To UBound(dblB, 1)
+            For lngColum = LBound(dblB, 2) To UBound(dblB, 2)
+                Randomize
+                dblB(lngRow, lngColum) = Application.WorksheetFunction.Norm_Inv(Rnd(), 0, 1)
+            Next
+        Next
+        
+    End Sub
+    
+    
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 学習の前進計算 ＆ 予測時に使用する
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Public Function Foward(ByVal vntX As Variant, ByRef vntZ As Variant) As Double()
+        Call CopyArray(vntX, dblX)
+        Call CalcWXB
+        Call ActivateFunction
+        Call CopyArray(dblZ, vntZ)
+        Foward = dblZ
+    End Function
+    
+    '********************************************
+    ' 「wx+b=y」の計算を実行
+    '********************************************
+    Private Sub CalcWXB()
+        
+        Dim vntWX As Variant
+        vntWX = Application.WorksheetFunction.MMult(dblW, dblX)
+        
+        Dim lngRow As Long
+        For lngRow = 1 To UBound(vntWX, 1)
+            On Error Resume Next
+            dblY(lngRow, 1) = vntWX(lngRow, 1) + dblB(lngRow, 1)
+            If Err.Number <> 0 Then
+                dblY(lngRow, 1) = vntWX(lngRow) + dblB(lngRow, 1)
+            End If
+            On Error GoTo 0
+        Next
+                
+    End Sub
+
+    '********************************************
+    ' 「activate(y)=z」の計算を実行
+    '********************************************
+    Private Sub ActivateFunction()
+        
+        Dim lngRow As Long
+        
+        'ReLU関数によるActivate
+        If blnReLU = True Then
+            For lngRow = 1 To UBound(dblY, 1)
+                dblZ(lngRow, 1) = Application.WorksheetFunction.Max(0, dblY(lngRow, 1))
+            Next
+        
+        'Sigmoid関数によるActivate
+        ElseIf blnSigmoid = True Then
+            For lngRow = 1 To UBound(dblY, 1)
+                dblZ(lngRow, 1) = 1 / (1 + Exp(-dblY(lngRow, 1)))
+            Next
+        End If
+        
+    End Sub
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 誤差逆伝播計算によるパラーメータの更新
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Public Function Backward(ByVal vntZ As Variant, ByRef vntX As Variant) As Double()
+        Call CopyArray(vntZ, dblZ_B)
+        Call ActivateFunctionBack
+        Call CalcWXB_XBack
+        Call CalcWXB_WBack
+        Call CalcWXB_BBack
+        Call CopyArray(dblX_B, vntX)
+        Call UpdateParams
+        Backward = dblX_B
+    End Function
+    
+    '********************************************
+    ' 「activate(y)」の微分計算を実行
+    '********************************************
+    Sub ActivateFunctionBack()
+        
+        Dim lngRow As Long
+        
+        'ReLU関数の逆伝播
+        If blnReLU = True Then
+            For lngRow = 1 To UBound(dblY, 1)
+                If dblY(lngRow, 1) >= 0 Then
+                    dblY_B(lngRow, 1) = dblZ_B(lngRow, 1)
+                Else
+                    dblY_B(lngRow, 1) = 0
+                End If
+            Next
+        
+        'Sigmoid関数の逆伝播
+        ElseIf blnSigmoid = True Then
+            For lngRow = 1 To UBound(dblY_B, 1)
+                dblY_B(lngRow, 1) = dblZ_B(lngRow, 1) * (dblZ(lngRow, 1) * (1 - dblZ(lngRow, 1)))
+            Next
+        End If
+    End Sub
+    
+    '********************************************
+    ' 「wx+b⇒xの微分⇒w」の微分計算を実行
+    '********************************************
+    Private Sub CalcWXB_XBack()
+        
+        Dim lngRow As Long
+        Dim lngColumn As Long
+        
+        '「w ＆ 逆伝播の積和（加算の反復）」を計算するため一度過去データを消去
+        For lngRow = LBound(dblX_B, 1) To UBound(dblX_B, 1)
+            dblX_B(lngRow, 1) = 0
+        Next
+        
+        '「w ＆ 逆伝播」の積和（加算の反復）
+        For lngRow = LBound(dblW, 1) To UBound(dblW, 1)
+            For lngColumn = LBound(dblW, 2) To UBound(dblW, 2)
+                dblX_B(lngColumn, 1) = dblX_B(lngColumn, 1) + dblW(lngRow, lngColumn) * dblY_B(lngRow, 1)
+            Next
+        Next
+    End Sub
+    
+    '********************************************
+    ' 「wx+b⇒wの微分⇒x」の微分計算を実行
+    '********************************************
+    Private Sub CalcWXB_WBack()
+        
+        Dim lngRow As Long
+        Dim lngColumn As Long
+        
+        '「x ＆ 逆伝播」の積和
+        For lngRow = LBound(dblW_B, 1) To UBound(dblW_B, 1)
+            For lngColumn = LBound(dblW_B, 2) To UBound(dblW_B, 2)
+                dblW_B(lngRow, lngColumn) = dblX(lngColumn, 1) * dblY_B(lngRow, 1)
+            Next
+        Next
+    End Sub
+    
+    '********************************************
+    ' 「wx+b⇒bの微分⇒1」の微分計算を実行
+    '********************************************
+    Private Sub CalcWXB_BBack()
+        Call CopyArray(dblY_B, dblB_B)
+    End Sub
+    
+    '********************************************
+    ' パラメータの更新
+    ' 「新パラメータ = 旧パラメータ - 学習率 * 各パラメータの逆伝播値」
+    '********************************************
+    Private Sub UpdateParams()
+        Dim lngRow As Long
+        Dim lngColumn As Long
+        
+        'w = w - LearningRate * w_b
+        For lngRow = LBound(dblW_B, 1) To UBound(dblW_B, 1)
+            For lngColumn = LBound(dblW_B, 2) To UBound(dblW_B, 2)
+                dblW(lngRow, lngColumn) = dblW(lngRow, lngColumn) - dblW_B(lngRow, lngColumn) * dblLR
+            Next
+        Next
+        
+        'b = b - LearningRate * b_b
+        For lngRow = LBound(dblB_B, 1) To UBound(dblB_B, 1)
+            For lngColumn = LBound(dblB_B, 2) To UBound(dblB_B, 2)
+                dblB(lngRow, lngColumn) = dblB(lngRow, lngColumn) - dblB_B(lngRow, lngColumn) * dblLR
+            Next
+        Next
+            
+    End Sub
+
+    '********************************************
+    ' 配列のコピー関数※２元配列限定
+    '********************************************
+    Private Sub CopyArray(ByVal vntFrom As Variant, ByRef vntTo As Variant)
+        
+        Dim lngRow As Long
+        Dim lngColumn As Long
+        
+        '配列の形を一致させる
+        ReDim vntTo(LBound(vntFrom, 1) To UBound(vntFrom, 1), LBound(vntFrom, 2) To UBound(vntFrom, 2))
+        
+        '値をコピー
+        For lngRow = 1 To UBound(vntFrom, 1)
+            For lngColumn = 1 To UBound(vntFrom, 2)
+                vntTo(lngRow, lngColumn) = vntFrom(lngRow, lngColumn)
+            Next
+        Next
+        
+    End Sub
+
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 '　JsonConverterの環境依存を解消
