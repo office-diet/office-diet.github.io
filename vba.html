@@ -103,13 +103,13 @@
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
-
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' VLOOKUP関数をラップ・機能拡張
 '
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-
+    
     '文字列・数値の不一致による検索失敗・エラーを回避
     Function VlookUp(ByVal vntKey As Variant, ByVal rngTable As Range, lngColumn As Long) As Variant
         
@@ -145,18 +145,18 @@
         VlookUp = ""
         
     End Function
-
+    
                     </pre>
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
-
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' MATCH関数をラップ・機能拡張（検索に活用）
 '
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-
+    
     '「Match（エクセル関数）」の拡張
     '※文字列・数値の不一致による検索失敗・エラーを回避
     Function Match(ByVal vntSearchKey As Variant, ByVal rngSearchRange As Range) As Long
@@ -198,7 +198,7 @@
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
-
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' Replaceのコーディングを簡略化
@@ -215,13 +215,13 @@
 '            ReplaceCellString = True
 '        End If
     End Function
-
+    
     
                     </pre>
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
-
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 '　空白なのに、謎の値が入っているセルの中身を削除
@@ -248,7 +248,7 @@
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
-
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' Keyとなるコードに【数値】【文字列】が混在した場合の補助関数
@@ -270,12 +270,12 @@
     Function RangeNumberToText(rng As Range)
         rng.TextToColumns FieldInfo:=Array(1, xlTextFormat)
     End Function
-
+    
                     </pre>
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
-
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 '　OutlookMail操作
@@ -292,7 +292,7 @@
         Body As String
         HtmlBody As String
     End Type
-
+    
     '構造体でデータを受け取り、メール作成・保存を行う
     Sub MakeAndSaveMail(typMailSettings As MailSettings)
         
@@ -331,12 +331,12 @@
         Set objMailItem = Nothing
         
     End Sub                    
-
+    
                     </pre>
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
-
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' シートやCSVファイルに対してSQLを実行するサンプル
@@ -355,7 +355,7 @@
 '
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
     
-
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' ファイル自身の各シートに対してSQLを実行する関数
@@ -374,7 +374,7 @@
         
         Const adOpenKeyset = 1
         Const adLockReadOnly = 1
-
+        
         adoRecordset.Open strSql, adoConnection, adOpenKeyset, adLockReadOnly
         
         With wsDataTable
@@ -411,7 +411,7 @@
         Set adoConnection = Nothing
         
     End Function
-
+    
     '************************************************
     ' 本エクセルブックにDB接続
     '************************************************
@@ -443,12 +443,12 @@
         Set AdoConnectCsvFolder = adoConnection
                 
     End Function
-
+    
                     </pre>
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
-
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 '　WebAPIを使用したスクレイピング・クローリング備忘録
@@ -494,12 +494,12 @@
         Set objHtmlDoc = Nothing
         
     End Sub
-
+    
                     </pre>
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
-
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' 国土地理院API使用方法備忘録
@@ -535,21 +535,20 @@
         GetPointApi = Array(objJson(1)("geometry")("coordinates")(2), objJson(1)("geometry")("coordinates")(1))
         
     End Function
-
-
+    
                     </pre>
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
-
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' 10進数を2進数に変換
 '
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-
+    
     Function ChangeDecimalToBinary(ByVal lngOriginNumber As Long, Optional ByVal intBaseNumber As Integer = 2) As Long
-
+    
         Dim strDecimal As String
         Dim lngDividedNumber As Long
         Dim lngMod As Long
@@ -569,12 +568,12 @@
         ChangeDecimalToBinary = Int(strDecimal)
         
     End Function
-
+    
                     </pre>
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
-
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' 文字列をベクトル化してあいまい検索（未完成）
@@ -612,7 +611,7 @@
         MsgBox FuzzySearch("山田 花子（旧姓：佐藤）", dctStaffName, dctWordToVec)(0)
         
     End Sub
-
+    
     
     '******************************************************
     ' セル範囲から文字列を収集しベクトルを生成し
@@ -793,7 +792,7 @@
         '********************************
         Const dblDiffPenalty As Double = 2  '完全不一致のペナルティ（乗数）
         Const dblSameReward As Double = 0.5 '部分完全一致の報酬（倍）
-
+    
         
         For lngIndex = 0 To dctWords.Count - 1
             
@@ -834,18 +833,18 @@
         FuzzySearch = Array(strResultWord, lngResultIndex)
         
     End Function
-
+    
                     </pre>
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
-
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 '　数列を生成
 '
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-
+    
     Function MakePermutation(ByVal intNumberCount As Integer, ByVal intPickupCount As Integer, Optional ByVal aryReplaceNumbers As Variant) As Variant
         
         Dim lngPatternCount As Long
@@ -924,12 +923,12 @@
         MakePermutation = aryNumbers
         
     End Function
-
+    
                     </pre>
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
-
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 '　クラスタリング（K-Means）練習備忘録
@@ -1045,18 +1044,18 @@
         GetDistance = Sqr(dblAnswer)
         
     End Function
-
+    
                     </pre>
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
-
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 '　マクロ高速化クラス（画面描画・再計算・警告表示停止・復旧）
 '
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-
+    
     '*************************************************
     ' インスタンス作成時点で画面処理等を停止する
     '*************************************************
@@ -1070,7 +1069,7 @@
         End With
         
     End Sub
-
+    
     '*************************************************
     ' インスタンスが破棄されたら自動でデフォルトに復旧
     '*************************************************
@@ -1085,7 +1084,7 @@
         End With
     
     End Sub
-
+    
     '*************************************************
     ' 設定を個別に指定できる
     '*************************************************
@@ -1098,7 +1097,7 @@
         Application.EnableEvents = intEvent
         
     End Sub
-
+    
     '*************************************************
     ' ステータスバーへの進捗・メッセージ表示
     '*************************************************
@@ -1111,12 +1110,12 @@
         End If
         
     End Sub
-
+    
                     </pre>
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
-
+    
 '★★★★★★★★★★★★★★★★★★★★★★★★
 ' 標準Module
 '★★★★★★★★★★★★★★★★★★★★★★★★
@@ -1130,7 +1129,7 @@
     'ID |  x1  |  x2  | tflag | pred |
     ' 1 |  0.1 |  0.5 |   1   |  0.6 |
     ' 2 |  0.9 |  0.3 |   0   |  0.3 |
-
+    
     Sub NeuralNetworkTest()
         
         '実行時間計測
@@ -1196,13 +1195,13 @@
         MsgBox "実行時間：" & Format(Now - dteStart, "hh:mm:ss")
         
     End Sub
-
+    
 '★★★★★★★★★★★★★★★★★★★★★★★★
 ' ClassNeuralNetwork（ClassModule）
 '★★★★★★★★★★★★★★★★★★★★★★★★
-
+    
 Option Explicit
-
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' クラス内プロパティ
@@ -1265,7 +1264,7 @@ Option Explicit
     '********************************************
     ' 「wx+b=y」の計算を実行
     '********************************************
-
+    
     Public Sub Train(ByVal vntX As Variant, ByVal intTeach As Integer)
         
         Dim intLayerIndex As Integer
@@ -1296,8 +1295,8 @@ Option Explicit
         End If
         
     End Sub
-
-
+    
+    
     Private Sub CrossEntropyLoss()
         If intT = 1 Then
             dblE = (-intT) * Log(dblZ(1, 1))
@@ -1333,9 +1332,9 @@ Option Explicit
 '★★★★★★★★★★★★★★★★★★★★★★★★
 ' ClassLayer（ClassModule）
 '★★★★★★★★★★★★★★★★★★★★★★★★
-
+    
 Option Explicit
-
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' クラス内プロパティ
@@ -1375,7 +1374,7 @@ Option Explicit
     'パラメータを出力できるようにするなど、
     '拡張性のためLayerに名前を保持する
     Dim strLayerName As String
-
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' Layerの初期設定
@@ -1474,7 +1473,7 @@ Option Explicit
         Next
                 
     End Sub
-
+    
     '********************************************
     ' 「activate(y)=z」の計算を実行
     '********************************************
@@ -1606,7 +1605,7 @@ Option Explicit
         Next
             
     End Sub
-
+    
     '********************************************
     ' 配列のコピー関数※２元配列限定
     '********************************************
@@ -1626,11 +1625,12 @@ Option Explicit
         Next
         
     End Sub
-
+    
                     </pre>
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 '　JsonConverterの環境依存を解消
