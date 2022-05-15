@@ -27,25 +27,25 @@
             <div class="code-body">
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
-
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' 最終行・列を取得
 '
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-
+    
     Function GetLastRow(ByVal ws As Worksheet, ByVal strColumn As String) As Long
-
+        
         GetLastRow = ws.Cells(ws.Rows.Count, strColumn).End(xlUp).Row
-
+        
     End Function
-
+    
     Function GetLastColumn(ByVal ws As Worksheet, ByVal lngRow As Long) As Long
-
+        
         GetLastColumn = ws.Cells(lngRow, ws.Columns.Count).End(xlToLeft).Column
-
+        
     End Function
-
+    
                     </pre>
                 </div>
                 <div class="vba-code">
@@ -98,7 +98,7 @@
         MaxAbs = vntMax
         
     End Function
-
+    
                     </pre>
                 </div>
                 <div class="vba-code">
