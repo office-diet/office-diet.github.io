@@ -1630,7 +1630,67 @@ Option Explicit
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
+                        
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' ユニークな文字列（Key）を収集(KeyとValueの区別も可能)
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
     
+    Function CollectUnique(ByVal rngKeyCells As Range, Optional ByVal rngValueCells As Range) As Object
+        
+        '値範囲が未指定だった場合、Key範囲を値範囲とみなす
+        If rngValueCells Is Nothing Then
+            Set rngValueCells = rngKeyCells
+        End If
+        
+        'Dictionaryを生成
+        Dim dctUnique As Object
+        Set dctUnique = CreateObject("Scripting.Dictionary")
+        
+        '行範囲・列範囲料対応
+        Dim lngRow As Long
+        Dim lngColumn As Long
+        
+        For lngRow = LBound(rngKeyCells.Value, 1) To UBound(rngKeyCells.Value, 1)
+            For lngColumn = LBound(rngKeyCells.Value, 2) To UBound(rngKeyCells.Value, 2)
+                
+                '重複確認を行いながら、UniqueなKeyを収集
+                If dctUnique.exists(rngKeyCells.Cells(lngRow, lngColumn).Value) = False And rngKeyCells.Cells(lngRow, lngColumn).Value <> "" Then
+                    dctUnique.Add rngKeyCells.Cells(lngRow, lngColumn).Value, rngValueCells.Cells(lngRow, lngColumn).Value
+                End If
+            Next
+        Next
+        
+        Set CollectUnique = dctUnique
+        
+    End Function
+                        
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+                        
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 文章中に指定した文字列が出現する回数を数える
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function CountString(ByVal strOrigin As String, ByVal strSearchKey As String) As Integer
+        
+        Dim strReplace As String
+        
+        strReplace = Replace(strOrigin, strSearchKey, "")
+        CountString = (Len(strOrigin) - Len(strReplace)) / Len(strSearchKey)
+        
+    End Function
+
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+                        
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 '　JsonConverterの環境依存を解消
