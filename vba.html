@@ -201,6 +201,42 @@
     
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
+' 指定したセル範囲の完全一致を確認
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function CompareRange(ByVal rngAnwer As Range, ByVal rngCorrect As Range) As Boolean
+        
+        Dim lngRow As Long
+        Dim lngColumn As Long
+        
+        '行数・列数の一致確認
+        If rngAnwer.Rows.Count <> rngCorrect.Rows.Count Or rngAnwer.Columns.Count <> rngCorrect.Columns.Count Then
+            CompareRange = False
+            Exit Function
+        End If
+        
+        '指定範囲内の同位置セルの一致を確認
+        For lngRow = 1 To rngAnwer.Rows.Count
+            For lngColumn = 1 To rngAnwer.Columns.Count
+                If rngAnwer.Cells(lngRow, lngColumn).Value <> rngCorrect.Cells(lngRow, lngColumn).Value Then
+                    CompareRange = False
+                    Exit Function
+                End If
+            Next
+        Next
+        
+        CompareRange = True
+    
+    End Function
+    
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
 ' Replaceのコーディングを簡略化
 '
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
