@@ -213,7 +213,7 @@
     Const intLowerOnly As Integer = 5
     Const intNumberOnly As Integer = 6
     
-    Function MakeRandomString(ByVal intStringLength As Integer, Optional ByVal intType As Integer) As String
+    Function MakeRandomString(ByVal intStringLength As Integer, Optional ByVal intType As Integer = 0) As String
         
         '元となる文字
         Const strUpperAlphabets As String = "A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,U,R,T,U,V,W,X,Y,Z"
@@ -225,8 +225,6 @@
         
         '使用する文字種類の分岐
         Select Case intType
-            Case intAllChar
-                aryCharacters = Split(strUpperAlphabets & "," & strLowerAlphabets & "," & strNumbers, ",")
             Case intAlphabetsOnly
                 aryCharacters = Split(strUpperAlphabets & "," & strLowerAlphabets, ",")
             Case intUpperAlphabetsOnly
@@ -239,6 +237,8 @@
                 aryCharacters = Split(strLowerAlphabets & "," & strNumbers, ",")
             Case intNumberOnly
                 aryCharacters = Split(strNumbers, ",")
+            Case Else
+                aryCharacters = Split(strUpperAlphabets & "," & strLowerAlphabets & "," & strNumbers, ",")
         End Select
         
         Dim strResult As String
