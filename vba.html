@@ -199,6 +199,68 @@
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
     
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' ランダム・無意味な文字列を生成
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+        
+    Const intAllChar As Integer = 0
+    Const intAlphabetsOnly As Integer = 1
+    Const intUpperAlphabetsOnly As Integer = 2
+    Const intLowerAlphabetsOnly As Integer = 3
+    Const intUpperOnly As Integer = 4
+    Const intLowerOnly As Integer = 5
+    Const intNumberOnly As Integer = 6
+    
+    Function MakeRandomString(ByVal intStringLength As Integer, Optional ByVal intType As Integer) As String
+        
+        '元となる文字
+        Const strUpperAlphabets As String = "A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,U,R,T,U,V,W,X,Y,Z"
+        Const strLowerAlphabets As String = "a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z"
+        Const strNumbers As String = "0,1,2,3,4,5,6,7,8,9"
+        
+        '文字を分割し格納する配列
+        Dim aryCharacters As Variant
+        
+        '使用する文字種類の分岐
+        Select Case intType
+            Case intAllChar
+                aryCharacters = Split(strUpperAlphabets & "," & strLowerAlphabets & "," & strNumbers, ",")
+            Case intAlphabetsOnly
+                aryCharacters = Split(strUpperAlphabets & "," & strLowerAlphabets, ",")
+            Case intUpperAlphabetsOnly
+                aryCharacters = Split(strUpperAlphabets, ",")
+            Case intLowerAlphabetsOnly
+                aryCharacters = Split(strLowerAlphabets, ",")
+            Case intUpperOnly
+                aryCharacters = Split(strUpperAlphabets & "," & strNumbers, ",")
+            Case intLowerOnly
+                aryCharacters = Split(strLowerAlphabets & "," & strNumbers, ",")
+            Case intNumberOnly
+                aryCharacters = Split(strNumbers, ",")
+        End Select
+        
+        Dim strResult As String
+        Dim intCharacterCount As Integer
+        Dim intRandomIndex As Integer
+        
+        '配列からランダムに文字を取得する
+        For intCharacterCount = 1 To intStringLength
+            Randomize
+            intRandomIndex = Application.WorksheetFunction.RandBetween(LBound(aryCharacters), UBound(aryCharacters))
+            strResult = strResult + aryCharacters(intRandomIndex)
+        Next
+        
+        '生成されたランダム文字列を返却
+        MakeRandomString = strResult
+    End Function
+    
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' 指定したセル範囲の完全一致を確認
@@ -245,6 +307,7 @@
         
         rngCell.Value = Replace(rngCell.Value, strPlaceHolder, strReplace)
         
+'        '置換が実行されたか否か返却
 '        If InStr(rngCell.Value, strReplace) > 0 Then
 '            ReplaceCellString = False
 '        Else
