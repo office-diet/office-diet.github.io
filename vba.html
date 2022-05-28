@@ -1784,7 +1784,1378 @@ Option Explicit
         Next
         
     End Sub
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
     
+'★★★★★★★★★★★★★★★★★★★★★★★★
+' 標準モジュール
+'★★★★★★★★★★★★★★★★★★★★★★★★
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' ConvolutionNeuralNetwork（予測に失敗・・・勉強中。）
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+        
+    Sub CNN_TEST()
+        
+        Dim wsTrain As Worksheet
+        Set wsTrain = ThisWorkbook.Worksheets("data_train")
+        
+        Dim intTeacher() As Integer
+        Dim dblImage() As Double
+        
+        
+        '********************************************
+        ' CNN　学習率0.0001
+        ' Convolution intpu:1 output:4
+        ' Maxpooling
+        ' Convolution intpu:4 output:4
+        ' Maxpooling
+        ' Flatten
+        ' Dense（ReLU）param:100
+        ' Dense（ReLU）param:100
+        ' Dense（SoftMax）output:10
+        '********************************************
+        Dim clsCNN As ClassCNN
+        Set clsCNN = New ClassCNN
+        Call clsCNN.Init(1, 2, 3, 4, 100, 10, 3, 0.0001)
+        
+        Dim lngRow As Long
+        Dim lngEpoch As Long
+        
+        '学習
+        For lngEpoch = 1 To 2
+            For lngRow = 2 To 1001
+                
+                'エクセルシート上の行に変換した画像データを行列化
+                ReDim intTeacher(1 To 10, 1 To 1)
+                intTeacher(wsTrain.Range("B" & lngRow).Value + 1, 1) = 1
+                Call FlatToSquare(wsTrain.Range("C" & lngRow & ":GP" & lngRow), dblImage)
+                
+                '学習
+                Call clsCNN.Train(dblImage, intTeacher)
+            Next
+        Next
+        
+        Dim intGood As Integer
+        Dim intBad As Integer
+        
+        For lngRow = 1002 To 2002
+                        
+            '予測と正解を表示
+            Call FlatToSquare(wsTrain.Range("C" & lngRow & ":GP" & lngRow), dblImage)
+            Debug.Print clsCNN.Predict(dblImage), wsTrain.Range("B" & lngRow).Value
+            
+            '成否を数える
+            If clsCNN.Predict(dblImage) = wsTrain.Range("B" & lngRow).Value Then
+                intGood = intGood + 1
+            Else
+                intBad = intBad + 1
+            End If
+        Next
+        
+        '成否の結果（最大15％程度・・・）
+        Debug.Print intGood, intBad
+        
+        End Sub
+    
+        
+    '********************************************
+    ' 行に変換した画像を行列に復元※正方形限定
+    '********************************************
+        Function FlatToSquare(ByVal rngRow As Range, ByRef dblImage() As Double) As Double()
+        
+        Dim lngArrayRow As Long
+        Dim lngArrayColumn As Long
+        
+        ReDim dblImage(1 To 1, 1 To Sqr(rngRow.Columns.Count), 1 To Sqr(rngRow.Columns.Count))
+        
+        Dim lngIndex As Long
+        
+        For lngArrayRow = 1 To Sqr(rngRow.Columns.Count)
+            For lngArrayColumn = 1 To Sqr(rngRow.Columns.Count)
+                lngIndex = lngIndex + 1
+                dblImage(1, lngArrayRow, lngArrayColumn) = rngRow.Cells(1, lngIndex) / 255
+            Next
+        Next
+        
+        End Function
+    
+    '********************************************
+    ' 配列のコピー関数（Double限定）
+    '********************************************
+    Sub CopyArray(ByRef dblFrom() As Double, ByRef dblTo() As Double)
+        
+        Dim intDummy As Integer
+        Dim intDimensionCheck As Integer
+        
+        On Error Resume Next
+        Do While True
+            intDimensionCheck = intDimensionCheck + 1
+            intDummy = UBound(dblFrom(), intDimensionCheck)
+            If Err.Number <> 0 Then
+                Exit Do
+            End If
+        Loop
+        On Error GoTo 0
+        
+        Dim intLayer As Integer
+        Dim intRow As Integer
+        Dim intColumn As Integer
+        
+        Dim intLayerDimension
+        Dim intRowDimension
+        Dim intColumnDimension
+        
+        '1次元配列（行配列）
+        If intDimensionCheck = 2 Then
+        
+            '配列の形を一致させる
+            intColumnDimension = 1
+            ReDim dblTo(LBound(dblFrom, intColumnDimension) To UBound(dblFrom, intColumnDimension))
+            
+            '値をコピー
+            For intColumn = LBound(dblFrom, intColumnDimension) To UBound(dblFrom, intColumnDimension)
+                dblTo(intColumn) = dblFrom(intColumn)
+            Next
+            
+        '2次元配列（行列配列）
+        ElseIf intDimensionCheck = 3 Then
+        
+            '配列の形を一致させる
+            intRowDimension = 1
+            intColumnDimension = 2
+            ReDim dblTo(LBound(dblFrom, intRowDimension) To UBound(dblFrom, intRowDimension), _
+                        LBound(dblFrom, intColumnDimension) To UBound(dblFrom, intColumnDimension))
+            
+            '値をコピー
+            For intRow = LBound(dblFrom, intRowDimension) To UBound(dblFrom, intRowDimension)
+                For intColumn = LBound(dblFrom, intColumnDimension) To UBound(dblFrom, intColumnDimension)
+                    dblTo(intRow, intColumn) = dblFrom(intRow, intColumn)
+                Next
+            Next
+        
+        '3次元配列（層行列配列）
+        ElseIf intDimensionCheck = 4 Then
+                        
+            '配列の形を一致させる
+            intLayerDimension = 1
+            intRowDimension = 2
+            intColumnDimension = 3
+            ReDim dblTo(LBound(dblFrom, intLayerDimension) To UBound(dblFrom, intLayerDimension), _
+                        LBound(dblFrom, intRowDimension) To UBound(dblFrom, intRowDimension), _
+                        LBound(dblFrom, intColumnDimension) To UBound(dblFrom, intColumnDimension))
+            
+            '値をコピー
+            For intLayer = LBound(dblFrom, intLayerDimension) To UBound(dblFrom, intLayerDimension)
+                For intRow = LBound(dblFrom, intRowDimension) To UBound(dblFrom, intRowDimension)
+                    For intColumn = LBound(dblFrom, intColumnDimension) To UBound(dblFrom, intColumnDimension)
+                        dblTo(intLayer, intRow, intColumn) = dblFrom(intLayer, intRow, intColumn)
+                    Next
+                Next
+            Next
+        End If
+        
+    End Sub
+
+    '********************************************
+    ' 行列積（Double限定）
+    '********************************************
+    Function Dot(ByRef dblW() As Double, ByRef dblX() As Double) As Variant
+        
+        Dim intArrayRow As Integer
+        Dim intArrayColumn As Integer
+        
+        Dim dblWX() As Double
+        ReDim dblWX(1 To UBound(dblW, 1), 1 To 1)
+        
+        For intArrayRow = LBound(dblW, 1) To UBound(dblW, 1)
+            For intArrayColumn = LBound(dblW, 2) To UBound(dblW, 2)
+                
+                dblWX(intArrayRow, 1) = dblWX(intArrayRow, 1) + _
+                    dblW(intArrayRow, intArrayColumn) * dblX(intArrayColumn, 1)
+                
+            Next
+        Next
+        
+        Dot = dblWX
+        
+    End Function
+    
+'★★★★★★★★★★★★★★★★★★★★★★★★
+' ClassCNN（ClassModule）
+'★★★★★★★★★★★★★★★★★★★★★★★★
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' クラス内プロパティ
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    'クラス内ので管理するLayerの設定等
+    Dim intInputCount As Integer
+    Dim intOutputCount As Integer
+    Dim intLayerCount As Integer
+    Dim intUnitCount As Integer
+    Dim dblLR As Double
+    
+    'クラス内でLayer・学習・予測を管理する
+    Dim aryNetworks() As Variant
+    Dim intT() As Integer
+    Dim dblE As Double
+    Dim dblZ() As Double
+    Dim dblZ_B() As Double
+    Dim dblP() As Double
+    
+    Dim clsConvolution() As ClassConvolution
+    Dim clsFlatten As ClassFlatten
+    Dim clsDense() As ClassLayer
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' クラスの初期設定・Layerの管理を代行
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Sub Init(ByVal intInputLayerCount As Integer, ByVal intConvolutionLayerCount As Integer, ByVal intDenseLayerCount As Integer, _
+                ByVal intConvolutionOutputCount As Integer, intDenseParamCount As Integer, ByVal intOutputCount As Integer, _
+                ByVal intKernelSize As Integer, ByVal dblLearningRate As Double)
+        
+        ReDim clsConvolution(1 To intConvolutionLayerCount)
+        ReDim clsDense(1 To intDenseLayerCount)
+        
+        Dim intIndex As Integer
+        
+        For intIndex = 1 To intConvolutionLayerCount
+            Set clsConvolution(intIndex) = New ClassConvolution
+            
+            If intIndex = 1 Then
+                Call clsConvolution(intIndex).Init(intInputLayerCount, intConvolutionOutputCount, intKernelSize, dblLearningRate)
+            Else
+                Call clsConvolution(intIndex).Init(intConvolutionOutputCount, intConvolutionOutputCount, intKernelSize, dblLearningRate)
+            End If
+        Next
+        
+        Set clsFlatten = New ClassFlatten
+        
+        For intIndex = 1 To intDenseLayerCount
+            Set clsDense(intIndex) = New ClassLayer
+            
+            If intIndex = 1 Then
+                Call clsDense(intIndex).Init(16, intDenseParamCount, "ReLU", dblLearningRate, intIndex)
+            ElseIf intIndex = intDenseLayerCount Then
+                Call clsDense(intIndex).Init(intDenseParamCount, intOutputCount, "SoftMax", dblLearningRate, intIndex)
+            Else
+                Call clsDense(intIndex).Init(intDenseParamCount, intDenseParamCount, "ReLU", dblLearningRate, intIndex)
+            End If
+        Next
+        
+        ReDim intT(1 To intOutputCount, 1 To 1)
+        
+    End Sub
+
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 学習・予測に使用する陣伝播計算
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Sub Train(ByRef dblX() As Double, ByRef intTeacher() As Integer)
+        
+        Call CopyArray(dblX, dblZ)
+        Dim intIndex As Integer
+        
+        '教師データをコピー
+        For intIndex = LBound(intTeacher) To UBound(intTeacher)
+            intT(intIndex, 1) = intTeacher(intIndex, 1)
+        Next
+        
+        'Convolution層の順伝播
+        For intIndex = 1 To UBound(clsConvolution)
+            Call clsConvolution(intIndex).Forward(dblZ, dblZ)
+        Next
+        
+        '平面化（縦ベクトル）
+        Call clsFlatten.Flatten(dblZ, dblZ)
+        
+        '全結合層の順伝播
+        For intIndex = 1 To UBound(clsDense)
+            Call clsDense(intIndex).Forward(dblZ, dblZ)
+        Next
+        
+        '目的関数
+        Call CalcError
+        
+        '全結合層の逆伝播
+        For intIndex = UBound(clsDense) To 1 Step -1
+            Call clsDense(intIndex).Backward(dblZ_B, dblZ_B)
+        Next
+        
+        '平面の行列化（正方形）
+        Call clsFlatten.FlattenBack(dblZ_B, dblZ_B)
+        
+        'Convolution層の逆伝播
+        For intIndex = UBound(clsConvolution) To 1 Step -1
+            Call clsConvolution(intIndex).Backward(dblZ_B, dblZ_B)
+        Next
+        
+    End Sub
+    
+    '目的関数＆逆伝播初期数値生成
+    Private Function CalcError() As Double
+        
+        ReDim dblZ_B(LBound(dblZ) To UBound(dblZ), 1 To 1)
+        
+        Dim dblError As Double
+        Dim intArrayRow As Integer
+        
+        For intArrayRow = LBound(dblZ) To UBound(dblZ)
+            
+            dblError = dblError - intT(intArrayRow, 1) * Log(dblZ(intArrayRow, 1))
+            dblZ_B(intArrayRow, 1) = dblZ(intArrayRow, 1) - intT(intArrayRow, 1)
+            
+        Next
+        
+        '誤差表示
+        DoEvents
+        Debug.Print dblError
+        DoEvents
+        
+        CalcError = dblError
+        
+    End Function
+    
+    '予想
+    Function Predict(ByRef dblX() As Double) As Integer
+        
+        Call CopyArray(dblX, dblP)
+        
+        Dim intIndex As Integer
+        
+        'Convolution層の順伝播
+        For intIndex = 1 To UBound(clsConvolution)
+            Call clsConvolution(intIndex).Forward(dblP, dblP)
+        Next
+        
+        '平面化（縦ベクトル）
+        Call clsFlatten.Flatten(dblP, dblP)
+        
+        '全結合層の順伝播
+        For intIndex = 1 To UBound(clsDense)
+            Call clsDense(intIndex).Forward(dblP, dblP)
+        Next
+        
+        '出力された配列の最大値のインデックスが予測値
+        Predict = Application.WorksheetFunction.Match(Application.WorksheetFunction.Max(dblP), dblP, False) - 1
+        
+    End Function
+    
+'★★★★★★★★★★★★★★★★★★★★★★★★
+' ClassConvolution（ClassModule）
+'★★★★★★★★★★★★★★★★★★★★★★★★
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' クラス内プロパティ
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    '1色画像処理のため3次元配列
+    Const intLayerDimension As Integer = 1
+    Const intRowDimension As Integer = 2
+    Const intColumnDimension As Integer = 3
+    
+    'カーネルは別Layerのデータを受け取るため、4次元配列
+    Const intKernelLayerDimension As Integer = 1    '自分自身の層番号
+    Const intKernelGroupDimension As Integer = 2    'データを受け取る相手の層番号
+    Const intKernelRowDimension As Integer = 3
+    Const intKernelColumnDimension As Integer = 4
+    
+    '逆伝播カーネルは上下左右反転させる
+    Dim dblKernel() As Double
+    Dim dblkernelReverse() As Double
+    
+    '順伝播情報を保持する
+    Dim dblInput() As Double
+    Dim dblConvolution() As Double
+    Dim dblActivate() As Double
+    Dim dblOutput() As Double
+    Dim dblW() As Double
+    
+    '逆伝播情報を保持する
+    Dim dblInput_B() As Double
+    Dim dblConvolution_B() As Double
+    Dim dblConvolution_B_Margin() As Double
+    Dim dblActivate_B() As Double
+    Dim dblOutput_B() As Double
+    Dim dblKernel_B() As Double
+    Dim dblW_B() As Double
+    
+    'ユニットの設定
+    Dim intInputSize As Integer
+    Dim intOutputSize As Integer
+    Dim intKernelSize As Integer
+    Dim intMarginSize As Integer
+    
+    '学習率を保持
+    Dim dblLR As Double
+        
+    'パラメータを出力できるようにするなど、
+    '拡張性のためLayerに名前を保持する
+    Dim strLayerName As String
+    
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' Layerの初期設定
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Sub Init(ByVal intInputLayerSize As Integer, ByVal intOutputLayerSize As Integer, ByVal intMakeKernelSize As Integer, ByVal dblLearningRate As Double)
+        intInputSize = intInputLayerSize
+        intOutputSize = intOutputLayerSize
+        intKernelSize = intMakeKernelSize
+        intMarginSize = intKernelSize - 1
+        dblLR = dblLearningRate
+        Call MakeWeight
+        Call MakeKernel
+    End Sub
+    
+    '********************************************
+    ' ウェイトの生成
+    '********************************************
+    Private Sub MakeWeight()
+        
+        ReDim dblW(1 To intOutputSize, 1 To 1)
+        Dim lngArrayRow As Long
+        For lngArrayRow = 1 To intOutputSize
+            Randomize
+            dblW(lngArrayRow, 1) = Application.WorksheetFunction.NormInv(Rnd(), 0, 1)
+        Next
+    End Sub
+    
+        
+    '********************************************
+    ' カーネルの生成
+    '********************************************
+    Private Sub MakeKernel()
+        
+        ReDim dblKernel(1 To intOutputSize, 1 To intInputSize, 1 To intKernelSize, 1 To intKernelSize)
+        ReDim dblkernelReverse(1 To intOutputSize, 1 To intInputSize, 1 To intKernelSize, 1 To intKernelSize)
+        
+        Dim intKernelCount As Integer
+        Dim intArrayLayer As Integer
+        Dim intArrayRow As Integer
+        Dim intArrayColumn As Integer
+        Dim dblRandom As Double
+                
+        '出力数と同数必要
+        For intArrayLayer = 1 To intOutputSize
+            
+            '入力数と同数必要
+            For intKernelCount = 1 To intInputSize
+                
+                'カーネル正方形のサイズ
+                For intArrayRow = 1 To intKernelSize
+                    For intArrayColumn = 1 To intKernelSize
+                        
+                        '上下左右反転カーネルも生成
+                        Randomize
+                        dblRandom = Application.WorksheetFunction.NormInv(Rnd(), 0, 1)
+                        dblKernel(intArrayLayer, intKernelCount, intArrayRow, intArrayColumn) = dblRandom
+                        dblkernelReverse(intArrayLayer, intKernelCount, intKernelSize - intArrayRow + 1, intKernelSize - intArrayColumn + 1) = dblRandom
+                    Next
+                Next
+            Next
+        Next
+        
+    End Sub
+    
+
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 学習の前進計算 ＆ 予測時に使用する
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Sub Forward(ByRef dblInputArray() As Double, ByRef dblOutputArray() As Double)
+        
+        Call CopyArray(dblInputArray, dblInput)
+        Call Convolution
+        Call ActivateFunction
+        Call MaxPooling
+        Call CopyArray(dblOutput, dblOutputArray)
+        
+    End Sub
+    
+    '********************************************
+    ' コンボリューション
+    '********************************************
+    Private Sub Convolution()
+        
+        ReDim dblConvolution( _
+            1 To intOutputSize, _
+            LBound(dblInput, intRowDimension) To UBound(dblInput, intRowDimension) - intKernelSize + 1, _
+            LBound(dblInput, intColumnDimension) To UBound(dblInput, intColumnDimension) - intKernelSize + 1)
+        
+        Dim intOutputLayer As Integer
+        Dim intOutputRow As Integer
+        Dim intOutputColumn As Integer
+        
+        Dim intInputLayer As Integer
+        
+        Dim intKernelLayer As Integer
+        Dim intKernelGroup As Integer
+        Dim intKernelRow As Integer
+        Dim intKernelColumn As Integer
+        
+        Dim intAddRow As Integer
+        Dim intAddColumn As Integer
+        
+        '計算結果を集約する配列の「層行列」
+        For intOutputLayer = LBound(dblConvolution, intLayerDimension) To UBound(dblConvolution, intLayerDimension)
+            For intOutputRow = LBound(dblConvolution, intRowDimension) To UBound(dblConvolution, intRowDimension)
+                For intOutputColumn = LBound(dblConvolution, intColumnDimension) To UBound(dblConvolution, intColumnDimension)
+                    
+                    'ウェイトは単純加算
+                    dblConvolution(intOutputLayer, intOutputRow, intOutputColumn) = dblW(intOutputLayer, 1)
+                    
+                    '別レイヤーのインプットを受け取り集計
+                    For intInputLayer = LBound(dblInput, intLayerDimension) To UBound(dblInput, intLayerDimension)
+                        
+                        'カーネルを使用し各レイヤーデータをスキャン＋集計
+                        For intKernelRow = LBound(dblKernel, intKernelRowDimension) To UBound(dblKernel, intKernelRowDimension)
+                            For intKernelColumn = LBound(dblKernel, intKernelColumnDimension) To UBound(dblKernel, intKernelColumnDimension)
+                                
+                                intAddRow = intKernelRow - 1
+                                intAddColumn = intKernelColumn - 1
+                                
+                                dblConvolution(intOutputLayer, intOutputRow, intOutputColumn) = dblConvolution(intOutputLayer, intOutputRow, intOutputColumn) + _
+                                    dblKernel(intOutputLayer, intInputLayer, intKernelRow, intKernelColumn) * dblInput(intInputLayer, intOutputRow + intAddRow, intOutputColumn + intAddColumn)
+                                
+                            Next
+                        Next
+                    Next
+                Next
+            Next
+        Next
+                
+    End Sub
+    
+    
+    '********************************************
+    ' ReLUによるアクティベート
+    '********************************************
+    Private Sub ActivateFunction()
+        
+        ReDim dblActivate( _
+            LBound(dblConvolution, intLayerDimension) To UBound(dblConvolution, intLayerDimension), _
+            LBound(dblConvolution, intRowDimension) To UBound(dblConvolution, intRowDimension), _
+            LBound(dblConvolution, intColumnDimension) To UBound(dblConvolution, intColumnDimension))
+        
+        Dim intLayer As Integer
+        Dim intRow As Integer
+        Dim intColumn As Integer
+        
+        For intLayer = LBound(dblActivate, intLayerDimension) To UBound(dblActivate, intLayerDimension)
+            For intRow = LBound(dblActivate, intRowDimension) To UBound(dblActivate, intRowDimension)
+                For intColumn = LBound(dblActivate, intColumnDimension) To UBound(dblActivate, intColumnDimension)
+                    dblActivate(intLayer, intRow, intColumn) = Application.WorksheetFunction.Max(0, dblConvolution(intLayer, intRow, intColumn))
+                Next
+            Next
+        Next
+                
+    End Sub
+    
+    '********************************************
+    ' 2×2のマックスプーリング
+    '********************************************
+    Private Sub MaxPooling()
+        
+        ReDim dblOutput( _
+            LBound(dblActivate, intLayerDimension) To UBound(dblActivate, intLayerDimension), _
+            LBound(dblActivate, intRowDimension) To UBound(dblActivate, intRowDimension) / 2, _
+            LBound(dblActivate, intColumnDimension) To UBound(dblActivate, intColumnDimension) / 2)
+        
+        Dim intLayer As Integer
+        Dim intRow As Integer
+        Dim intColumn As Integer
+        
+        Dim intOutputRow As Integer
+        Dim intOutputColumn As Integer
+        
+        For intLayer = LBound(dblActivate, intLayerDimension) To UBound(dblActivate, intLayerDimension)
+            For intRow = LBound(dblActivate, intRowDimension) To UBound(dblActivate, intRowDimension)
+                For intColumn = LBound(dblActivate, intColumnDimension) To UBound(dblActivate, intColumnDimension)
+                    
+                    '出力結果は半分サイズ
+                    intOutputRow = Application.WorksheetFunction.RoundUp(intRow / 2, 0)
+                    intOutputColumn = Application.WorksheetFunction.RoundUp(intColumn / 2, 0)
+                    
+                    If dblOutput(intLayer, intOutputRow, intOutputColumn) < dblActivate(intLayer, intRow, intColumn) Then
+                        dblOutput(intLayer, intOutputRow, intOutputColumn) = dblActivate(intLayer, intRow, intColumn)
+                    End If
+                    
+                Next
+            Next
+        Next
+        
+    End Sub
+    
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 誤差逆伝播計算によるパラーメータの更新
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Public Function Backward(ByRef dblInputArray_B() As Double, ByRef dblOutputArray_B() As Double) As Double()
+        
+        Call CopyArray(dblInputArray_B, dblOutput_B)
+        Call MaxPoolingBack
+        Call ActivateFunctionBack
+        Call ConvolutionBack
+        Call UpdateParams
+        Call CopyArray(dblInput_B, dblOutputArray_B)
+        
+    End Function
+
+    '********************************************
+    ' MaxPoolingの逆伝播
+    '********************************************
+    Private Sub MaxPoolingBack()
+        
+        ReDim dblActivate_B( _
+            LBound(dblActivate, intLayerDimension) To UBound(dblActivate, intLayerDimension), _
+            LBound(dblActivate, intRowDimension) To UBound(dblActivate, intRowDimension), _
+            LBound(dblActivate, intColumnDimension) To UBound(dblActivate, intColumnDimension))
+        
+        Dim intLayer As Integer
+        Dim intRow As Integer
+        Dim intColumn As Integer
+        
+        Dim intOutputRow As Integer
+        Dim intOutputColumn As Integer
+        
+        For intLayer = LBound(dblActivate, intLayerDimension) To UBound(dblActivate, intLayerDimension)
+            For intRow = LBound(dblActivate, intRowDimension) To UBound(dblActivate, intRowDimension)
+                For intColumn = LBound(dblActivate, intColumnDimension) To UBound(dblActivate, intColumnDimension)
+                    
+                    intOutputRow = Application.WorksheetFunction.RoundUp(intRow / 2, 0)
+                    intOutputColumn = Application.WorksheetFunction.RoundUp(intColumn / 2, 0)
+                    If dblActivate(intLayer, intRow, intColumn) = dblOutput(intLayer, intOutputRow, intOutputColumn) Then
+                        dblActivate_B(intLayer, intRow, intColumn) = dblOutput_B(intLayer, intOutputRow, intOutputColumn)
+                    End If
+                    
+                Next
+            Next
+        Next
+        
+    End Sub
+    
+    '********************************************
+    ' ReLUによるアクティベートの逆伝播
+    '********************************************
+    Private Sub ActivateFunctionBack()
+        
+        ReDim dblConvolution_B( _
+            LBound(dblConvolution, intLayerDimension) To UBound(dblConvolution, intLayerDimension), _
+            LBound(dblConvolution, intRowDimension) To UBound(dblConvolution, intRowDimension), _
+            LBound(dblConvolution, intColumnDimension) To UBound(dblConvolution, intColumnDimension))
+        
+        Dim intLayer As Integer
+        Dim intRow As Integer
+        Dim intColumn As Integer
+        
+        For intLayer = LBound(dblActivate, intLayerDimension) To UBound(dblActivate, intLayerDimension)
+            For intRow = LBound(dblActivate, intRowDimension) To UBound(dblActivate, intRowDimension)
+                For intColumn = LBound(dblActivate, intColumnDimension) To UBound(dblActivate, intColumnDimension)
+                    
+                    If dblConvolution(intLayer, intRow, intColumn) >= 0 Then
+                        dblConvolution_B(intLayer, intRow, intColumn) = dblActivate_B(intLayer, intRow, intColumn)
+                    End If
+                Next
+            Next
+        Next
+        
+    End Sub
+    
+    '********************************************
+    ' Convolutionの逆伝播
+    '********************************************
+    Private Sub ConvolutionBack()
+        
+        ReDim dblInput_B( _
+            LBound(dblInput, intLayerDimension) To UBound(dblInput, intLayerDimension), _
+            LBound(dblInput, intRowDimension) To UBound(dblInput, intRowDimension), _
+            LBound(dblInput, intColumnDimension) To UBound(dblInput, intColumnDimension))
+        
+        '反転Kernel計算用の「余白付き」逆伝播信号
+        Call MakeConvolutionBackMargin
+        
+        Dim intInputLayer As Integer
+        Dim intInputRow As Integer
+        Dim intInputColumn As Integer
+        
+        Dim intConvolutionLayer As Integer
+        
+        Dim intKernelRow As Integer
+        Dim intKernelColumn As Integer
+        
+        Dim intAddRow As Integer
+        Dim intAddColumn As Integer
+        
+        '********************************************
+        ' Convolutionからインプットへの逆伝播
+        '********************************************
+        
+        '計算結果を集約する配列の「層行列」
+        For intInputLayer = LBound(dblInput_B, intLayerDimension) To UBound(dblInput_B, intLayerDimension)
+            For intInputRow = LBound(dblInput_B, intRowDimension) To UBound(dblInput_B, intRowDimension)
+                For intInputColumn = LBound(dblInput_B, intColumnDimension) To UBound(dblInput_B, intColumnDimension)
+                    
+                    '別レイヤーの逆伝播を受け取り集計
+                    For intConvolutionLayer = LBound(dblConvolution_B_Margin, intLayerDimension) To UBound(dblConvolution_B_Margin, intLayerDimension)
+                        
+                        '反転カーネルを使用し各レイヤーデータをスキャン＋逆伝播集計
+                        For intKernelRow = LBound(dblkernelReverse, intKernelRowDimension) To UBound(dblkernelReverse, intKernelRowDimension)
+                            For intKernelColumn = LBound(dblkernelReverse, intKernelColumnDimension) To UBound(dblkernelReverse, intKernelColumnDimension)
+                                
+                                intAddRow = intKernelRow - 1
+                                intAddColumn = intKernelColumn - 1
+                                
+                                dblInput_B(intInputLayer, intInputRow, intInputColumn) = dblInput_B(intInputLayer, intInputRow, intInputColumn) + _
+                                    dblkernelReverse(intConvolutionLayer, intInputLayer, intKernelRow, intKernelColumn) * dblConvolution_B_Margin(intConvolutionLayer, intInputRow + intAddRow, intInputColumn + intAddColumn)
+                                
+                            Next
+                        Next
+                    Next
+                Next
+            Next
+        Next
+        
+        
+        Dim intKernelLayer As Integer
+        Dim intKernelGroup As Integer
+        Dim intConvolutionRow As Integer
+        Dim intConvolutionColumn As Integer
+        
+        ReDim dblKernel_B( _
+                LBound(dblKernel, intKernelLayerDimension) To UBound(dblKernel, intKernelLayerDimension), _
+                LBound(dblKernel, intKernelGroupDimension) To UBound(dblKernel, intKernelGroupDimension), _
+                LBound(dblKernel, intKernelRowDimension) To UBound(dblKernel, intKernelRowDimension), _
+                LBound(dblKernel, intKernelColumnDimension) To UBound(dblKernel, intKernelColumnDimension))
+        
+        '********************************************
+        ' カーネルの逆伝播
+        '********************************************
+        
+        For intKernelLayer = LBound(dblKernel_B, intKernelLayerDimension) To UBound(dblKernel_B, intKernelLayerDimension)
+            For intKernelGroup = LBound(dblKernel_B, intKernelGroupDimension) To UBound(dblKernel_B, intKernelGroupDimension)
+                For intKernelRow = LBound(dblKernel_B, intKernelRowDimension) To UBound(dblKernel_B, intKernelRowDimension)
+                    For intKernelColumn = LBound(dblKernel_B, intKernelColumnDimension) To UBound(dblKernel_B, intKernelColumnDimension)
+                        
+                        For intConvolutionRow = LBound(dblConvolution_B, intRowDimension) To UBound(dblConvolution_B, intRowDimension)
+                            For intConvolutionColumn = LBound(dblConvolution_B, intColumnDimension) To UBound(dblConvolution_B, intColumnDimension)
+                                
+                                intAddRow = intKernelRow - 1
+                                intAddColumn = intKernelColumn - 1
+                                
+                                dblKernel_B(intKernelLayer, intKernelGroup, intKernelRow, intKernelColumn) = _
+                                    dblKernel_B(intKernelLayer, intKernelGroup, intKernelRow, intKernelColumn) + _
+                                    dblConvolution_B(intKernelLayer, intConvolutionRow, intConvolutionColumn) * _
+                                    dblInput(intKernelGroup, intConvolutionRow + intAddRow, intConvolutionColumn + intAddColumn)
+                            Next
+                        Next
+                    Next
+                Next
+            Next
+        Next
+        
+    End Sub
+    
+    '********************************************
+    ' 余白付き逆伝播信号
+    ' ※反転Kernelを使用した計算に使用
+    '********************************************
+    Private Sub MakeConvolutionBackMargin()
+        
+        ReDim dblConvolution_B_Margin( _
+            LBound(dblConvolution_B, intLayerDimension) To UBound(dblConvolution_B, intLayerDimension), _
+            LBound(dblConvolution_B, intRowDimension) To UBound(dblConvolution_B, intRowDimension) + (intMarginSize) * 2, _
+            LBound(dblConvolution_B, intColumnDimension) To UBound(dblConvolution_B, intColumnDimension) + (intMarginSize) * 2)
+
+        ReDim dblW_B( _
+            LBound(dblW, intLayerDimension) To UBound(dblW, intLayerDimension), _
+            LBound(dblW, intRowDimension) To UBound(dblW, intRowDimension))
+    
+        Dim intArrayLayer As Integer
+        Dim intArrayRow As Integer
+        Dim intArrayColumn As Integer
+                
+        For intArrayLayer = LBound(dblConvolution_B, intLayerDimension) To UBound(dblConvolution_B, intLayerDimension)
+            For intArrayRow = LBound(dblConvolution_B, intRowDimension) To UBound(dblConvolution_B, intRowDimension)
+                For intArrayColumn = LBound(dblConvolution_B, intColumnDimension) To UBound(dblConvolution_B, intColumnDimension)
+                    dblConvolution_B_Margin(intArrayLayer, intArrayRow + intMarginSize, intArrayColumn + intMarginSize) = _
+                        dblConvolution_B(intArrayLayer, intArrayRow, intArrayColumn)
+                
+                    'ついでにウェイト（バイアス）の逆伝播信号集計
+                    dblW_B(intArrayLayer, 1) = dblW_B(intArrayLayer, 1) + dblConvolution_B(intArrayLayer, intArrayRow, intArrayColumn)
+                Next
+            Next
+        Next
+    End Sub
+    
+    '********************************************
+    ' パラメータの更新
+    '********************************************
+    Private Sub UpdateParams()
+        
+        Dim intKernelLayer As Integer
+        Dim intKernelGroup As Integer
+        Dim intKernelRow As Integer
+        Dim intKernelColumn As Integer
+        
+        'カーネル・反転カーネルともに更新
+        For intKernelLayer = LBound(dblKernel_B, intKernelLayerDimension) To UBound(dblKernel_B, intKernelLayerDimension)
+            For intKernelGroup = LBound(dblKernel_B, intKernelGroupDimension) To UBound(dblKernel_B, intKernelGroupDimension)
+                For intKernelRow = LBound(dblKernel_B, intKernelRowDimension) To UBound(dblKernel_B, intKernelRowDimension)
+                    For intKernelColumn = LBound(dblKernel_B, intKernelColumnDimension) To UBound(dblKernel_B, intKernelColumnDimension)
+                        
+                        dblKernel(intKernelLayer, intKernelGroup, intKernelRow, intKernelColumn) = _
+                            dblKernel(intKernelLayer, intKernelGroup, intKernelRow, intKernelColumn) - _
+                            dblLR * dblKernel_B(intKernelLayer, intKernelGroup, intKernelRow, intKernelColumn)
+                        
+                        dblkernelReverse(intKernelLayer, intKernelGroup, intKernelSize - intKernelRow + 1, intKernelSize - intKernelColumn + 1) = _
+                            dblKernel(intKernelLayer, intKernelGroup, intKernelRow, intKernelColumn)
+    
+                    Next
+                Next
+            Next
+        Next
+        
+        'ウェイト（バイアス）の更新
+        Dim intWeightRow As Integer
+        For intWeightRow = LBound(dblW, intLayerDimension) To UBound(dblW, intLayerDimension)
+            dblW(intWeightRow, 1) = dblW(intWeightRow, 1) - dblLR * dblW_B(intWeightRow, 1)
+        Next
+    
+    End Sub
+    
+'★★★★★★★★★★★★★★★★★★★★★★★★
+' ClassFlatten（ClassModule）
+'★★★★★★★★★★★★★★★★★★★★★★★★
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' クラス内プロパティ
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    '配列の1次元化・復元を行うために、元の次元を保存
+    Const intLayerDimension As Integer = 1
+    Const intRowDimension As Integer = 2
+    Const intColumnDimension As Integer = 3
+        
+    Dim intLayerCount As Integer
+    Dim intRowCount As Integer
+    Dim intColumnCount As Integer
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 配列の1次元化
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Sub Flatten(ByRef dblInputArray() As Double, ByRef dblOutputArray() As Double)
+        
+        '元の次元を保存
+        intLayerCount = UBound(dblInputArray, intLayerDimension)
+        intRowCount = UBound(dblInputArray, intRowDimension)
+        intColumnCount = UBound(dblInputArray, intColumnDimension)
+        
+        Dim intArrayLayer As Integer
+        Dim intArrayRow As Integer
+        Dim intArrayColumn As Integer
+        Dim intIndex As Integer
+        
+        Dim dblOutput() As Double
+        ReDim dblOutput(1 To intLayerCount * intRowCount * intColumnCount, 1 To 1)
+        
+        For intArrayLayer = 1 To intLayerCount
+            For intArrayRow = 1 To intRowCount
+                For intArrayColumn = 1 To intColumnCount
+                    intIndex = intIndex + 1
+                    dblOutput(intIndex, 1) = dblInputArray(intArrayLayer, intArrayRow, intArrayColumn)
+                Next
+            Next
+        Next
+            
+        Call CopyArray(dblOutput, dblOutputArray)
+        
+    End Sub
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 配列を3次元化に復元する
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Sub FlattenBack(ByRef dblInputArray() As Double, ByRef dblOutputArray() As Double)
+        
+        Dim intArrayLayer As Integer
+        Dim intArrayRow As Integer
+        Dim intArrayColumn As Integer
+        Dim intIndex As Integer
+        
+        Dim dblOutput() As Double
+        ReDim dblOutput(1 To intLayerCount, 1 To intRowCount, 1 To intColumnCount)
+        
+        For intArrayLayer = 1 To intLayerCount
+            For intArrayRow = 1 To intRowCount
+                For intArrayColumn = 1 To intColumnCount
+                    intIndex = intIndex + 1
+                    dblOutput(intArrayLayer, intArrayRow, intArrayColumn) = dblInputArray(intIndex, 1)
+                Next
+            Next
+        Next
+            
+        Call CopyArray(dblOutput, dblOutputArray)
+        
+    End Sub
+    
+'★★★★★★★★★★★★★★★★★★★★★★★★
+' ClassLayer（ClassModule）
+'★★★★★★★★★★★★★★★★★★★★★★★★
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' クラス内プロパティ
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    'Layer設計のプロパティ
+    '内部で保持する配列のサイズなどをダイナミックに作成
+    Dim intXRowsCount As Integer
+    Dim intXColumnsCount As Integer
+    Dim intWRowsCount As Integer
+    Dim intWColumnsCount As Integer
+    
+    'アクティベート関数の選択
+    Dim blnReLU As Boolean
+    Dim blnSigmoid As Boolean
+    Dim blnSoftMax As Boolean
+    
+    '学習・予想の計算時に使用するパラメータ
+    Dim dblX() As Double
+    Dim dblW() As Double
+    Dim dblB() As Double
+    Dim dblY() As Double
+    Dim dblZ() As Double
+    
+    '誤差逆伝播計算に使用
+    '計算完了後「_Bなし」の変数を更新する
+    '※逆伝播は値の保存必要ないかも？
+    Dim dblX_B() As Double
+    Dim dblW_B() As Double
+    Dim dblB_B() As Double
+    Dim dblY_B() As Double
+    Dim dblZ_B() As Double
+    
+    '学習率を保持
+    Dim dblLR As Double
+    
+    'パラメータを出力できるようにするなど、
+    '拡張性のためLayerに名前を保持する
+    Dim strLayerName As String
+
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' Layerの初期設定
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Public Sub Init(ByVal intInput As Integer, ByVal intOutput As Integer, ByVal strActivateFucntion As String, ByVal dblLearningRate As Double, ByVal intLayerNumber As Integer)
+        
+        '入力データの体裁
+        intXRowsCount = intInput
+        intXColumnsCount = 1
+        
+        'Wパラメータの体裁
+        intWRowsCount = intOutput
+        intWColumnsCount = intInput
+        
+        'アクティベート関数の選択
+        If strActivateFucntion = "ReLU" Then
+            blnReLU = True
+        ElseIf strActivateFucntion = "Sigmoid" Then
+            blnSigmoid = True
+        ElseIf strActivateFucntion = "SoftMax" Then
+            blnSoftMax = True
+        End If
+        
+        '学習率の保持
+        dblLR = dblLearningRate
+        
+        strLayerName = "Layer" & intLayerNumber
+        
+        '入出力の体裁によって、配列のサイズを決定
+        ReDim dblX(1 To intXRowsCount, 1 To intXColumnsCount) As Double
+        ReDim dblW(1 To intWRowsCount, 1 To intWColumnsCount) As Double
+        ReDim dblB(1 To intWRowsCount, 1 To 1) As Double
+        ReDim dblY(1 To intWRowsCount, 1 To 1) As Double
+        ReDim dblZ(1 To intWRowsCount, 1 To 1) As Double
+        
+        '誤差逆伝播計算用配列は「_Bなし」と同じサイズ
+        ReDim dblX_B(1 To intXRowsCount, 1 To intXColumnsCount) As Double
+        ReDim dblW_B(1 To intWRowsCount, 1 To intWColumnsCount) As Double
+        ReDim dblB_B(1 To intWRowsCount, 1 To 1) As Double
+        ReDim dblY_B(1 To intWRowsCount, 1 To 1) As Double
+        ReDim dblZ_B(1 To intWRowsCount, 1 To 1) As Double
+        
+        Dim lngRow As Long
+        Dim lngColum As Long
+        
+        'Wをランダム（正規分布）な数値で埋める
+        For lngRow = LBound(dblW, 1) To UBound(dblW, 1)
+            For lngColum = LBound(dblW, 2) To UBound(dblW, 2)
+                Randomize
+                dblW(lngRow, lngColum) = Application.WorksheetFunction.Norm_Inv(Rnd(), 0, 1)
+            Next
+        Next
+        
+        'Bをランダム（正規分布）な数値で埋める
+        For lngRow = LBound(dblB, 1) To UBound(dblB, 1)
+            For lngColum = LBound(dblB, 2) To UBound(dblB, 2)
+                Randomize
+                dblB(lngRow, lngColum) = Application.WorksheetFunction.Norm_Inv(Rnd(), 0, 1)
+            Next
+        Next
+        
+    End Sub
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 学習の前進計算 ＆ 予測時に使用する
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Public Function Forward(ByRef dblArrayX() As Double, ByRef dblArrayZ() As Double) As Double()
+        Call CopyArray(dblArrayX, dblX)
+        Call CalcWXB
+        Call ActivateFunction
+        Call CopyArray(dblZ, dblArrayZ)
+        Forward = dblZ
+    End Function
+    
+    '********************************************
+    ' 「wx+b=y」の計算を実行
+    '********************************************
+    Private Sub CalcWXB()
+        
+        Dim vntWX As Variant
+        vntWX = Dot(dblW, dblX)
+        
+        Dim lngRow As Long
+        For lngRow = 1 To UBound(vntWX, 1)
+            On Error Resume Next
+            dblY(lngRow, 1) = vntWX(lngRow, 1) + dblB(lngRow, 1)
+            If Err.Number <> 0 Then
+                dblY(lngRow, 1) = vntWX(lngRow) + dblB(lngRow, 1)
+            End If
+            On Error GoTo 0
+        Next
+                
+    End Sub
+
+    '********************************************
+    ' 「activate(y)=z」の計算を実行
+    '********************************************
+    Private Sub ActivateFunction()
+        
+        Dim lngRow As Long
+        
+        'ReLU関数によるActivate
+        If blnReLU = True Then
+            For lngRow = 1 To UBound(dblY, 1)
+                dblZ(lngRow, 1) = Application.WorksheetFunction.Max(0, dblY(lngRow, 1))
+            Next
+        
+        'Sigmoid関数によるActivate
+        ElseIf blnSigmoid = True Then
+            For lngRow = 1 To UBound(dblY, 1)
+                dblZ(lngRow, 1) = 1 / (1 + Exp(-dblY(lngRow, 1)))
+            Next
+            
+        ElseIf blnSoftMax = True Then
+            
+            Dim dblMax As Double
+            Dim dblTotal As Double
+            
+            dblMax = Application.WorksheetFunction.Max(dblY)
+            
+            For lngRow = 1 To UBound(dblY, 1)
+                dblZ(lngRow, 1) = Exp(dblY(lngRow, 1) - dblMax) + (1 / 10 ^ 6)
+                dblTotal = dblTotal + dblZ(lngRow, 1)
+            Next
+            
+            For lngRow = 1 To UBound(dblY, 1)
+                dblZ(lngRow, 1) = dblZ(lngRow, 1) / dblTotal
+            Next
+            
+        End If
+        
+    End Sub
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 誤差逆伝播計算によるパラーメータの更新
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Public Function Backward(ByRef dblZ() As Double, ByRef dblX() As Double) As Double()
+        Call CopyArray(dblZ, dblZ_B)
+        Call ActivateFunctionBack
+        Call CalcWXB_XBack
+        Call CalcWXB_WBack
+        Call CalcWXB_BBack
+        Call CopyArray(dblX_B, dblX)
+        Call UpdateParams
+        Backward = dblX_B
+    End Function
+    
+    '********************************************
+    ' 「activate(y)」の微分計算を実行
+    '********************************************
+    Sub ActivateFunctionBack()
+        
+        Dim lngRow As Long
+        
+        'ReLU関数の逆伝播
+        If blnReLU = True Then
+            For lngRow = 1 To UBound(dblY, 1)
+                If dblY(lngRow, 1) >= 0 Then
+                    dblY_B(lngRow, 1) = dblZ_B(lngRow, 1)
+                Else
+                    dblY_B(lngRow, 1) = 0
+                End If
+            Next
+        
+        'Sigmoid関数の逆伝播
+        ElseIf blnSigmoid = True Then
+            For lngRow = 1 To UBound(dblY_B, 1)
+                dblY_B(lngRow, 1) = dblZ_B(lngRow, 1) * (dblZ(lngRow, 1) * (1 - dblZ(lngRow, 1)))
+            Next
+            
+        'SoftMaxの逆伝播
+        ElseIf blnSoftMax = True Then
+            Call CopyArray(dblZ_B, dblY_B)
+        End If
+    End Sub
+    
+    '********************************************
+    ' 「wx+b⇒xの微分⇒w」の微分計算を実行
+    '********************************************
+    Private Sub CalcWXB_XBack()
+        
+        Dim lngRow As Long
+        Dim lngColumn As Long
+        
+        '「w ＆ 逆伝播の積和（加算の反復）」を計算するため一度過去データを消去
+        For lngRow = LBound(dblX_B, 1) To UBound(dblX_B, 1)
+            dblX_B(lngRow, 1) = 0
+        Next
+        
+        '「w ＆ 逆伝播」の積和（加算の反復）
+        For lngRow = LBound(dblW, 1) To UBound(dblW, 1)
+            For lngColumn = LBound(dblW, 2) To UBound(dblW, 2)
+                dblX_B(lngColumn, 1) = dblX_B(lngColumn, 1) + dblW(lngRow, lngColumn) * dblY_B(lngRow, 1)
+            Next
+        Next
+    End Sub
+    
+    '********************************************
+    ' 「wx+b⇒wの微分⇒x」の微分計算を実行
+    '********************************************
+    Private Sub CalcWXB_WBack()
+        
+        Dim lngRow As Long
+        Dim lngColumn As Long
+        
+        '「x ＆ 逆伝播」の積和
+        For lngRow = LBound(dblW_B, 1) To UBound(dblW_B, 1)
+            For lngColumn = LBound(dblW_B, 2) To UBound(dblW_B, 2)
+                dblW_B(lngRow, lngColumn) = dblX(lngColumn, 1) * dblY_B(lngRow, 1)
+            Next
+        Next
+    End Sub
+    
+    '********************************************
+    ' 「wx+b⇒bの微分⇒1」の微分計算を実行
+    '********************************************
+    Private Sub CalcWXB_BBack()
+        Call CopyArray(dblZ_B, dblB_B)
+    End Sub
+    
+    '********************************************
+    ' パラメータの更新
+    ' 「新パラメータ = 旧パラメータ - 学習率 * 各パラメータの逆伝播値」
+    '********************************************
+    Private Sub UpdateParams()
+        Dim lngRow As Long
+        Dim lngColumn As Long
+        
+        'w = w - LearningRate * w_b
+        For lngRow = LBound(dblW_B, 1) To UBound(dblW_B, 1)
+            For lngColumn = LBound(dblW_B, 2) To UBound(dblW_B, 2)
+                dblW(lngRow, lngColumn) = dblW(lngRow, lngColumn) - dblW_B(lngRow, lngColumn) * dblLR
+            Next
+        Next
+        
+        'b = b - LearningRate * b_b
+        For lngRow = LBound(dblB_B, 1) To UBound(dblB_B, 1)
+            For lngColumn = LBound(dblB_B, 2) To UBound(dblB_B, 2)
+                dblB(lngRow, lngColumn) = dblB(lngRow, lngColumn) - dblB_B(lngRow, lngColumn) * dblLR
+            Next
+        Next
+        
+    End Sub
+    
+'★★★★★★★★★★★★★★★★★★★★★★★★
+' ClassNeuralNetwork（ClassModule）
+'★★★★★★★★★★★★★★★★★★★★★★★★
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' クラス内プロパティ
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    'クラス内ので管理するLayerの設定等
+    Dim intInputCount As Integer
+    Dim intOutputCount As Integer
+    Dim intLayerCount As Integer
+    Dim intUnitCount As Integer
+    Dim dblLR As Double
+    
+    'クラス内でLayer・学習・予測を管理する
+    Dim aryNetworks() As Variant
+    Dim intT As Integer
+    Dim dblE As Double
+    Dim dblZ() As Double
+    Dim dblZ_B() As Double
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' クラスの初期設定・Layerの管理を代行
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Public Sub Init(ByVal intInput As Integer, ByVal intOutput As Integer, ByVal intLayer As Integer, ByVal intUnits As Integer, ByVal dblLearningRate As Double)
+        
+        
+        ReDim dblZ(1 To intOutput, 1 To 1) As Double
+        ReDim dblZ_B(1 To intOutput, 1 To 1) As Double
+        
+        intInputCount = intInput
+        intOutputCount = intOutput
+        intLayerCount = intLayer
+        intUnitCount = intUnits
+        dblLR = dblLearningRate
+        
+        ReDim aryNetworks(1 To intLayerCount)
+        
+        Dim intLayerIndex As Integer
+        
+        For intLayerIndex = LBound(aryNetworks) To UBound(aryNetworks)
+            
+            Set aryNetworks(intLayerIndex) = New ClassLayer
+            
+            If intLayerIndex = LBound(aryNetworks) Then
+                Call aryNetworks(intLayerIndex).Init(intInputCount, intUnitCount, "ReLU", dblLearningRate, intLayerIndex)
+            ElseIf intLayerIndex <> UBound(aryNetworks) Then
+                Call aryNetworks(intLayerIndex).Init(intUnitCount, intUnitCount, "ReLU", dblLearningRate, intLayerIndex)
+            Else
+                Call aryNetworks(intLayerIndex).Init(intUnitCount, intOutputCount, "Sigmoid", dblLearningRate, intLayerIndex)
+            End If
+            
+        Next
+        
+    End Sub
+    
+    '********************************************
+    ' 学習
+    '********************************************
+    Public Sub Train(ByVal vntX As Variant, ByVal intTeach As Integer)
+        
+        Dim intLayerIndex As Integer
+        Dim vntZ As Variant
+        
+        intT = intTeach
+        vntZ = vntX
+        
+        For intLayerIndex = LBound(aryNetworks) To UBound(aryNetworks)
+            Call aryNetworks(intLayerIndex).Forward(vntZ, vntZ)
+        Next
+        
+        dblZ(1, 1) = vntZ(1, 1)
+        
+        If dblZ(1, 1) <> 0 And dblZ(1, 1) <> 1 Then
+            
+            Call CrossEntropyLoss
+            Call CrossEntropyLossBack
+            
+            Dim vntZ_B As Variant
+            vntZ_B = dblZ_B
+            
+            For intLayerIndex = UBound(aryNetworks) To LBound(aryNetworks) Step -1
+                Call aryNetworks(intLayerIndex).Backward(vntZ_B, vntZ_B)
+            Next
+        Else
+            Debug.Print "error"
+        End If
+        
+    End Sub
+    
+    '********************************************
+    ' 目的関数・誤差計算
+    '********************************************
+    Private Sub CrossEntropyLoss()
+        If intT = 1 Then
+            dblE = (-intT) * Log(dblZ(1, 1))
+        Else
+            dblE = -(1 - intT) * Log(1 - dblZ(1, 1))
+        End If
+    End Sub
+    
+    '********************************************
+    ' 目的関数・誤差計算逆伝播
+    '********************************************
+    Private Sub CrossEntropyLossBack()
+        On Error Resume Next
+        dblZ_B(1, 1) = (-intT / dblZ(1, 1)) + ((1 - intT) / (1 - dblZ(1, 1)))
+        If Err.Number <> 0 Then
+            dblZ_B(1, 1) = 0
+        End If
+        On Error GoTo 0
+    End Sub
+    
+    '********************************************
+    ' 予測
+    '********************************************
+    Public Function Predict(ByVal vntX As Variant) As Double
+        
+        Dim intLayerIndex As Integer
+        Dim vntZ As Variant
+        
+        vntZ = vntX
+        
+        For intLayerIndex = LBound(aryNetworks) To UBound(aryNetworks)
+            Call aryNetworks(intLayerIndex).Forward(vntZ, vntZ)
+        Next
+        
+        Predict = vntZ(1, 1)
+        
+    End Function
+
                     </pre>
                 </div>
                 <div class="vba-code">
@@ -2919,6 +4290,22 @@ Option Explicit
     
     #End If
 
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 頻出定数・短コード
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+        
+    Const strFileFilerCsv As String = "CSVファイル(*.csv),*.csv"
+    Const strFileFilerXL As String = "エクセルファイル (*.xls?),*.xls?"
+    
+    CreateObject("WScript.Shell").CurrentDirectory = "FileServer"                    
+    
                     </pre>
                 </div>
             </div>
