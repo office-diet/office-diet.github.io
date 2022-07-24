@@ -356,6 +356,10 @@ window.addEventListener("load", function(){
     ["2022/04/23", "https://twitter.com/i/events/1517961114537295872", "江東区塩浜⇒木場公園⇒南大沢⇒小山田⇒京王堀之内", "--km", "https://pbs.twimg.com/media/FQ-_GqKakAAqayZ?format=jpg&name=small"], 
     ["2022/04/25", "https://twitter.com/i/events/1520320470163529729", "上野周辺", "--km", "https://pbs.twimg.com/media/FRLrsd-aQAA4JLR?format=jpg&name=small"], 
     ["2022/04/30", "https://twitter.com/i/events/1520321650151292928", "江東区塩浜⇒小松川境川親水公園⇒モンチッチ公園⇒四ツ木", "--km", "https://pbs.twimg.com/media/FRjWsJoaQAENRyA?format=jpg&name=small"], 
+    ["2022/05/18", "https://twitter.com/i/events/1530697320693899265", "多摩センター⇒堀之内⇒南大沢⇒小山田", "--km", "https://pbs.twimg.com/media/FTAHFdWagAAVFDN?format=jpg&name=small"], 
+    ["2022/06/08", "https://twitter.com/i/events/1535954702814572545", "調布市国領⇒三鷹市⇒世田谷区⇒千歳烏山", "--km", "https://pbs.twimg.com/media/FUq36ATaUAAQj83?format=jpg&name=small"], 
+    ["2022/06/18", "https://twitter.com/i/events/1540933984280256512", "多摩センター⇒町田⇒小山田⇒南大沢", "--km", "https://pbs.twimg.com/media/FVe-falaUAA42Ur?format=jpg&name=small"], 
+    ["2022/07/18", "https://twitter.com/i/events/1551146080775340035", "読売ランド前⇒新百合ヶ丘⇒鶴川⇒小山田⇒南大沢", "--km", "https://pbs.twimg.com/media/FX4npDYaAAAOaA1?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
