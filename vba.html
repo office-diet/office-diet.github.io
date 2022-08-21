@@ -415,6 +415,50 @@
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
                         
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 対象範囲内のユニークを数える
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function CountUnique(ByVal rngCells As Range, Optional ByVal blnCountBlank As Boolean = False)
+        
+        'Dictionaryにユニークを収集
+        Dim dctUnique As Object
+        Set dctUnique = CreateObject("Scripting.Dictionary")
+        
+        Dim vntCell As Range
+        Dim intBlankExists As Integer
+        
+        '対象範囲全セルを走査
+        For Each vntCell In rngCells
+            
+            '空欄が、無い=0、存在=1
+            If vntCell.Value = "" Then
+                intBlankExists = 1
+            Else
+                
+                '重複無く収集
+                If dctUnique.Exists(vntCell.Value) = False Then
+                    dctUnique.Add vntCell.Value, vntCell.Value
+                End If
+            End If
+        Next
+        
+        '空欄を数えるか否かで数値変更
+        If blnCountBlank = True Then
+            CountUnique = dctUnique.Count + intBlankExists
+        Else
+            CountUnique = dctUnique.Count
+        End If
+        
+    End Function
+                        
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+                        
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' 文章中に指定した文字列が出現する回数を数える
@@ -434,7 +478,197 @@
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
+
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 選択パターン数
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+    Function CountChoicePattern(ByVal lngNumber As Long, Optional ByVal blnCountChoiceNone = False) As Long
+        
+        Dim intPickUpCount As Integer
+        Dim lngChoicePatternTotal As Long
+        
+        For intPickUpCount = 1 To lngNumber
+            lngChoicePatternTotal = lngChoicePatternTotal + Application.WorksheetFunction.Combin(lngNumber, intPickUpCount)
+        Next
+        
+        If blnCountChoiceNone = True Then
+            CountChoicePattern = lngChoicePatternTotal + 1
+        Else
+            CountChoicePattern = lngChoicePatternTotal
+        End If
+        
+    End Function
+
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+                        
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 正規表現Replace関数
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+    Function ReplaceRegExp(ByVal strOrigin As String, ByVal strRegExp As String, ByVal strReplace As String) As String
+        
+        Dim objRegExp As Object
+        Set objRegExp = CreateObject("VBScript.RegExp")
+        
+        With objRegExp
+            
+            .Pattern = strRegExp
+            .Global = True
+            RegExpReplace = .Replace(strOrigin, strReplace)
+            
+        End With
+        
+    End Function
+
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 月次で変更されるシート名を生成
+' ※「年度（「P」eriod）」「年（「Y」ear）」「月（「M」onth）」
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
     
+    Function GetMonthName(ByVal strOrigin As String, ByVal dteTargetMonth As Date) As String
+        
+        '置換に使用するPlaceHolder
+        Const strStar As String = "★"
+        Dim aryPlaceHolders As Variant
+        aryPlaceHolders = Array("YY", "YYYY", "M", "MM", _
+                                "YYM", "YYMM", "YYYYM", "YYYYMM")
+        Dim strResult As String
+        strResult = strOrigin
+        
+        '一般的な表記パターンを総当たりで置換
+        Dim vntPlaceHolder As Variant
+        For Each vntPlaceHolder In aryPlaceHolders
+            
+            'PlaceHolder大文字
+            strResult = Replace(strResult, _
+                                strStar & vntPlaceHolder & strStar, _
+                                Format(dteTargetMonth, vntPlaceHolder))
+                                
+            'PlaceHolder小文字
+            strResult = Replace(strResult, _
+                                strStar & StrConv(vntPlaceHolder, vbLowerCase) & strStar, _
+                                Format(dteTargetMonth, vntPlaceHolder))
+        Next
+        
+        '「年度」による置換
+        '※4月を境に切り替え
+        Dim intPeriod As Integer
+        If Month(dteTargetMonth) < 4 Then
+            intPeriod = Year(dteTargetMonth) - 1
+        Else
+            intPeriod = Year(dteTargetMonth)
+        End If
+        
+        'PlaceHolder,書式設定を変更
+        aryPlaceHolders = Array(Array("PP", "00"), Array("PPPP", "0000"))
+        For Each vntPlaceHolder In aryPlaceHolders
+            
+            '大文字
+            strResult = Replace(strResult, _
+                                strStar & vntPlaceHolder(0) & strStar, _
+                                Format(intPeriod, vntPlaceHolder(1)))
+            
+            '小文字
+            strResult = Replace(strResult, _
+                                strStar & StrConv(vntPlaceHolder(0), vbLowerCase) & strStar, _
+                                Format(intPeriod, vntPlaceHolder(1)))
+        Next
+                        
+        GetMonthName = strResult
+    End Function
+
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">    
+
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 入力されたフォルダパスの「存在する最深フォルダ」を特定する
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function DigFolder(ByVal strFolderPath As String) As String
+        
+        Const strServerHead As String = "\\"
+        Const strPathDelimiter As String = "\"
+        Dim strPathHead As String
+        Dim aryPath As Variant
+        
+        'サーバーパスの場合「\\fsv\fldA」
+        If Left(strFolderPath, Len(strServerHead)) = strServerHead Then
+            
+            '\\fsv & { fldA, fldB, fldC, fldD }
+            strPathHead = "\\" & Split(Right(strFolderPath, Len(strFolderPath) - Len(strServerHead)), strPathDelimiter)(0)
+            aryPath = Split(Right(strFolderPath, Len(strFolderPath) - Len(strPathHead) - 1), strPathDelimiter)
+        
+        'ドライブの場合「c:\fldA」
+       Else
+            
+            'c: & { fldA, fldB, fldC, fldD }
+            strPathHead = Split(strFolderPath, strPathDelimiter)(0)
+            aryPath = Split(Right(strFolderPath, Len(strFolderPath) - Len(strPathHead) - 1), strPathDelimiter)
+        End If
+        
+        
+        Dim vntPath As Variant
+        Dim strJoinPath As String
+        Dim strExistsPath As String
+        
+        '「\\fsv」「c:」より走査
+        strExistsPath = strPathHead
+        
+        '「\」で分割した文字列を連結してゆく
+        For Each vntPath In aryPath
+            
+            '存在している最短Path + 次の階層のフォルダ名で調査
+            strJoinPath = strExistsPath & strPathDelimiter & vntPath
+            If CreateObject("Scripting.FileSystemObject").FolderExists(strJoinPath) = True Then
+                
+                '調査したフォルダが存在したら「存在確認済みPathを連結」
+                strExistsPath = strJoinPath
+            Else
+                
+                '調査したフォルダが存在しなかったら前回のPathを返却
+                DigFolder = strExistsPath
+                Exit Function
+            End If
+        Next
+        
+        '全階層のフォルダが存在したらFullPahを返却
+        DigFolder = strExistsPath
+        
+    End Function
+    
+    Function ClearAutoFilter(ParamArray aryWorksheets() As Variant)
+        
+        Dim vntWorksheet As Variant
+        For Each vntWorksheet In aryWorksheets
+            If vntWorksheet.AutoFilterMode = True Then vntWorksheet.AutoFilterMode = False
+        Next
+        
+    End Function
+
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">    
+
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 '　OutlookMail操作
@@ -4301,8 +4535,8 @@ Option Explicit
 '
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
         
-    Const strFileFilerCsv As String = "CSVファイル(*.csv),*.csv"
-    Const strFileFilerXL As String = "エクセルファイル (*.xls?),*.xls?"
+    Const strFileFilterCsv As String = "CSVファイル(*.csv),*.csv"
+    Const strFileFilterXL As String = "エクセルファイル (*.xls?),*.xls?"
     
     CreateObject("WScript.Shell").CurrentDirectory = "FileServer"                    
     
