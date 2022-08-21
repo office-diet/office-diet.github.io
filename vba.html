@@ -45,12 +45,11 @@
         GetLastColumn = ws.Cells(lngRow, ws.Columns.Count).End(xlToLeft).Column
         
     End Function
-    
                     </pre>
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
-                    
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' MIN・MAX関数をラップ・機能拡張
@@ -98,7 +97,6 @@
         MaxAbs = vntMax
         
     End Function
-    
                     </pre>
                 </div>
                 <div class="vba-code">
@@ -145,7 +143,6 @@
         VlookUp = ""
         
     End Function
-    
                     </pre>
                 </div>
                 <div class="vba-code">
@@ -193,7 +190,6 @@
         Match = 0
         
     End Function
-    
                     </pre>
                 </div>
                 <div class="vba-code">
@@ -255,7 +251,6 @@
         '生成されたランダム文字列を返却
         MakeRandomString = strResult
     End Function
-    
                     </pre>
                 </div>
                 <div class="vba-code">
@@ -291,7 +286,6 @@
         CompareRange = True
     
     End Function
-    
                     </pre>
                 </div>
                 <div class="vba-code">
@@ -314,8 +308,6 @@
 '            ReplaceCellString = True
 '        End If
     End Function
-    
-    
                     </pre>
                 </div>
                 <div class="vba-code">
@@ -342,7 +334,6 @@
         Next
         
     End Function
-    
                     </pre>
                 </div>
                 <div class="vba-code">
@@ -369,12 +360,11 @@
     Function RangeNumberToText(rng As Range)
         rng.TextToColumns FieldInfo:=Array(1, xlTextFormat)
     End Function
-    
                     </pre>
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
-                        
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' ユニークな文字列（Key）を収集(KeyとValueの区別も可能)
@@ -408,13 +398,12 @@
         
         Set CollectUnique = dctUnique
         
-    End Function
-                        
+    End Function                    
                     </pre>
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
-                        
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' 対象範囲内のユニークを数える
@@ -452,13 +441,12 @@
             CountUnique = dctUnique.Count
         End If
         
-    End Function
-                        
+    End Function     
                     </pre>
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
-                        
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' 文章中に指定した文字列が出現する回数を数える
@@ -473,12 +461,11 @@
         CountString = (Len(strOrigin) - Len(strReplace)) / Len(strSearchKey)
         
     End Function
-    
                     </pre>
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
-
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' 選択パターン数
@@ -501,12 +488,11 @@
         End If
         
     End Function
-
                     </pre>
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
-                        
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' 正規表現Replace関数
@@ -527,12 +513,11 @@
         End With
         
     End Function
-
                     </pre>
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
-
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' 月次で変更されるシート名を生成
@@ -591,12 +576,11 @@
                         
         GetMonthName = strResult
     End Function
-
                     </pre>
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">    
-
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' 入力されたフォルダパスの「存在する最深フォルダ」を特定する
@@ -663,12 +647,11 @@
         Next
         
     End Function
-
                     </pre>
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">    
-
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 '　OutlookMail操作
@@ -723,8 +706,7 @@
         Set objOutlook = Nothing
         Set objMailItem = Nothing
         
-    End Sub                    
-    
+    End Sub
                     </pre>
                 </div>
                 <div class="vba-code">
@@ -836,7 +818,6 @@
         Set AdoConnectCsvFolder = adoConnection
                 
     End Function
-    
                     </pre>
                 </div>
                 <div class="vba-code">
@@ -887,7 +868,6 @@
         Set objHtmlDoc = Nothing
         
     End Sub
-    
                     </pre>
                 </div>
                 <div class="vba-code">
@@ -928,7 +908,6 @@
         GetPointApi = Array(objJson(1)("geometry")("coordinates")(2), objJson(1)("geometry")("coordinates")(1))
         
     End Function
-    
                     </pre>
                 </div>
                 <div class="vba-code">
@@ -961,7 +940,6 @@
         ChangeDecimalToBinary = Int(strDecimal)
         
     End Function
-    
                     </pre>
                 </div>
                 <div class="vba-code">
@@ -1226,7 +1204,6 @@
         FuzzySearch = Array(strResultWord, lngResultIndex)
         
     End Function
-    
                     </pre>
                 </div>
                 <div class="vba-code">
@@ -1316,7 +1293,6 @@
         MakePermutation = aryNumbers
         
     End Function
-    
                     </pre>
                 </div>
                 <div class="vba-code">
@@ -1437,7 +1413,6 @@
         GetDistance = Sqr(dblAnswer)
         
     End Function
-    
                     </pre>
                 </div>
                 <div class="vba-code">
@@ -1503,7 +1478,6 @@
         End If
         
     End Sub
-    
                     </pre>
                 </div>
                 <div class="vba-code">
@@ -1830,7 +1804,6 @@ Option Explicit
         Next
         
     End Sub
-    
     
     
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
@@ -3389,12 +3362,11 @@ Option Explicit
         Predict = vntZ(1, 1)
         
     End Function
-
                     </pre>
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
-                        
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 '　JsonConverterの環境依存を解消
@@ -4523,7 +4495,6 @@ Option Explicit
     End Function
     
     #End If
-
                     </pre>
                 </div>
                 <div class="vba-code">
@@ -4539,7 +4510,6 @@ Option Explicit
     Const strFileFilterXL As String = "エクセルファイル (*.xls?),*.xls?"
     
     CreateObject("WScript.Shell").CurrentDirectory = "FileServer"                    
-    
                     </pre>
                 </div>
             </div>

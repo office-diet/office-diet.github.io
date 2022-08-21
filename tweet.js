@@ -360,6 +360,7 @@ window.addEventListener("load", function(){
     ["2022/06/08", "https://twitter.com/i/events/1535954702814572545", "調布市国領⇒三鷹市⇒世田谷区⇒千歳烏山", "--km", "https://pbs.twimg.com/media/FUq36ATaUAAQj83?format=jpg&name=small"], 
     ["2022/06/18", "https://twitter.com/i/events/1540933984280256512", "多摩センター⇒町田⇒小山田⇒南大沢", "--km", "https://pbs.twimg.com/media/FVe-falaUAA42Ur?format=jpg&name=small"], 
     ["2022/07/18", "https://twitter.com/i/events/1551146080775340035", "読売ランド前⇒新百合ヶ丘⇒鶴川⇒小山田⇒南大沢", "--km", "https://pbs.twimg.com/media/FX4npDYaAAAOaA1?format=jpg&name=small"], 
+    ["2022/08/17", "https://twitter.com/i/events/1561154392161939456", "相模原⇒古淵⇒小山田⇒南尾沢", "--km", "https://pbs.twimg.com/media/FaThn-PaQAAccFC?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
