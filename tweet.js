@@ -361,6 +361,7 @@ window.addEventListener("load", function(){
     ["2022/06/18", "https://twitter.com/i/events/1540933984280256512", "多摩センター⇒町田⇒小山田⇒南大沢", "--km", "https://pbs.twimg.com/media/FVe-falaUAA42Ur?format=jpg&name=small"], 
     ["2022/07/18", "https://twitter.com/i/events/1551146080775340035", "読売ランド前⇒新百合ヶ丘⇒鶴川⇒小山田⇒南大沢", "--km", "https://pbs.twimg.com/media/FX4npDYaAAAOaA1?format=jpg&name=small"], 
     ["2022/08/17", "https://twitter.com/i/events/1561154392161939456", "相模原⇒古淵⇒小山田⇒南大沢", "--km", "https://pbs.twimg.com/media/FaThn-PaQAAccFC?format=jpg&name=small"], 
+    ["2022/08/27", "https://twitter.com/i/events/1563782687017431040", "江東区塩浜⇒大島⇒亀戸⇒小松川⇒新川さくら館⇒新砂大橋", "--km", "https://pbs.twimg.com/media/FbKjp2uagAMQ1PO?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");

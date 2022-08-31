@@ -508,7 +508,7 @@
             
             .Pattern = strRegExp
             .Global = True
-            RegExpReplace = .Replace(strOrigin, strReplace)
+            ReplaceRegExp = .Replace(strOrigin, strReplace)
             
         End With
         
@@ -638,7 +638,17 @@
         DigFolder = strExistsPath
         
     End Function
-    
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">    
+
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' オートフィルタの解除（可変長引数）
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
     Function ClearAutoFilter(ParamArray aryWorksheets() As Variant)
         
         Dim vntWorksheet As Variant
@@ -4505,7 +4515,7 @@ Option Explicit
 ' 頻出定数・短コード
 '
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-        
+    
     Const strFileFilterCsv As String = "CSVファイル(*.csv),*.csv"
     Const strFileFilterXL As String = "エクセルファイル (*.xls?),*.xls?"
     
