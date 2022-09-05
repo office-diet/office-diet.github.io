@@ -579,8 +579,37 @@
                     </pre>
                 </div>
                 <div class="vba-code">
-                    <pre class="prettyprint lang-vb linenums" lang="vb">    
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
     
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 文字列をファイルパスとして結合
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function TextJoinAsPath(ParamArray aryString() As Variant) As String
+        
+        Dim vntString As Variant
+        Dim strPath As String
+        
+        For Each vntString In aryString
+            If strPath = "" Then
+                strPath = vntString
+            ElseIf Right(strPath, 1) = "\" Then
+                strPath = strPath & vntString
+            Else
+                strPath = strPath & "\" & vntString
+            End If
+        Next
+        
+        TextJoinAsPath = strPath
+    End Function
+
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' 入力されたフォルダパスの「存在する最深フォルダ」を特定する
