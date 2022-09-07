@@ -45,6 +45,24 @@
         GetLastColumn = ws.Cells(lngRow, ws.Columns.Count).End(xlToLeft).Column
         
     End Function
+    
+    Function SearchLastRow(ByVal ws As Worksheet, aryColumns As Variant)
+        Dim vntColumn As Variant
+        Dim lngFindLastRow As Long
+        For Each vntColumn In aryColumns
+            lngFindLastRow = Max(lngFindLastRow, GetLastRow(ws, vntColumn))
+        Next
+        SearchLastRow = lngFindLastRow
+    End Function
+    
+    Function SearchLastColumn(ByVal ws As Worksheet, aryRows As Variant)
+        Dim vntRow As Variant
+        Dim lngFindLastColumn As Long
+        For Each vntRow In aryRows
+            lngFindLastColumn = Max(lngFindLastColumn, GetLastRow(ws, vntRow))
+        Next
+        SearchLastColumn = lngFindLastColumn
+    End Function
                     </pre>
                 </div>
                 <div class="vba-code">
@@ -189,6 +207,89 @@
             
         Match = 0
         
+    End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' テキストファイルでメッセージを表示する
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Sub MessageByTextFile(ByVal strMessage As String, Optional ByVal strFileName As String = "MESSAGE_LOG.txt", Optional ByVal blnKillLogFile As Boolean = False)
+        
+        'ADODB.Stream定数
+        Const adTypeBinary As Integer = 1
+        Const adTypeText As Integer = 2
+        Const adSaveCreateNotExist As Integer = 1
+        Const adSaveCreateOverWrite As Integer = 2
+        Const adWriteChar As Integer = 0
+        Const adWriteLine As Integer = 1
+        
+        Dim strLogFilePath As String
+        strLogFilePath = TextJoinAsPath(ThisWorkbook.Path, strFileName)
+        
+        'テキストファイルを生成
+        Dim objAdoStream As Object
+        Set objAdoStream = CreateObject("ADODB.Stream")
+        With objAdoStream
+            .Type = adTypeText
+            .Charset = "UTF-8"
+            .Open
+            .WriteText strMessage, adWriteLine
+            .SaveToFile strLogFilePath, adSaveCreateOverWrite
+            .Close
+            Set objAdoStream = Nothing
+        End With
+        
+        'テキストファイルを最前面に表示
+        Shell ("notepad.exe" & " " & strLogFilePath), vbNormalFocus
+        
+        'テキストファイルは削除？
+        If blnKillLogFile = True Then
+            Kill strLogFilePath
+        End If
+        
+    End Sub
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' シートを名称の部分一致で取得
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    '定数
+    Const intHeadMatch As Integer = 0
+    Const intMidMatch As Integer = 1
+    Const intEndMatch As Integer = 2
+    
+    Function SearchWorksheet(ByVal strWorksheetBaseName As String, ByVal intMatchType As Integer) As Worksheet
+        
+        '先頭一致・中間一致・末尾一致
+        Dim strSearchKey As String
+        If intMatchType = intHeadMatch Then
+            strSearchKey = strWorksheetBaseName & "*"
+        ElseIf intMatchType = intMidMatch Then
+            strSearchKey = "*" & strWorksheetBaseName & "*"
+        Else
+            strSearchKey = "*" & strWorksheetBaseName
+        End If
+        
+        '部分一致（Like）で検索
+        Dim ws As Variant
+        For Each ws In ThisWorkbook.Worksheets
+            If ws.Name Like strSearchKey Then
+                Set SearchWorksheet = ws
+                Exit Function
+            End If
+        Next
     End Function
                     </pre>
                 </div>
@@ -498,7 +599,7 @@
 ' 正規表現Replace関数
 '
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-
+    
     Function ReplaceRegExp(ByVal strOrigin As String, ByVal strRegExp As String, ByVal strReplace As String) As String
         
         Dim objRegExp As Object
@@ -512,6 +613,32 @@
             
         End With
         
+    End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 正規表現にマッチした文字列を抽出
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function PickUpRegExp(ByVal strOrigin As String, ByVal strRegExp As String) As String
+        
+        Dim objRegExp As Object
+        Set objRegExp = CreateObject("VBScript.RegExp")
+        
+        With objRegExp
+            .Pattern = strRegExp
+            .Global = False
+            
+            On Error Resume Next
+            PickUpRegExp = .Execute(strOrigin)(0).Value
+            On Error GoTo 0
+            
+        End With
     End Function
                     </pre>
                 </div>
@@ -604,12 +731,11 @@
         
         TextJoinAsPath = strPath
     End Function
-
                     </pre>
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
-
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' 入力されたフォルダパスの「存在する最深フォルダ」を特定する
@@ -671,13 +797,13 @@
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
-
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' オートフィルタの解除（可変長引数）
 '
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-
+    
     Function ClearAutoFilter(ParamArray aryWorksheets() As Variant)
         
         Dim vntWorksheet As Variant
