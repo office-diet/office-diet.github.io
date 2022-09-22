@@ -569,6 +569,40 @@
     
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
+' 文字列中の前後スペース・ダブルスペースを削除
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function DeleteSpace(ByVal strOrigin As String, ByVal intType As vbWideOrNarrow) As String
+        
+        'ツール内では一旦半角スペースを基準に処理
+        Const strSingleSpace As String = " "
+        Const strDoubleSpace As String = "  "
+        Const strWideSpace As String = "　"
+        
+        Dim strResult As String
+        strResult = Replace(Trim(strOrigin), "　", " ")
+        If InStr(strResult, strDoubleSpace) <> 0 Then
+            
+            'ダブルスペースがなくなるまでループ
+            Do While InStr(strResult, strDoubleSpace) <> 0
+                strResult = Replace(strResult, strDoubleSpace, strSingleSpace)
+            Loop
+        End If
+        
+        If intType = vbWide Then
+            strResult = Replace(strResult, strSingleSpace, strWideSpace)
+        End If
+        
+        DeleteSpace = strResult
+    End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
 ' 選択パターン数
 '
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
@@ -640,6 +674,58 @@
             
         End With
     End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 正規表現にマッチするパターンが文字列の中に含まれるか？
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function IncludeRegExp(ByVal strOrigin As String, ByVal strRegExp As String) As Boolean
+        
+        Dim objRegExp As Object
+        Set objRegExp = CreateObject("VBScript.RegExp")
+        
+        With objRegExp
+            
+            .Pattern = strRegExp
+            .Global = True
+            
+            If .Execute(strOrigin).Count > 0 Then
+                IncludeRegExp = True
+            Else
+                IncludeRegExp = False
+            End If
+        End With
+        
+    End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' Colorプロパティの「数値」からRGB分解・計算
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function GetRGB(ByVal lngColor As Long) As Variant
+        
+        Dim intR As Integer
+        Dim intG As Integer
+        Dim intB As Integer
+        intR = lngColor Mod 256
+        intG = ((lngColor Mod 256 ^ 2) - intB) / 256
+        intB = Int(lngColor / (256 ^ 2))
+        
+        GetRGB = Array(intR, intG, intB)
+        
+    End Function                    
                     </pre>
                 </div>
                 <div class="vba-code">
@@ -872,6 +958,25 @@
         Set objMailItem = Nothing
         
     End Sub
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+'　Outlook下書きフォルダ件数確認
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function CheckOutlookFolderItemsCount()
+            
+        '★Outlookの参照設定を行っていない場合、Accountsのインデックスを指定するとがエラーが発生します。
+        Dim objOutlookAccount As Object
+        Set objOutlookAccount = CreateObject("Outlook.Application").Session.Accounts
+        CheckOutlookFolderItemsCount = objOutlookAccount(1).DeliveryStore.GetDefaultFolder(16).items.Count
+
+    End Function
                     </pre>
                 </div>
                 <div class="vba-code">
