@@ -362,6 +362,9 @@ window.addEventListener("load", function(){
     ["2022/07/18", "https://twitter.com/i/events/1551146080775340035", "読売ランド前⇒新百合ヶ丘⇒鶴川⇒小山田⇒南大沢", "--km", "https://pbs.twimg.com/media/FX4npDYaAAAOaA1?format=jpg&name=small"], 
     ["2022/08/17", "https://twitter.com/i/events/1561154392161939456", "相模原⇒古淵⇒小山田⇒南大沢", "--km", "https://pbs.twimg.com/media/FaThn-PaQAAccFC?format=jpg&name=small"], 
     ["2022/08/27", "https://twitter.com/i/events/1563782687017431040", "江東区塩浜⇒大島⇒亀戸⇒小松川⇒新川さくら館⇒新砂大橋", "--km", "https://pbs.twimg.com/media/FbKjp2uagAMQ1PO?format=jpg&name=small"], 
+    ["2022/09/04", "https://twitter.com/i/events/1570952050384699395", "白黒の東京", "--km", "https://pbs.twimg.com/media/FbzllKyUUAARj57?format=png&name=small"], 
+    ["2022/09/14", "https://twitter.com/i/events/1570947660286414848", "布田⇒柴崎⇒つつじヶ丘⇒烏山病院", "--km", "https://pbs.twimg.com/media/FckOu_xaQAEWWpH?format=jpg&name=small"], 
+    ["2022/09/24", "https://twitter.com/i/events/1575801069610815488", "八王子⇒日野⇒豊田⇒八王子⇒南大沢⇒堀之内", "--km", "https://pbs.twimg.com/media/FdX9rXLakAE1r7u?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
