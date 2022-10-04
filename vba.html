@@ -731,6 +731,24 @@
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
     
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 年度を取得
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function GetYearPeriod(ByVal dteTarget As Date) As String
+        If Month(dteTarget) < 4 Then
+            GetYearPeriod = Format(Year(dteTarget) - 1, "0000年度")
+        Else
+            GetYearPeriod = Format(Year(dteTarget), "0000年度")
+        End If
+    End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' 月次で変更されるシート名を生成
@@ -738,13 +756,14 @@
 '
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
     
-    Function GetMonthName(ByVal strOrigin As String, ByVal dteTargetMonth As Date) As String
+    Function ReplaceDateName(ByVal strOrigin As String, ByVal dteTargetMonth As Date) As String
         
         '置換に使用するPlaceHolder
         Const strStar As String = "★"
         Dim aryPlaceHolders As Variant
         aryPlaceHolders = Array("YY", "YYYY", "M", "MM", _
-                                "YYM", "YYMM", "YYYYM", "YYYYMM")
+                                "YYM", "YYMM", "YYYYM", "YYYYMM", _
+                                "YYMD", "YYMMDD", "YYYYMd", "YYYYMMDD")
         Dim strResult As String
         strResult = strOrigin
         
@@ -787,8 +806,8 @@
                                 Format(intPeriod, vntPlaceHolder(1)))
         Next
                         
-        GetMonthName = strResult
-    End Function
+        ReplaceDateName = strResult
+    End Function                        
                     </pre>
                 </div>
                 <div class="vba-code">
@@ -884,6 +903,32 @@
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
     
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 指定フォルダのファイル数をカウント
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function CountFileInFolder(ByVal strSearchKey) As Long
+        
+        Dim lngCount As Long
+        Dim strFindFile As String
+        
+        strFindFile = Dir(strSearchKey)
+        
+        Do While strFindFile <> ""
+            lngCount = lngCount + 1
+            strFindFile = Dir()
+        Loop
+        
+        CountFileInFolder = lngCount
+        
+    End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' オートフィルタの解除（可変長引数）
@@ -965,10 +1010,11 @@
     
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
-'　Outlook下書きフォルダ件数確認
+'　Outlook下書きフォルダ操作各種
 '
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
     
+    '下書きフォルダの現在の保存件数
     Function CheckOutlookFolderItemsCount()
             
         '★Outlookの参照設定を行っていない場合、Accountsのインデックスを指定するとがエラーが発生します。
@@ -976,6 +1022,29 @@
         Set objOutlookAccount = CreateObject("Outlook.Application").Session.Accounts
         CheckOutlookFolderItemsCount = objOutlookAccount(1).DeliveryStore.GetDefaultFolder(16).items.Count
 
+    End Function
+    
+    '下書きフォルダの本文のHTMLを取得
+    Function GetHTML()
+        
+        '★Outlookの参照設定を行っていない場合、Accountsのインデックスを指定するとがエラーが発生します。
+        Dim objOutlookAccount As Object
+        Set objOutlookAccount = CreateObject("Outlook.Application").Session.Accounts
+        GetHTML = objOutlookAccount(1).DeliveryStore.GetDefaultFolder(16).items(2).htmlbody
+        
+    End Function
+    
+    '下書きフォルダの本文のHTMLを変更
+    Function SetHtml()
+        
+        '★Outlookの参照設定を行っていない場合、Accountsのインデックスを指定するとがエラーが発生します。
+        Dim objOutlookAccount As Object
+        Dim objMailItem As Object
+        Set objOutlookAccount = CreateObject("Outlook.Application").Session.Accounts
+        Set objMailItem = objOutlookAccount(1).DeliveryStore.GetDefaultFolder(16).items(2)
+        objMailItem.htmlbody = "<font face=""メイリオ"" style=""background-color: lightskyblue; color: white; border: 1px solid black; margin: 10px;"">楽しい</font>だろうか？"
+        objMailItem.Save
+        
     End Function
                     </pre>
                 </div>
