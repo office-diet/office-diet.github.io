@@ -1010,9 +1010,30 @@
     
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
-'　Outlook下書きフォルダ操作各種
+' Outlook操作各種
 '
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    'Outlook画面が開いているか？確認
+    Function IsOpenOutlookWindow()
+            
+        If CreateObject("Outlook.Application").Explorers.Count > 0 then
+            IsOpenOutlookWindow = True
+        Else
+            IsOpenOutlookWindow = False
+        End If
+        
+    End Function
+    
+    'メインアカウントの確認
+    Function GetOutlookDefaultAccount()
+        
+        '★Outlookの参照設定を行っていない場合、Accountsのインデックスを指定するとがエラーが発生します。
+        Dim objOutlookAccount As Object
+        Set objOutlookAccount = CreateObject("Outlook.Application").Session.Accounts
+        GetOutlookDefaultAccount = objOutlookAccount(1).DisplayName
+        
+    End Function
     
     '下書きフォルダの現在の保存件数
     Function CheckOutlookFolderItemsCount()
@@ -1030,7 +1051,7 @@
         '★Outlookの参照設定を行っていない場合、Accountsのインデックスを指定するとがエラーが発生します。
         Dim objOutlookAccount As Object
         Set objOutlookAccount = CreateObject("Outlook.Application").Session.Accounts
-        GetHTML = objOutlookAccount(1).DeliveryStore.GetDefaultFolder(16).items(2).htmlbody
+        GetHTML = objOutlookAccount(1).DeliveryStore.GetDefaultFolder(16).items(1).htmlbody
         
     End Function
     
