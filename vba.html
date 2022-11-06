@@ -843,6 +843,39 @@
     
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
+' 階層をさかのぼって親フォルダを取得
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function GetParentFolderPath(Optional ByVal intBackCount = 0) As String
+        
+        Dim strFolderPath As String
+        strFolderPath = ThisWorkbook.Path
+        
+        Dim intBackIndex As Integer
+        
+        '親階層をさかのぼる回数は「絶対値」を使用
+        'さかのぼる回数が0ならば自身の保存フォルダを返却
+        For intBackIndex = 1 To Abs(intBackCount)
+            
+            '「\」が無くなったら空文字を返却
+            If InStr(strFolderPath, "\") = 0 Then
+                GetParentFolderPath = ""
+                Exit Function
+            End If
+            strFolderPath = Left(strFolderPath, InStrRev(strFolderPath, "\") - 1)
+        Next
+        
+        GetParentFolderPath = strFolderPath
+        
+    End Function                            
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
 ' 入力されたフォルダパスの「存在する最深フォルダ」を特定する
 '
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
