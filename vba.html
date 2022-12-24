@@ -215,6 +215,95 @@
     
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
+' 複数条件でインデックス検索
+' ※検索対象は5列まで！
+' ※インデックスを返却するので注意！！
+' 　検索範囲によってインデックスと行・列は一致しません。
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    '条件に一致する最初のインデックスを検索する
+    Function FindIfs(ByVal rngSearchArea1 As Range, ByVal strSearchKey1 As String, _
+                Optional ByVal rngSearchArea2 As Range = Nothing, Optional ByVal strSearchKey2 As String = "", _
+                Optional ByVal rngSearchArea3 As Range = Nothing, Optional ByVal strSearchKey3 As String = "", _
+                Optional ByVal rngSearchArea4 As Range = Nothing, Optional ByVal strSearchKey4 As String = "", _
+                Optional ByVal rngSearchArea5 As Range = Nothing, Optional ByVal strSearchKey5 As String = "") As Variant
+
+        '無駄な検索ループを省くためCountIfs関数で存在確認を実行する
+        Dim lngFindCount As Long
+        
+        'キーと範囲を配列に格納
+        Dim arySearchKeys As Variant
+        Dim arySearchArea As Variant
+        
+        '引数の数に応じて必要項目を配列に格納
+        On Error Resume Next
+        If rngSearchArea2 Is Nothing Then
+            lngFindCount = Application.WorksheetFunction.CountIfs(rngSearchArea1, strSearchKey1)
+            arySearchKeys = Array(strSearchKey1)
+            arySearchArea = Array(rngSearchArea1)
+        ElseIf rngSearchArea3 Is Nothing Then
+            lngFindCount = Application.WorksheetFunction.CountIfs(rngSearchArea1, strSearchKey1, rngSearchArea2, strSearchKey2)
+            arySearchKeys = Array(strSearchKey1, strSearchKey2)
+            arySearchArea = Array(rngSearchArea1, rngSearchArea2)
+        ElseIf rngSearchArea4 Is Nothing Then
+            lngFindCount = Application.WorksheetFunction.CountIfs(rngSearchArea1, strSearchKey1, rngSearchArea2, strSearchKey2, rngSearchArea3, strSearchKey3)
+            arySearchKeys = Array(strSearchKey1, strSearchKey2, strSearchKey3)
+            arySearchArea = Array(rngSearchArea1, rngSearchArea2, rngSearchArea3)
+        ElseIf rngSearchArea5 Is Nothing Then
+            lngFindCount = Application.WorksheetFunction.CountIfs(rngSearchArea1, strSearchKey1, rngSearchArea2, strSearchKey2, rngSearchArea3, strSearchKey3, rngSearchArea4, strSearchKey4)
+            arySearchKeys = Array(strSearchKey1, strSearchKey2, strSearchKey3, strSearchKey4)
+            arySearchArea = Array(rngSearchArea1, rngSearchArea2, rngSearchArea3, rngSearchArea4)
+        Else
+            lngFindCount = Application.WorksheetFunction.CountIfs(rngSearchArea1, strSearchKey1, rngSearchArea2, strSearchKey2, rngSearchArea3, strSearchKey3, rngSearchArea4, strSearchKey4, rngSearchArea5, strSearchKey5)
+            arySearchKeys = Array(strSearchKey1, strSearchKey2, strSearchKey3, strSearchKey4, strSearchKey5)
+            arySearchArea = Array(rngSearchArea1, rngSearchArea2, rngSearchArea3, rngSearchArea4, rngSearchArea5)
+        End If
+        
+        '① Countifs関数で発見されなかったら実行を終了
+        '② 対象セル範囲に矛盾があったらエラーのため実行終了
+        If lngFindCount = 0 Or Err.Number <> 0 Then
+            FindIfs = 0
+            Exit Function
+        End If
+        On Error GoTo 0
+        
+        Dim intItemIndex As Integer
+        Dim lngCellIndex As Long
+        
+        For lngCellIndex = 1 To rngSearchArea1.Cells.Count
+            
+            '全件一致確認
+            Dim blnMatch As Boolean
+            blnMatch = True
+            
+            'キーワード・範囲配列を順次走査
+            For intItemIndex = LBound(arySearchKeys) To UBound(arySearchKeys)
+                
+                'キーワードと検索対象セルの不一致が発見されたらFalseを設定
+                If Not arySearchKeys(intItemIndex) Like arySearchArea(intItemIndex).Cells(lngCellIndex).Value Then
+                    blnMatch = False
+                End If
+                
+                '全件一致したら発見されたインデックスを返却
+                If blnMatch = True Then
+                    FindIfs = lngCellIndex
+                    Exit Function
+                End If
+                
+            Next
+        Next
+        
+        FindIfs = 0
+        
+    End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
 ' テキストファイルでメッセージを表示する
 '
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
@@ -254,6 +343,22 @@
         End If
         
     End Sub
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 文字列のバイト数を取得
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function GetLenB(ByVal strText As String) As Integer
+        
+        GetLenB = LenB(StrConv(strText, vbFromUnicode))
+        
+    End Function
                     </pre>
                 </div>
                 <div class="vba-code">
