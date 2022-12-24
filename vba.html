@@ -1118,8 +1118,6 @@
         With typMailSettings
             
             'メール各設定
-            objMailItem.SendUsingAccount = .From
-            objMailItem.SentOnBehalfOfName = .From
             objMailItem.To = .To
             objMailItem.Cc = .Cc
             objMailItem.Bcc = .Bcc
@@ -1130,6 +1128,10 @@
 '            objMailItem.BodyFormat = olFormatHTML
 '            objMailItem.HtmlBody = .HtmlBody
             
+            '下書きを保存するアカウントを指定
+            Dim objAccounts As Object
+            Set objAccounts = objOutlook.Session.Accounts.Item(.From)
+            Set objMailItem.SendUsingAccount = objAccounts            
             
             'メール保存
             objMailItem.Save
