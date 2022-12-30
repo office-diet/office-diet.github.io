@@ -1101,9 +1101,11 @@
         Subject As String
         Body As String
         HtmlBody As String
+        EntryId as String
     End Type
     
     '構造体でデータを受け取り、メール作成・保存を行う
+    ’※送信時に使用するためにメールのIDを返却
     Sub MakeAndSaveMail(typMailSettings As MailSettings)
         
         Const olMailItem As Integer = 0
@@ -1124,9 +1126,9 @@
             objMailItem.Subject = .Subject
             
             '本文
-            objMailItem.Body = .Body
-'            objMailItem.BodyFormat = olFormatHTML
-'            objMailItem.HtmlBody = .HtmlBody
+            objMailItem.BodyFormat = olFormatHTML
+            objMailItem.HtmlBody = .HtmlBody
+'            objMailItem.Body = .Body
             
             '下書きを保存するアカウントを指定
             Dim objAccounts As Object
@@ -1136,6 +1138,9 @@
             'メール保存
             objMailItem.Save
             
+            ’メールのIDを構造体に格納して返却
+            .EntryId = objMailItem.EntryId
+            
         End With
         
         'オブジェクト解放
@@ -1143,6 +1148,43 @@
         Set objMailItem = Nothing
         
     End Sub
+    
+    '指定したアカウントの下書きフォルダの指定メールを送信
+    Function SendMailByAccountAndMailId(ByVal strOutlookAccount As String, ByVal strMailId As String) As Boolean
+        
+        'Outlookオブジェクト生成
+        Dim objOutlook As Object
+        Dim objAccounts As Object
+        Dim objNameSpace As Object
+        Dim objItem As Object
+        
+        Set objOutlook = CreateObject("Outlook.Application")
+        Set objAccounts = objOutlook.Session.Accounts
+        
+        '指定アカウント・指定メールにアクセスできなかったら終了
+        On Error Resume Next
+        Set objNameSpace = objAccounts(strOutlookAccount).Application.GetNamespace("MAPI")
+        Set objItem = objNameSpace.GetItemFromID(strMailId)
+        
+        If Err.Number <> 0 Then
+            SendMailByAccountAndMailId = False
+            Exit Function
+        End If
+        
+        'マクロでメール送信すると謎のエラーが発生することが多いため
+        '表示してから送信することでエラーを回避
+        objItem.Display
+        'objItem.Send
+        
+        'オブジェクト解放
+        Set objOutlook = Nothing
+        Set objAccounts = Nothing
+        Set objNameSpace = Nothing
+        Set objItem = Nothing
+        
+        SendMailByAccountAndMailId = True
+        
+    End Function
                     </pre>
                 </div>
                 <div class="vba-code">
@@ -1155,18 +1197,48 @@
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
     
     'Outlook画面が開いているか？確認
-    Function IsOpenOutlookWindow()
-            
+    Function IsOpenOutlookWindow(ByVal blnShowMessage as String)
+        
         If CreateObject("Outlook.Application").Explorers.Count > 0 then
             IsOpenOutlookWindow = True
         Else
+            If blnShowMessage = True Then
+                MsgBox "Outlookアプリが起動されていません。" & vbCrLf & _
+                    "Outlookアプリを手動で起動・ログインしてからマクロを実行してください。" & vbCrLf & _
+                    "実行を中止します。", vbExclamation
+            End If
             IsOpenOutlookWindow = False
         End If
         
     End Function
     
+    'Outlookの指定アカウントにログインしているか確認
+    Function IsLoginOutlook(ByVal strOutlookAccount As String, ByVal blnShowMessage As Boolean) As Boolean
+        
+        '★Outlookの参照設定を行っていない場合、Accountsのインデックスを指定するとがエラーが発生します。
+        Dim objOutlookAccount As Object
+        Set objOutlookAccount = CreateObject("Outlook.Application").Session.Accounts
+        
+        '指定アカウントを操作できない⇒ログインしていないと判断
+        '※DisplayNameを取得する事に特別な意味はありません。
+        On Error Resume Next
+        Dim strDisplayName As String
+        strDisplayName = objOutlookAccount(strOutlookAccount).DisplayName
+        If Err.Number <> 0 Then
+            IsLoginOutlook = False
+            If blnShowMessage = True Then
+                MsgBox "指定アカウント「" & strOutlookAccount & "」にログインしていません。" & vbCrLf & _
+                        "指定アカウントにログインしてから再度実行してください。" & vbCrLf & _
+                        "実行を中止します。", vbExclamation
+            End If
+        Else
+            IsLoginOutlook = True
+        End If
+        On Error GoTo 0
+    End Function
+    
     'メインアカウントの確認
-    Function GetOutlookDefaultAccount()
+    Function GetOutlookDefaultAccount() As String
         
         '★Outlookの参照設定を行っていない場合、Accountsのインデックスを指定するとがエラーが発生します。
         Dim objOutlookAccount As Object
@@ -1176,35 +1248,73 @@
     End Function
     
     '下書きフォルダの現在の保存件数
-    Function CheckOutlookFolderItemsCount()
-            
-        '★Outlookの参照設定を行っていない場合、Accountsのインデックスを指定するとがエラーが発生します。
-        Dim objOutlookAccount As Object
-        Set objOutlookAccount = CreateObject("Outlook.Application").Session.Accounts
-        CheckOutlookFolderItemsCount = objOutlookAccount(1).DeliveryStore.GetDefaultFolder(16).items.Count
-
-    End Function
-    
-    '下書きフォルダの本文のHTMLを取得
-    Function GetHTML()
+    Function CheckOutlookFolderItemsCount(ByVal strOutlookAccount As String)
         
         '★Outlookの参照設定を行っていない場合、Accountsのインデックスを指定するとがエラーが発生します。
         Dim objOutlookAccount As Object
         Set objOutlookAccount = CreateObject("Outlook.Application").Session.Accounts
-        GetHTML = objOutlookAccount(1).DeliveryStore.GetDefaultFolder(16).items(1).htmlbody
+        CheckOutlookFolderItemsCount = objOutlookAccount(ByVal strOutlookAccount as String).DeliveryStore.GetDefaultFolder(16).items.Count
+        
+    End Function
+    
+    '下書きフォルダの本文のHTMLを取得
+    Function GetHTML(ByVal strOutlookAccount As String)
+        
+        '★Outlookの参照設定を行っていない場合、Accountsのインデックスを指定するとがエラーが発生します。
+        Dim objOutlookAccount As Object
+        Set objOutlookAccount = CreateObject("Outlook.Application").Session.Accounts
+        GetHTML = objOutlookAccount(ByVal strOutlookAccount as String).DeliveryStore.GetDefaultFolder(16).items(1).htmlbody
         
     End Function
     
     '下書きフォルダの本文のHTMLを変更
-    Function SetHtml()
+    Function SetHtml(ByVal strOutlookAccount As String)
         
         '★Outlookの参照設定を行っていない場合、Accountsのインデックスを指定するとがエラーが発生します。
         Dim objOutlookAccount As Object
         Dim objMailItem As Object
         Set objOutlookAccount = CreateObject("Outlook.Application").Session.Accounts
-        Set objMailItem = objOutlookAccount(1).DeliveryStore.GetDefaultFolder(16).items(2)
+        Set objMailItem = objOutlookAccount(byval strOutlookAccount as String).DeliveryStore.GetDefaultFolder(16).items(2)
         objMailItem.htmlbody = "<font face=""メイリオ"" style=""background-color: lightskyblue; color: white; border: 1px solid black; margin: 10px;"">楽しい</font>だろうか？"
         objMailItem.Save
+        
+    End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' PDF加工関数
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    '************************************************
+    ' PDF用パスワード設定関数
+    ' ※PowerShellコマンドを生成して実行
+    ' ※itextsharp.dllを使用
+    '************************************************
+    Function SetPasswordPDF(ByVal strInFilePath As String, ByVal strOutFilePath As String, ByVal strPassword As String, ByVal strDllPath As String) As Boolean
+                        
+        Dim strCommand As String
+        
+        strCommand = "" & _
+            "$inpath = '" & strInFilePath & "';" & vbCrLf & _
+            "$outpath = '" & strOutFilePath & "';" & vbCrLf & _
+            "$password = '" & strPassword & "';" & vbCrLf & _
+            "$dllpath = '" & strDllPath & "';" & vbCrLf & _
+            "Add-Type -Path ($dllpath);" & vbCrLf & _
+            "$reader = New-Object iTextSharp.text.pdf.PdfReader($inpath);" & vbCrLf & _
+            "$fs = New-Object System.IO.FileStream($outpath,[System.IO.FileMode]::OpenOrCreate);" & vbCrLf & _
+            "[iTextSharp.text.pdf.PdfEncryptor]::Encrypt($reader, $fs, $true, $password, $password, [iTextSharp.text.pdf.PdfWriter]::ALLOW_PRINTING);" & vbCrLf & _
+            "$fs.Close();" & vbCrLf & _
+            "$reader.Close();"
+        
+        Dim objWSH As Object
+        Set objWSH = CreateObject("WScript.Shell")
+        objWSH.Run "powershell -Command " & strCommand, 0, True
+        
+        SetPasswordPDF = CreateObject("Scripting.FileSystemObject").FileExists(strOutFilePath)
         
     End Function
                     </pre>
