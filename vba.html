@@ -36,7 +36,11 @@
     
     Function GetLastRow(ByVal ws As Worksheet, ByVal strColumn As String) As Long
         
-        GetLastRow = ws.Cells(ws.Rows.Count, strColumn).End(xlUp).Row
+        If IsNumeric(strColumn) Then
+            GetLastRow = ws.Cells(ws.Rows.Count, strColumn * 1).End(xlUp).Row
+        Else
+            GetLastRow = ws.Cells(ws.Rows.Count, strColumn).End(xlUp).Row
+        End If
         
     End Function
     
