@@ -292,8 +292,8 @@
                     End If
                 elseIf arySearchKeys(intItemIndex) Like "<>*" Then
                     dim strSearchKey as string
-                    strSsearchKey = right(arySearchKeys(intItemIndex), len(arySearchKeys(intItemIndex)) - 2)
-                    If strSsearchKey Like arySearchArea(intItemIndex).Cells(lngCellIndex).Value Then
+                    strSearchKey = right(arySearchKeys(intItemIndex), len(arySearchKeys(intItemIndex)) - 2)
+                    If strSearchKey Like arySearchArea(intItemIndex).Cells(lngCellIndex).Value Then
                         blnMatch = False
                     End If
                 Else
@@ -1454,6 +1454,124 @@
         objMailItem.Save
         
     End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' PowerPointを使用した動画編集
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    '*************************************************
+    ' 指定動画ファイルのプロパティを取得
+    ' ※動画ファイルじゃない場合、指定プロパティが空欄のはずなので
+    ' 　返り値が無になる前提で関数を作成しています
+    '*************************************************
+    
+    Function GetVideoData(ByVal strVideoDataPath As String) As Variant
+        
+        Dim objFSO As Object
+        Set objFSO = CreateObject("Scripting.FileSystemObject")
+        
+        Dim strFileName As String
+        Dim vntDataFolder As Variant
+        strFileName = objFSO.GetFileName(strVideoDataPath)
+        vntDataFolder = objFSO.GetParentFolderName(strVideoDataPath)
+        
+        Dim objNameSpace As Object
+        Set objNameSpace = CreateObject("Shell.Application").Namespace(vntDataFolder)
+        
+        '「ファイル名」「長さ」「フレーム幅」「フレーム高」
+        Dim aryResult(1 To 4) As Variant
+        aryResult(1) = strFileName
+        
+        'プロパティの数は膨大なのでとりあえず「500」まで調査する
+        Dim intIndex As Integer
+        For intIndex = 0 To 500
+            
+            '動画ファイルであれば下記プロパティがすべてあるはず！！
+            If objNameSpace.GetDetailsOf(Nothing, intIndex) = "長さ" Then
+                aryResult(2) = objNameSpace.GetDetailsOf(objNameSpace.ParseName(strFileName), intIndex)
+            ElseIf objNameSpace.GetDetailsOf(Nothing, intIndex) = "フレーム幅" Then
+                aryResult(3) = objNameSpace.GetDetailsOf(objNameSpace.ParseName(strFileName), intIndex)
+            ElseIf objNameSpace.GetDetailsOf(Nothing, intIndex) = "フレーム高" Then
+                aryResult(4) = objNameSpace.GetDetailsOf(objNameSpace.ParseName(strFileName), intIndex)
+            End If
+            
+            '全てのプロパティが揃ったら配列を返却
+            '※「プロパティが揃わなかったら動画ではない」と判断し値を返さない
+            If aryResult(2) <> "" And aryResult(3) <> "" And aryResult(4) <> "" Then
+                GetVideoData = aryResult
+                Exit Function
+            End If
+        Next
+        
+    End Function
+    
+    
+    '*************************************************
+    ' 指定動画ファイル・設定を適用したスライドを追加
+    ' ※PowerPointPresentationは関数外で作成済み
+    '
+    '   'PowerPointファイルを新規作成
+    '   Dim objPowerPointPresentation As Object
+    '   Set objPowerPointPresentation = CreateObject("PowerPoint.Application").Presentations.Add
+    '
+    '   '各種設定の完了したパワポを動画出力
+    '   objPowerPointPresentation.CreateVideo Filename:=wsMain.Range(strRngOutputFileName).Value, VertResolution:=1080, Quality:=80
+    '
+    '*************************************************
+    
+    Sub AddMovieSlide(ByVal strFilePath As String, ByVal dteStartTime As Date, ByVal dteEndTime As Date, ByVal objPowerPointPresentation As Object)
+        
+        '「時間」を「1/1000秒単位の整数」に変換
+        Dim lngStartTime As Long
+        Dim lngEndTime As Long
+        lngStartTime = dteStartTime * 24 * 60 * 60 * 1000
+        lngEndTime = dteEndTime * 24 * 60 * 60 * 1000
+        
+        '末尾にスライドを追加
+        Dim intSlideIndex As Integer
+        intSlideIndex = objPowerPointPresentation.Slides.Count + 1
+        objPowerPointPresentation.Slides.Add intSlideIndex, 1
+        
+        '追加した末尾のスライドを操作
+        With objPowerPointPresentation.Slides(intSlideIndex)
+            
+            'スライドに動画を追加
+            '※スライドいっぱいのサイズに引き伸ばし
+            Call .Shapes.AddMediaObject2(Top:=0, Left:=0, _
+                    Width:=objPowerPointPresentation.PageSetup.SlideWidth, _
+                    Height:=objPowerPointPresentation.PageSetup.SlideHeight, _
+                    Filename:=strFilePath)
+            
+            '動画の開始・終了タイミングを設定
+            With .Shapes(.Shapes.Count)
+                .MediaFormat.StartPoint = lngStartTime
+                .MediaFormat.EndPoint = lngEndTime
+            End With
+            
+            '動画の自動再生などを設定
+            With .Shapes(.Shapes.Count).AnimationSettings
+                .AdvanceMode = 2
+                .AdvanceTime = 0
+                .Animate = True
+                .PlaySettings.PlayOnEntry = True
+            End With
+            
+            '動画の再生時間とスライドの表示時間を一致させる
+            '※スライドは「秒」指定なので「/1000」必須！
+            With .SlideShowTransition
+                .AdvanceOnTime = True
+                .AdvanceTime = (lngEndTime - lngStartTime) / 1000
+            End With
+            
+        End With
+                
+    End Sub
                     </pre>
                 </div>
                 <div class="vba-code">
