@@ -365,6 +365,13 @@ window.addEventListener("load", function(){
     ["2022/09/04", "https://twitter.com/i/events/1570952050384699395", "白黒の東京", "--km", "https://pbs.twimg.com/media/FbzllKyUUAARj57?format=png&name=small"], 
     ["2022/09/14", "https://twitter.com/i/events/1570947660286414848", "布田⇒柴崎⇒つつじヶ丘⇒烏山病院", "--km", "https://pbs.twimg.com/media/FckOu_xaQAEWWpH?format=jpg&name=small"], 
     ["2022/09/24", "https://twitter.com/i/events/1575801069610815488", "八王子⇒日野⇒豊田⇒八王子⇒南大沢⇒堀之内", "--km", "https://pbs.twimg.com/media/FdX9rXLakAE1r7u?format=jpg&name=small"], 
+    ["2022/10/19", "https://twitter.com/i/events/1584100948065935360", "ゆうひの丘⇒聖蹟桜ヶ丘⇒多摩丘陵⇒南大沢⇒京王堀之内", "--km", "https://pbs.twimg.com/media/FfafUFBUoAAAyI5?format=jpg&name=small"], 
+    ["2022/10/29", "https://twitter.com/i/events/1586270544751603712", "豊洲⇒月島⇒築地⇒竹芝⇒田町⇒大門", "--km", "https://pbs.twimg.com/media/FgMc54qagAE4PaU?format=jpg&name=small"], 
+    ["2022/11/16", "https://twitter.com/i/events/1594073923313754113", "相模原⇒橋本⇒南大沢⇒小山田⇒多摩センター", "--km", "https://pbs.twimg.com/media/Fhp2ZtEaMAESe_L?format=jpg&name=small"], 
+    ["2023/02/15", "https://office-diet.github.io/tweets/20230215.html", "橋本⇒小山田⇒南大沢", "--km", "https://pbs.twimg.com/media/Fo-ghZPaAAE5xAD?format=jpg&name=small"], 
+    ["2023/02/19", "https://office-diet.github.io/tweets/20230219.html", "塩浜⇒辰巳⇒潮見", "--km", "https://pbs.twimg.com/media/FpU6MLWaUAE-9-4?format=jpg&name=small"], 
+    ["2023/02/23", "https://office-diet.github.io/tweets/20230223.html", "清砂大橋⇒葛西周辺⇒塩浜", "--km", "https://pbs.twimg.com/media/Fpnf581aQAAFItU?format=jpg&name=small"], 
+    ["2023/02/25", "https://office-diet.github.io/tweets/20230225.html", "豊洲⇒お台場⇒東京ビッグサイト⇒塩浜", "--km", "https://pbs.twimg.com/media/FpwX3_paMAA4hSP?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
