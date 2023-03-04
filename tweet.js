@@ -372,6 +372,9 @@ window.addEventListener("load", function(){
     ["2023/02/19", "https://office-diet.github.io/tweets/20230219.html", "塩浜⇒辰巳⇒潮見", "--km", "https://pbs.twimg.com/media/FpU6MLWaUAE-9-4?format=jpg&name=small"], 
     ["2023/02/23", "https://office-diet.github.io/tweets/20230223.html", "清砂大橋⇒葛西周辺⇒塩浜", "--km", "https://pbs.twimg.com/media/Fpnf581aQAAFItU?format=jpg&name=small"], 
     ["2023/02/25", "https://office-diet.github.io/tweets/20230225.html", "豊洲⇒お台場⇒東京ビッグサイト⇒塩浜", "--km", "https://pbs.twimg.com/media/FpwX3_paMAA4hSP?format=jpg&name=small"], 
+    ["2023/02/26", "https://office-diet.github.io/tweets/20230226.html", "江東区塩浜周辺", "--km", "https://pbs.twimg.com/media/Fp4uS18acAI9FOt?format=jpg&name=small"], 
+    ["2023/02/27", "https://office-diet.github.io/tweets/20230227.html", "江東区塩浜・木場周辺", "--km", "https://pbs.twimg.com/media/FqIjqx5agAEQDNo?format=jpg&name=small"], 
+    ["2023/03/04", "https://office-diet.github.io/tweets/20230304.html", "江東区塩浜⇒清砂大橋⇒富士公園⇒なぎさ公園⇒ディズニーランド", "--km", "https://pbs.twimg.com/media/FqV4o8OakAAgSEc?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
