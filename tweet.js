@@ -381,6 +381,7 @@ window.addEventListener("load", function(){
     ["2023/03/09", "https://office-diet.github.io/tweets/20230309.html", "塩浜⇒辰巳⇒木場⇒大門", "--km", "https://pbs.twimg.com/media/FqubalTaIAA7c_z?format=jpg&name=small"], 
     ["2023/03/10", "https://office-diet.github.io/tweets/20230310.html", "豊洲⇒月島⇒大門", "--km", "https://pbs.twimg.com/media/Fqzly0FaUAMdqb2?format=jpg&name=small"], 
     ["2023/03/11", "https://office-diet.github.io/tweets/20230311.html", "夢の島マリーナ⇒新木場緑道公園⇒若洲海浜公園⇒木場", "--km", "https://pbs.twimg.com/media/Fq40fdzaQAAQcGu?format=jpg&name=small"],     
+    ["2023/03/11", "https://office-diet.github.io/tweets/20230311_2.html", "東陽町⇒横十間川親水公園⇒先代掘川親水公園⇒木場", "--km", "https://pbs.twimg.com/media/Fq8CAnraEAAJdMb?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
