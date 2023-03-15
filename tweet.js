@@ -382,6 +382,9 @@ window.addEventListener("load", function(){
     ["2023/03/10", "https://office-diet.github.io/tweets/20230310.html", "豊洲⇒月島⇒大門", "--km", "https://pbs.twimg.com/media/Fqzly0FaUAMdqb2?format=jpg&name=small"], 
     ["2023/03/11", "https://office-diet.github.io/tweets/20230311.html", "夢の島マリーナ⇒新木場緑道公園⇒若洲海浜公園⇒木場", "--km", "https://pbs.twimg.com/media/Fq40fdzaQAAQcGu?format=jpg&name=small"],     
     ["2023/03/11", "https://office-diet.github.io/tweets/20230311_2.html", "東陽町⇒横十間川親水公園⇒先代掘川親水公園⇒木場", "--km", "https://pbs.twimg.com/media/Fq8CAnraEAAJdMb?format=jpg&name=small"], 
+    ["2023/03/13", "https://office-diet.github.io/tweets/20230313.html", "木場⇒門前仲町⇒大門", "--km", "https://pbs.twimg.com/media/FrC4Ua6aQAAX98N?format=jpg&name=small"], 
+    ["2023/03/14", "https://office-diet.github.io/tweets/20230314.html", "塩浜⇒隅田川⇒大門", "--km", "https://pbs.twimg.com/media/FrIJ5t-aYAYxmWq?format=jpg&name=small"], 
+    ["2023/03/15", "https://office-diet.github.io/tweets/20230315.html", "塩浜⇒木場公園⇒森下⇒新宿⇒渋谷本町⇒幡谷⇒笹塚⇒烏山", "--km", "https://pbs.twimg.com/media/FrNSuP4aYAEgLfj?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
