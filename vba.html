@@ -1130,39 +1130,49 @@
 '
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
     
-    Function TimeConvert(ByVal strTimeValue As String) As Date
+    Function TimeConvert(ByVal vntTimeValue As Variant) As Date
         
-        'も時列内に「:」があればチェック開始
-        If InStr(strTimeValue, ":") > 0 Then
-            
-            Dim aryHoursMinutes As Variant
-            aryHoursMinutes = Split(strTimeValue, ":")
-            
-            '「:」が複数あったら処理終了
-            If UBound(aryHoursMinutes) - LBound(aryHoursMinutes) <> 1 Then
-                TimeConvert = 0
-                Exit Function
-            End If
-            
-            Dim strHours As String
-            Dim strMinutes As String
-            strHours = aryHoursMinutes(LBound(aryHoursMinutes))     '1～3文字
-            strMinutes = aryHoursMinutes(UBound(aryHoursMinutes))   '絶対2文字
-            
-            '「時間：1～3文字」「分：2文字」の場合のみ処理
-            If Len(strHours) > 0 And Len(strHours) < 4 And Len(strMinutes) = 2 And IsNumeric(strHours) And IsNumeric(strMinutes) Then
+        '文字列だったら「24時間超表現」考慮
+        If TypeName(vntTimeValue) = "String" Then
+                        
+            '「[h]:mm」「[h]:mmss」の場合処理実施
+            '※時間は最大3桁
+            If IncludeRegExp(vntTimeValue, "^\d{1,3}:\d{2}(:\d{2})?$") = True Then
+                
+                Dim aryHoursMinutes As Variant
+                aryHoursMinutes = Split(vntTimeValue, ":")
+                
+                '「:」が複数あったら処理終了
+                If UBound(aryHoursMinutes) - LBound(aryHoursMinutes) <> 1 Then
+                    TimeConvert = 0
+                    Exit Function
+                End If
+                
+                Dim strHours As String
+                Dim strMinutes As String
+                strHours = aryHoursMinutes(LBound(aryHoursMinutes))     '1～3文字
+                strMinutes = aryHoursMinutes(LBound(aryHoursMinutes) + 1)   '絶対2文字
+                
+                '「時間」「分」のみ処理
                 TimeConvert = CDate("1:00") * strHours * 1 + CDate("0:01") * strMinutes * 1
-                Exit Function
+            
+            '「mm/dd hh:mm」「yyyy/mm/dd hh:mm:ss」等の場合
+            ElseIf IncludeRegExp(vntTimeValue, "^(\d{2,4}/)?\d{1,2}/\d{1,2}\s\d{1,2}:\d{2}(:\d{2})?$") = True Then
+                TimeConvert = DateValue(vntTimeValue) + TimeValue(vntTimeValue)
             End If
         
-        'エクセルシート上の時刻は「小数」になってしまう
-        ElseIf IsNumeric(strTimeValue) = True Then
-            TimeConvert = strTimeValue * 1
-            Exit Function
-        End If
+        'Date型はDate型のまま
+        ElseIf TypeName(vntTimeValue) = "Date" Then
+            TimeConvert = vntTimeValue
         
-        '体裁が時刻の形出なければ0を出力
-        TimeConvert = 0
+        '何らかの数値はDateに変換
+        ElseIf IsNumeric(vntTimeValue) Then
+            TimeConvert = vntTimeValue * 1
+        
+        '処理が不可能ならなければ0を出力
+        Else
+            TimeConvert = 0
+        End If
         
     End Function
     
@@ -1235,6 +1245,71 @@
     Function LongMinutesToTime(ByVal lngMinutes As Long) As Date
         
         LongMinutesToTime = CDate("0:01") * lngMinutes
+        
+    End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 対象月の週数（カレンダーの行数）をカウント
+' ※月またぎ週時間外を計算するため
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function GetWeekCount(ByVal dteMonthStart As Date, Optional ByVal intStartWeekday As Integer = vbSunday) As Integer
+        
+        '「カレンダーの左上」に当たる日付を特定
+        
+        '★通常カレンダー⇒26日を求める
+        '|----|----|----|------|----|----|----|
+        '| 日 | 月 | 火 |【水】| 木 | 金 | 土 |
+        '|----|----|----|------|----|----|----|
+        '| 26 | 27 | 28 |【01】| 02 | 03 | 04 |
+        '|----|----|----|------|----|----|----|
+        
+        '★月曜開始カレンダー⇒27日を求める
+        '|----|----|------|----|----|----|----|
+        '| 月 | 火 |【水】| 木 | 金 | 土 | 日 |
+        '|----|----|------|----|----|----|----|
+        '| 27 | 28 |【01】| 02 | 03 | 04 | 05 |
+        '|----|----|------|----|----|----|----|
+        
+        '★木曜開始カレンダー⇒23日を求める
+        '|----|----|----|----|----|----|------|
+        '| 木 | 金 | 土 | 日 | 月 | 火 |【水】|
+        '|----|----|----|----|----|----|------|
+        '| 23 | 24 | 25 | 26 | 27 | 28 |【01】|
+        '|----|----|----|----|----|----|------|
+        
+        '① 1日より前の曜日がカレンダー初日の場合
+        '　⇒指定曜日にさかのぼる
+        If Weekday(dteMonthStart) >= intStartWeekday Then
+            Dim dteCalenderLeftTop As Date
+            dteCalenderLeftTop = dteMonthStart - Weekday(dteMonthStart) + intStartWeekday
+        
+        '② 1日より後ろの曜日がカレンダー初日の場合
+        '　⇒指定曜日に進んでから1週間前にさかのぼる
+        Else
+            dteCalenderLeftTop = dteMonthStart + (intStartWeekday - Weekday(dteMonthStart)) - 7
+        End If
+        
+        'カレンダー各行の「左端」の月が変化したら当該月のカレンダー行数確定
+        '※
+        Dim dteCalenderLeftBottom As Date
+        dteCalenderLeftBottom = dteCalenderLeftTop
+        
+        'カレンダー「左端」の月が変化したらカウント終了
+        Do While dteCalenderLeftBottom <= Application.WorksheetFunction.EoMonth(dteMonthStart, 0)
+            Dim intWeekCount As Integer
+            intWeekCount = intWeekCount + 1
+            dteCalenderLeftBottom = dteCalenderLeftBottom + 7
+        Loop
+        
+        '当該月のカレンダー行数を返却
+        GetWeekCount = intWeekCount
         
     End Function
                     </pre>
