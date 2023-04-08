@@ -400,7 +400,12 @@ window.addEventListener("load", function(){
     ["2023/03/30", "https://office-diet.github.io/tweets/20230330.html", "洲崎神社⇒木場公園⇒大門", "--km", "https://pbs.twimg.com/media/FsaYCBNaAAQFMRX?format=jpg&name=small"], 
     ["2023/03/31", "https://office-diet.github.io/tweets/20230331.html", "門前仲町⇒大門⇒芝公園", "--km", "https://pbs.twimg.com/media/Fsf0N5kaIAIeZPs?format=jpg&name=small"], 
     ["2023/04/01", "https://office-diet.github.io/tweets/20230401.html", "亀戸天神⇒旧中川水辺公園⇒青戸⇒小松川境川親水公園⇒清新町北緑地", "--km", "https://pbs.twimg.com/media/FsmVXp2aUAAXgr8?format=jpg&name=small"], 
-  ];
+    ["2023/04/03", "https://office-diet.github.io/tweets/20230403.html", "門前仲町⇒大門", "--km", "https://pbs.twimg.com/media/FsvQKgKagAArFLW?format=jpg&name=small"], 
+    ["2023/04/04", "https://office-diet.github.io/tweets/20230404.html", "塩浜⇒木場⇒麻布⇒大門", "--km", "https://pbs.twimg.com/media/Fs0ePftaIAEStFY?format=jpg&name=small"], 
+    ["2023/04/05", "https://office-diet.github.io/tweets/20230405.html", "豊洲⇒勝鬨⇒築地", "--km", "https://pbs.twimg.com/media/Fs5aJ0eagAAE1QT?format=jpg&name=small"], 
+    ["2023/04/06", "https://office-diet.github.io/tweets/20230406.html", "豊洲⇒石川島公園", "--km", "https://pbs.twimg.com/media/Fs-omUxaIAAhWhg?format=jpg&name=small"], 
+    ["2023/04/07", "https://office-diet.github.io/tweets/20230407.html", "門前仲町⇒竹芝客船ターミナル⇒大門", "--km", "https://pbs.twimg.com/media/FtD29ykaIAATJJL?format=jpg&name=small"], 
+    ["2023/04/08", "https://office-diet.github.io/tweets/20230408.html", "木場⇒秋葉原⇒新宿⇒中野⇒烏山", "--km", "https://pbs.twimg.com/media/FtKVa_saMAAX2Vz?format=jpg&name=360x360"],   ];
   
   const formSearch = document.getElementById("search-form");
   const inputSearch = document.getElementById("search");
