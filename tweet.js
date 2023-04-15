@@ -405,7 +405,13 @@ window.addEventListener("load", function(){
     ["2023/04/05", "https://office-diet.github.io/tweets/20230405.html", "豊洲⇒勝鬨⇒築地", "--km", "https://pbs.twimg.com/media/Fs5aJ0eagAAE1QT?format=jpg&name=small"], 
     ["2023/04/06", "https://office-diet.github.io/tweets/20230406.html", "豊洲⇒石川島公園", "--km", "https://pbs.twimg.com/media/Fs-omUxaIAAhWhg?format=jpg&name=small"], 
     ["2023/04/07", "https://office-diet.github.io/tweets/20230407.html", "門前仲町⇒竹芝客船ターミナル⇒大門", "--km", "https://pbs.twimg.com/media/FtD29ykaIAATJJL?format=jpg&name=small"], 
-    ["2023/04/08", "https://office-diet.github.io/tweets/20230408.html", "木場⇒秋葉原⇒新宿⇒中野⇒烏山", "--km", "https://pbs.twimg.com/media/FtKVa_saMAAX2Vz?format=jpg&name=360x360"],   ];
+    ["2023/04/08", "https://office-diet.github.io/tweets/20230408.html", "木場⇒秋葉原⇒新宿⇒中野⇒烏山", "--km", "https://pbs.twimg.com/media/FtKVa_saMAAX2Vz?format=jpg&name=small"],
+    ["2023/04/10", "https://office-diet.github.io/tweets/20230410.html", "豊洲⇒大門⇒塩浜", "--km", "https://pbs.twimg.com/media/FtTXIgKaIAAEvH8?format=jpg&name=small"], 
+    ["2023/04/11", "https://office-diet.github.io/tweets/20230411.html", "中の島⇒大門⇒塩浜", "--km", "https://pbs.twimg.com/media/FtYi6e4aUAEQ0b_?format=jpg&name=small"], 
+    ["2023/04/12", "https://office-diet.github.io/tweets/20230412.html", "門前仲町⇒大門⇒塩浜", "--km", "https://pbs.twimg.com/media/FtdfOCjaAAAp-1Q?format=jpg&name=small"], 
+    ["2023/04/13", "https://office-diet.github.io/tweets/20230413.html", "古石場親水公園⇒汐留⇒竹芝客船ターミナル⇒塩浜", "--km", "https://pbs.twimg.com/media/FtiupU_aAAAeAy7?format=jpg&name=small"], 
+    ["2023/04/14", "https://office-diet.github.io/tweets/20230414_1.html", "豊洲⇒晴海⇒勝どき", "--km", "https://pbs.twimg.com/media/FtnrHmcaYAANPYH?format=jpg&name=small"], 
+    ["2023/04/14", "https://office-diet.github.io/tweets/20230414_2.html", "東陽町⇒南砂⇒小松川⇒塩浜", "--km", "https://pbs.twimg.com/media/FtsJOwDaIAA2scl?format=jpg&name=small"],   ];
   
   const formSearch = document.getElementById("search-form");
   const inputSearch = document.getElementById("search");
