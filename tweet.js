@@ -411,7 +411,9 @@ window.addEventListener("load", function(){
     ["2023/04/12", "https://office-diet.github.io/tweets/20230412.html", "門前仲町⇒大門⇒塩浜", "--km", "https://pbs.twimg.com/media/FtdfOCjaAAAp-1Q?format=jpg&name=small"], 
     ["2023/04/13", "https://office-diet.github.io/tweets/20230413.html", "古石場親水公園⇒汐留⇒竹芝客船ターミナル⇒塩浜", "--km", "https://pbs.twimg.com/media/FtiupU_aAAAeAy7?format=jpg&name=small"], 
     ["2023/04/14", "https://office-diet.github.io/tweets/20230414_1.html", "豊洲⇒晴海⇒勝どき", "--km", "https://pbs.twimg.com/media/FtnrHmcaYAANPYH?format=jpg&name=small"], 
-    ["2023/04/14", "https://office-diet.github.io/tweets/20230414_2.html", "東陽町⇒南砂⇒小松川⇒塩浜", "--km", "https://pbs.twimg.com/media/FtsJOwDaIAA2scl?format=jpg&name=small"],   ];
+    ["2023/04/14", "https://office-diet.github.io/tweets/20230414_2.html", "東陽町⇒南砂⇒小松川⇒塩浜", "--km", "https://pbs.twimg.com/media/FtsJOwDaIAA2scl?format=jpg&name=small"],   
+    ["2023/04/16", "https://office-diet.github.io/tweets/20230416.html", "辰巳⇒夢の島緑道公園⇒夢の島マリーナ", "--km", "https://pbs.twimg.com/media/Ft0DdOxacAEgDOz?format=jpg&name=small"], 
+  ];
   
   const formSearch = document.getElementById("search-form");
   const inputSearch = document.getElementById("search");
