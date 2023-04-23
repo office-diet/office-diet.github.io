@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>簡易デート印メーカー</title>
+    <meta name="thumbnail" content="DateStamp.jpg">
+    <meta name="description" content="簡易デート印メーカーだよ～🥰💕">
+    <style>
+    * {
+        box-sizing: border-box;
+    }
+    a {
+        text-decoration: none;
+        color: white;
+    }
+    .title, .footer {
+        background-color: dodgerblue;
+        color: white;
+        text-align: center;
+        font-weight: bold;
+        width: 300px;
+        padding: 5px;
+    }
+    .footer {
+        font-size: 10px;
+    }
+    .user-inputs {
+        display: flex;
+        flex-direction: column;
+        width: 300px;
+        justify-content: stretch;
+    }
+    .input-row {
+        margin: 5px 0;
+        display: flex;
+        flex-direction: row;
+    }
+    label {
+        display: inline-block;
+        width: 50px;
+        white-space: nowrap;
+        margin-right: 5px;
+    }
+    .user-inputs .input{
+        width: 200px;
+        margin-right: 5px;
+    }
+    .user-inputs .size {
+        width: 50px;
+    } 
+    .button {
+        margin: 5px 0 10px;
+        padding: 5px;
+        text-align: center;
+        background-color: skyblue;
+        border-radius: 5px;
+        font-weight: bold;
+        color: white;
+        width: 300px;
+        box-shadow: 0 5px dodgerblue;
+    }
+    .button:hover {
+        margin: 6px 0 9px;
+        box-shadow: 0 4px dodgerblue;
+        opacity: 0.8;
+    }
+    .button:active {
+        margin: 9px 0 6px;
+        box-shadow: 0 1px dodgerblue;
+    }
+    </style>
+</head>
+<body>
+    <div class="title">簡易デート印メーカー</div>
+    <div class="user-inputs">
+        <div class="input-row">
+            <label for="compay">社　名</label>
+            <input class="input compay" id="company" type="text"></input>
+            <input class="size company-size" id="company-size" type="number" value="48" min="1" max="180" step="1">
+        </div>
+        <div class="input-row">
+            <label for="group">部署名</label>
+            <input class="input group" id="group" type="text"></input>
+            <input class="size group-size" id="group-size" type="number" value="48" min="1" max="180" step="1">
+        </div>
+        <div class="input-row">
+            <label for="name">氏　名</label>
+            <input class="input name" id="name" type="text"></input>
+            <input class="size name-size" id="name-size" type="number" value="48" min="1" max="180" step="1">
+        </div>
+    </div>
+    <div class="button" id="clipboard-button">クリップボードにコピー</div>
+    <canvas id="canvas" width="300" height="300" style="border: solid 1px #000;box-sizing: border-box;"></canvas>
+    <div class="footer">
+        <a href="https://twitter.com/office_diet" target="_blank">Copyright © 2020-2999<br>office_diet All Rights Reserved.</a>
+    </div>
+    <script>
+        // canvas
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const canvasWidth = 300;
+        const canvasHeight = canvasWidth;
+        const fontSetting = 'px Arial, meiryo, sans-serif';
+
+        const inputCompany = document.getElementById("company");
+        const inputCompanySize = document.getElementById("company-size");
+        const inputGroup = document.getElementById("group");
+        const inputGroupSize = document.getElementById("group-size");
+        const inputName = document.getElementById("name");
+        const inputNameSize = document.getElementById("name-size");
+        const btnClipboard = document.getElementById("clipboard-button");
+
+        inputCompany.value = localStorage.getItem("company");
+        if (inputCompany.value == ""){
+            inputCompany.value = "Gaagle";
+        }
+        
+        inputCompanySize.value = localStorage.getItem("company-size");
+        if (inputCompanySize.value == ""){
+            inputCompanySize.value = "70";
+        }
+
+        inputGroup.value = localStorage.getItem("group");
+        if (inputGroup.value == ""){
+            inputGroup.value = "タレント部";
+        }
+        inputGroupSize.value = localStorage.getItem("group-size");
+        if (inputGroupSize.value == ""){
+            inputGroupSize.value = "40";
+        }
+
+        inputName.value = localStorage.getItem("name");
+        if (inputName.value == ""){
+            inputName.value = "新垣 結衣";
+        }
+        inputNameSize.value = localStorage.getItem("name-size");
+        if (inputNameSize.value == ""){
+            inputNameSize.value = "40";
+        }
+
+        makeStamp();
+
+        btnClipboard.addEventListener("click", function(){
+            
+            // 複数回実行すると成功する・・・
+            for(let j = 0; j < 10; j++){
+
+                canvas.focus();
+                canvas.click();
+
+                // 参考：https://dotnsf.blog.jp/archives/1079646769.html
+                let png = canvas.toDataURL( 'image/png' );
+                png = png.replace( /^.*,/, '' );
+                
+                let bin = atob( png );
+                let buffer = new Uint8Array( bin.length );
+                for( let i = 0; i < bin.length; i ++ ){
+                    buffer[i] = bin.charCodeAt( i );
+                }
+                let blob = new Blob( [buffer], { type: 'image/png' } );
+                
+                navigator.clipboard.write([
+                new ClipboardItem({
+                    'image/png': blob
+                })
+                ]);
+            }
+        });
+
+        // 各種入力を即時反映
+        inputCompany.addEventListener("keyup", function(){
+            localStorage.setItem("company", inputCompany.value);
+            makeStamp();
+        });
+        inputCompanySize.addEventListener("keyup", function(){
+            localStorage.setItem("company-size", inputCompanySize.value);
+            makeStamp();
+        });
+        inputCompanySize.addEventListener("change", function(){
+            localStorage.setItem("company-size", inputCompanySize.value);
+            makeStamp();
+        });
+        inputGroup.addEventListener("keyup", function(){
+            localStorage.setItem("group", inputGroup.value);
+            makeStamp();
+        });
+        inputGroupSize.addEventListener("keyup", function(){
+            localStorage.setItem("group-size", inputGroupSize.value);
+            makeStamp();
+        });
+        inputGroupSize.addEventListener("change", function(){
+            localStorage.setItem("group-size", inputGroupSize.value);
+            makeStamp();
+        });
+        inputName.addEventListener("keyup", function(){
+            localStorage.setItem("name", inputName.value);
+            makeStamp();
+        });
+        inputNameSize.addEventListener("keyup", function(){
+            localStorage.setItem("name-size", inputNameSize.value);
+            makeStamp();
+        });
+        inputNameSize.addEventListener("change", function(){
+            localStorage.setItem("name-size", inputNameSize.value);
+            makeStamp();
+        });
+
+        function makeStamp() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = "rgba(220, 220, 220)";
+            ctx.strokeStyle = "rgba(220, 220, 220)";
+            ctx.lineWidth = 3;
+            const company = inputCompany.value;
+            ctx.font = inputCompanySize.value + fontSetting;
+            let companyWidth = ctx.measureText(company).width;
+            ctx.fillText(company, (canvasWidth - companyWidth ) / 2, (canvasHeight + (inputCompanySize.value / 1.4)) / 2);
+            ctx.strokeText(company, (canvasWidth - companyWidth ) / 2, (canvasHeight + (inputCompanySize.value / 1.4)) / 2);
+
+            ctx.fillStyle = "red";
+            ctx.strokeStyle = "red"
+
+            let group = inputGroup.value;
+            ctx.font = inputGroupSize.value + fontSetting;
+            let groupWidth = ctx.measureText(group).width;
+            ctx.fillText(group, (canvasWidth - groupWidth ) / 2, (canvasHeight + (inputGroupSize.value / 1)) / 2 - 80);
+            
+            let name = inputName.value;
+            ctx.font = inputNameSize.value + fontSetting;
+            let nameWidth = ctx.measureText(name).width;
+            ctx.fillText(name, (canvasWidth - nameWidth ) / 2, (canvasHeight + (inputNameSize.value / 1.5)) / 2 + 80);
+
+            const datetime = new Date(); 
+            const date = datetime.getFullYear() + "/" + ("0" + (datetime.getMonth() + 1)).slice(-2) + "/" + ("0" + datetime.getDate()).slice(-2);
+            const dateHeight = 50;
+            ctx.font = dateHeight + fontSetting;
+            const dateWidth = ctx.measureText(date).width;
+            ctx.fillText(date, (canvasWidth - dateWidth ) / 2, (canvasHeight + (dateHeight / 1.5)) / 2);
+
+            ctx.beginPath();
+            ctx.strokeStyle = "red";
+            ctx.lineWidth = 5;
+            ctx.arc(150, 150, 140, 0, Math.PI * 2, true); // 外の円
+            ctx.moveTo(15, 110);
+            ctx.lineTo(285, 110)
+            ctx.moveTo(15, 190);
+            ctx.lineTo(285, 190)
+            ctx.stroke();
+        }
+
+    </script>
+</body>
+</html>
