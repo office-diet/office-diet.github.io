@@ -418,6 +418,9 @@ window.addEventListener("load", function(){
     ["2023/04/19", "https://office-diet.github.io/tweets/20230419.html", "木場公園⇒菊川⇒南大沢⇒小山内裏公園⇒尾根緑道⇒堀之内", "--km", "https://pbs.twimg.com/media/FuCPfcfagAAPAKz?format=jpg&name=small"], 
     ["2023/04/20", "https://office-diet.github.io/tweets/20230420.html", "豊洲ぐるり公園⇒大門", "--km", "https://pbs.twimg.com/media/FuGtQ6maYAAXsdH?format=jpg&name=small"], 
     ["2023/04/22", "https://office-diet.github.io/tweets/20230422.html", "荒川⇒葛西臨海公園⇒舞浜⇒浦安⇒行徳", "--km", "https://pbs.twimg.com/media/FuRhxqXaMAIbxiK?format=jpg&name=small"], 
+    ["2023/04/25", "https://office-diet.github.io/tweets/20230425.html", "塩浜⇒古石場親水公園", "--km", "https://pbs.twimg.com/media/FugeSPxaEAAmaBh?format=jpg&name=small"], 
+    ["2023/04/27", "https://office-diet.github.io/tweets/20230427.html", "古石場親水公園⇒東京タワー⇒芝公園", "--km", "https://pbs.twimg.com/media/Fuq5VVoagAETzCc?format=jpg&name=small"], 
+    ["2023/04/29", "https://office-diet.github.io/tweets/20230429.html", "木場公園⇒スカイツリー⇒墨田区⇒足立区⇒草加市⇒新田", "--km", "https://pbs.twimg.com/media/Fu1afbZaIAAoSSE?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
