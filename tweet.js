@@ -424,6 +424,8 @@ window.addEventListener("load", function(){
     ["2023/05/02", "https://office-diet.github.io/tweets/20230502.html", "豊洲⇒月島⇒竹芝客船ターミナル⇒大門", "--km", "https://pbs.twimg.com/media/FvEfdbcagAAE8Wc?format=jpg&name=small"], 
     ["2023/05/04", "https://office-diet.github.io/tweets/20230504.html", "塩浜⇒葛西⇒船橋⇒習志野⇒千代田⇒勝田台", "--km", "https://pbs.twimg.com/media/FvPuPamakAAep_D?format=jpg&name=small"], 
     ["2023/05/14", "https://office-diet.github.io/tweets/20230514.html", "塩浜⇒葛西⇒葛西臨海公園⇒ディズニーリゾート周辺⇒舞浜", "--km", "https://pbs.twimg.com/media/FwC8TpuakAAU764?format=jpg&name=small"], 
+    ["2023/05/17", "https://office-diet.github.io/tweets/20230517.html", "木場⇒森下⇒南大沢⇒小山内裏公園⇒堀之内⇒多摩センター", "--km", "https://pbs.twimg.com/media/FwTk-7_aUAEiX0z?format=jpg&name=small"], 
+    ["2023/05/21", "https://office-diet.github.io/tweets/20230521.html", "豊洲⇒東京ビッグサイト⇒青海⇒お台場⇒有明", "--km", "https://pbs.twimg.com/media/FwnEa8waQAEj6ln?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
