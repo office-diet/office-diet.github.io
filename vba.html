@@ -219,6 +219,41 @@
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
     
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' TextJoinの汎用化
+' ※「,区切り」「空白無視」
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function TextJoin(ByVal aryValues As Variant, Optional ByVal strDelimiter As String = ",", Optional ByVal blnSkipBlank As Boolean = True)
+        TextJoin = Application.WorksheetFunction.TextJoin(strDelimiter, blnSkipBlank, aryValues)
+    End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 列番号⇔列文字変換
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    'アルファベット⇒数値
+    Function GetColumnNumberFromName(ByVal strColumnName As String) As Long
+        GetColumnNumberFromName = ActiveSheet.Columns(strColumnName).Column
+    End Function
+    
+    '数値⇒アルファベット
+    Function GetColumnNameFromNumber(ByVal lngColumnNumber As Long) As String
+        GetColumnNameFromNumber = Split(ActiveSheet.Columns(lngColumnNumber).Address(False, False), ":")(0)
+    End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' 複数条件でインデックス検索
@@ -955,27 +990,242 @@
     
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
-' 文字列をファイルパスとして結合
+' ファイル・フォルダ処理
+' ※本関数軍は依存関係が存在するのでコピペ注意！！
 '
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+'************************************************
+' 複数の文字列をPathとして「\」で連結
+'************************************************
+Function TextJoinAsPath(ParamArray aryString() As Variant) As String
     
-    Function TextJoinAsPath(ParamArray aryString() As Variant) As String
+    Dim vntString As Variant
+    Dim strPath As String
+    
+    '「\」が既に存在するか？で条件分岐
+    For Each vntString In aryString
+        If strPath = "" Then
+            strPath = vntString
+        ElseIf Right(strPath, 1) = "\" And Left(vntString, 1) = "\" Then
+            strPath = strPath & Right(vntString, Len(vntString) - 1)
+        ElseIf Right(strPath, 1) = "\" Or Left(vntString, 1) = "\" Then
+            strPath = strPath & vntString
+        Else
+            strPath = strPath & "\" & vntString
+        End If
+    Next
+    
+    TextJoinAsPath = strPath
+End Function
+
+'************************************************
+' 指定したフォルダパスをたどり、発見された最も深いフォルダを返却
+'************************************************
+Function DigFolder(ByVal strTargetFolder As String) As String
+    
+    Do While True
         
-        Dim vntString As Variant
-        Dim strPath As String
-        
-        For Each vntString In aryString
-            If strPath = "" Then
-                strPath = vntString
-            ElseIf Right(strPath, 1) = "\" Then
-                strPath = strPath & vntString
+        '指定フォルダが存在したら終了
+        If IsFolderExists(strTargetFolder) = True Then
+            Exit Do
+            
+        'サーバなど「"\\"」始まりの場合はサーバまでさかのぼったら終了
+        '※「\\tdmfsv」はフォルダではないのでそれ以上さかのぼることはできない
+        ElseIf InStr(strTargetFolder, "\\") = 1 And InStrRev(strTargetFolder, "\") = 2 Then
+            Exit Do
+            
+        '「\」が一切なくなったら場合「ドライブ」の存在確認
+        '※「C:ドライブ」はフォルダとして認識されている
+        ElseIf InStr(strTargetFolder, "\") < 1 Then
+            
+            '指定ドライブが存在しなかったら空文字返却
+            If IsFolderExists(strTargetFolder) = False Then
+                DigFolder = ""
+                Exit Function
             Else
-                strPath = strPath & "\" & vntString
+                Exit Do
             End If
-        Next
         
-        TextJoinAsPath = strPath
-    End Function
+        '1階層さかのぼる
+        Else
+            strTargetFolder = GetParentPath(strTargetFolder)
+        End If
+    Loop
+    
+    DigFolder = strTargetFolder
+    
+End Function
+
+'************************************************
+' 指定パスの1階層上位のフォルダパスを取得
+'************************************************
+Function GetParentPath(ByVal strTagerFolder As String) As String
+    
+    If Right(strTagerFolder, 1) = "\" Then
+        strTagerFolder = Left(strTagerFolder, Len(strTagerFolder) - 1)
+    End If
+    
+    GetParentPath = Left(strTagerFolder, InStrRev(strTagerFolder, "\") - 1)
+    
+End Function
+
+'************************************************
+' 元ファイルフルパス + コピー先「フォルダ」指定でファイルをコピー
+'************************************************
+Sub CopyFileToFolder(ByVal strOriginFilePath As String, ByVal strCopyToFolder)
+    Dim strFileName As String
+    strFileName = GetFileNameFromFullPath(strOriginFilePath)
+    FileCopy strOriginFilePath, TextJoinAsPath(strCopyToFolder, strFileName)
+End Sub
+
+'************************************************
+' フルパスからファイル名を抽出
+'************************************************
+Function GetFileNameFromFullPath(ByVal strFullPath As String) As String
+    GetFileNameFromFullPath = CreateObject("Scripting.FileSystemObject").GetFileName(strFullPath)
+End Function
+
+'************************************************
+' 【ファイル】の存在確認
+'************************************************
+Function IsFileExists(ByVal strFilePath As String) As Boolean
+    
+    'ワイルドカードが含まれていたら
+    If InStr(strFilePath, "*") Then
+        
+        'Dir関数はフォルダが不正だとエラーが発生する
+        On Error Resume Next
+        Dim strFindFile As String
+        strFindFile = Dir(strFilePath)
+        
+        'あいまい検索の結果を返却
+        If strFindFile = "" Or Err.Number <> 0 Then
+            IsFileExists = False
+        Else
+            IsFileExists = True
+        End If
+        On Error GoTo 0
+    
+    '完全一致の検索結果
+    Else
+        IsFileExists = CreateObject("Scripting.FileSystemObject").FileExists(strFilePath)
+    End If
+End Function
+
+'************************************************
+' 【フォルダ】の存在確認
+'************************************************
+Function IsFolderExists(ByVal strFolderPath As String) As Boolean
+    
+    'ワイルドカードが含まれていたら
+    If InStr(strFolderPath, "*") Then
+        
+        'Dir関数はフォルダが不正だとエラーが発生する
+        On Error Resume Next
+        Dim strFindFolder As String
+        strFindFolder = Dir(strFolderPath, vbDirectory)
+        
+        'あいまい検索の結果を返却
+        If strFindFolder = "" Or Err.Number <> 0 Then
+            IsFolderExists = False
+        Else
+            IsFolderExists = True
+        End If
+        On Error GoTo 0
+    
+    '完全一致の検索結果
+    Else
+        IsFolderExists = CreateObject("Scripting.FileSystemObject").FolderExists(strFolderPath)
+    End If
+End Function
+
+'************************************************
+' 初期表示フォルダの切り替え
+'************************************************
+Function ChangeDefaultFolder(ByVal strDefaultFolder As String, Optional ByVal strNextFolder As String = "") As Boolean
+    
+    'フォルダが存在しなければエラーが発生する
+    On Error Resume Next
+    CreateObject("WScript.Shell").CurrentDirectory = strDefaultFolder
+    
+    '関数の戻り値で処理を分岐したいときのために返り値を用意
+    If Err.Number <> 0 Then
+        
+        'エラー時の第二候補がなければ終了
+        If strNextFolder = "" Then
+            ChangeDefaultFolder = False
+        
+        'エラー時の第二候補のフォルダに挑戦
+        Else
+            On Error GoTo 0
+            On Error Resume Next
+            CreateObject("WScript.Shell").CurrentDirectory = strNextFolder
+            If Err.Number <> 0 Then
+                ChangeDefaultFolder = False
+            Else
+                ChangeDefaultFolder = True
+            End If
+        End If
+        
+    'エラー値が「0」なら成功
+    Else
+        ChangeDefaultFolder = True
+    End If
+    On Error GoTo 0
+End Function
+
+'************************************************
+' 指定フォルダ内の全ファイルを削除
+' ※ファイルフィルタ設定可能
+'************************************************
+Function DeleteAllFileInFolder(ByVal strTargetFolder As String, Optional ByVal strFileFilter As String = "*")
+    
+    'Dir関数でファイル検索を実施するため末尾に「\」を付加
+    If Right(strTargetFolder, 1) <> "\" Then
+        strTargetFolder = strTargetFolder & "\"
+    End If
+    
+    Dim strFindFile As String
+    strFindFile = Dir(strTargetFolder & strFileFilter)
+    
+    'フォルダ内で発見されたファイルを順次削除
+    Do While strFindFile <> ""
+        Kill strTargetFolder & strFindFile
+        strFindFile = Dir()
+    Loop
+    
+End Function
+
+'************************************************
+' 指定フォルダ内のファイル数を確認
+'************************************************
+Function GetFilesCountInFolder(ByVal strTargetFolder As String, Optional ByVal strFileFilter As String = "") As Integer
+    
+    'ファイルフィルタが存在しなければループ無しでファイル数を取得
+    If strFileFilter = "" Then
+        
+        'フォルダが存在しないなど、エラーが発生したら0を返却
+        On Error Resume Next
+        GetFilesCountInFolder = CreateObject("Scripting.FileSystemObject").GetFolder(strTargetFolder).Files.Count
+        On Error GoTo 0
+    
+    'ファイルフィルタが存在したらDir関数のループでカウント
+    Else
+        Dim intFilesCount As Integer
+        Dim strFindFileName As String
+        strFindFileName = Dir(TextJoinAsPath(strTargetFolder, strFileFilter))
+        
+        Do While strFindFileName <> ""
+            intFilesCount = intFilesCount + 1
+            strFindFileName = Dir()
+        Loop
+        
+        GetFilesCountInFolder = intFilesCount
+        
+    End If
+    
+End Function
                     </pre>
                 </div>
                 <div class="vba-code">
@@ -1009,68 +1259,6 @@
         GetParentFolderPath = strFolderPath
         
     End Function                            
-                    </pre>
-                </div>
-                <div class="vba-code">
-                    <pre class="prettyprint lang-vb linenums" lang="vb">
-    
-'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-'
-' 入力されたフォルダパスの「存在する最深フォルダ」を特定する
-'
-'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-    
-    Function DigFolder(ByVal strFolderPath As String) As String
-        
-        Const strServerHead As String = "\\"
-        Const strPathDelimiter As String = "\"
-        Dim strPathHead As String
-        Dim aryPath As Variant
-        
-        'サーバーパスの場合「\\fsv\fldA」
-        If Left(strFolderPath, Len(strServerHead)) = strServerHead Then
-            
-            '\\fsv & { fldA, fldB, fldC, fldD }
-            strPathHead = "\\" & Split(Right(strFolderPath, Len(strFolderPath) - Len(strServerHead)), strPathDelimiter)(0)
-            aryPath = Split(Right(strFolderPath, Len(strFolderPath) - Len(strPathHead) - 1), strPathDelimiter)
-        
-        'ドライブの場合「c:\fldA」
-       Else
-            
-            'c: & { fldA, fldB, fldC, fldD }
-            strPathHead = Split(strFolderPath, strPathDelimiter)(0)
-            aryPath = Split(Right(strFolderPath, Len(strFolderPath) - Len(strPathHead) - 1), strPathDelimiter)
-        End If
-        
-        
-        Dim vntPath As Variant
-        Dim strJoinPath As String
-        Dim strExistsPath As String
-        
-        '「\\fsv」「c:」より走査
-        strExistsPath = strPathHead
-        
-        '「\」で分割した文字列を連結してゆく
-        For Each vntPath In aryPath
-            
-            '存在している最短Path + 次の階層のフォルダ名で調査
-            strJoinPath = strExistsPath & strPathDelimiter & vntPath
-            If CreateObject("Scripting.FileSystemObject").FolderExists(strJoinPath) = True Then
-                
-                '調査したフォルダが存在したら「存在確認済みPathを連結」
-                strExistsPath = strJoinPath
-            Else
-                
-                '調査したフォルダが存在しなかったら前回のPathを返却
-                DigFolder = strExistsPath
-                Exit Function
-            End If
-        Next
-        
-        '全階層のフォルダが存在したらFullPahを返却
-        DigFolder = strExistsPath
-        
-    End Function
                     </pre>
                 </div>
                 <div class="vba-code">
@@ -1340,24 +1528,40 @@
     
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
-'　OutlookMail操作
+'　OutlookMail作成
 '
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
     
-    '構造体でデータをまとめる
+    '構造体にメールセッティングをまとめる
     Type MailSettings
         From As String
         To As String
         Cc As String
         Bcc As String
         Subject As String
-        Body As String
         HtmlBody As String
-        EntryId as String
+        
+        '添付ファイル
+        '※複数項目存在する場合は「SplitDelimiter」区切り
+        AttachFiles As String
+        
+        '本文中の置換・画像の挿入
+        '※複数項目存在する場合は「SplitDelimiter」区切り
+        ReplaceContents As String
+        ContentsPlaceHolders As String
+        InsertImages As String
+        ImagePlaceHolders As String
+        
+        '「添付ファイル」「置換文字」「挿入画像」の区切り文字
+        SplitDelimiter As String
+        
+        EntryId As String
     End Type
     
-    '構造体でデータを受け取り、メール作成・保存を行う
-    ’※送信時に使用するためにメールのIDを返却
+    '**********************************************************
+    ' 構造体でデータを受け取り、メール作成・保存を行う
+    ' ※送信時に使用するためにメールのIDを返却
+    '**********************************************************
     Sub MakeAndSaveMail(typMailSettings As MailSettings)
         
         Const olMailItem As Integer = 0
@@ -1377,20 +1581,61 @@
             objMailItem.Bcc = .Bcc
             objMailItem.Subject = .Subject
             
+            'ファイルの添付
+            If .AttachFiles <> "" Then
+                Dim aryAttachFiles As Variant
+                aryAttachFiles = Split(.AttachFiles, .SplitDelimiter)
+                Dim intIndex As Integer
+                For intIndex = LBound(aryAttachFiles) To UBound(aryAttachFiles)
+                    objMailItem.Attachments.Add aryAttachFiles(intIndex)
+                Next
+            End If
+            
+            '区切り文字で配列に分割し、本文を置換する
+            If .ReplaceContents <> "" Then
+                Dim aryReplaceContents As Variant
+                Dim aryContentsPlaceHolders As Variant
+                aryReplaceContents = Split(.ReplaceContents, .SplitDelimiter)
+                aryContentsPlaceHolders = Split(.ContentsPlaceHolders, .SplitDelimiter)
+                
+                For intIndex = LBound(aryReplaceContents) To UBound(aryReplaceContents)
+                    .HtmlBody = Replace(.HtmlBody, aryContentsPlaceHolders(intIndex), aryReplaceContents(intIndex))
+                Next
+            End If
+            
+            '挿入画像は「ファイル添付」⇒「プロパティ変更」⇒「HTML用の別名設定」
+            If .InsertImages <> "" Then
+                Dim aryInsertImageFiles As Variant
+                Const strImageRenameBase As String = "InsertImages"
+                aryInsertImageFiles = Split(.InsertImages, .SplitDelimiter)
+                
+                For intIndex = LBound(aryInsertImageFiles) To UBound(aryInsertImageFiles)
+                    With objMailItem.Attachments.Add(aryInsertImageFiles(intIndex))
+                        .PropertyAccessor.SetProperty "http://schemas.microsoft.com/mapi/proptag/0x3712001F", strImageRenameBase & intIndex
+                    End With
+                Next
+                
+                '挿入画像は「HTML用の別名」を使用して挿入する
+                Dim aryImagePlaceHolders As Variant
+                aryImagePlaceHolders = Split(.ImagePlaceHolders, .SplitDelimiter)
+                For intIndex = LBound(aryInsertImageFiles) To UBound(aryInsertImageFiles)
+                    .HtmlBody = Replace(.HtmlBody, aryImagePlaceHolders(intIndex), "<img src=""cid:" & strImageRenameBase & intIndex & """>")
+                Next
+            End If
+            
             '本文
             objMailItem.BodyFormat = olFormatHTML
             objMailItem.HtmlBody = .HtmlBody
-'            objMailItem.Body = .Body
             
             '下書きを保存するアカウントを指定
             Dim objAccounts As Object
             Set objAccounts = objOutlook.Session.Accounts.Item(.From)
-            Set objMailItem.SendUsingAccount = objAccounts            
+            Set objMailItem.SendUsingAccount = objAccounts
             
             'メール保存
             objMailItem.Save
             
-            ’メールのIDを構造体に格納して返却
+            'メールのIDを構造体に格納して返却
             .EntryId = objMailItem.EntryId
             
         End With
@@ -1401,7 +1646,9 @@
         
     End Sub
     
-    '指定したアカウントの下書きフォルダの指定メールを送信
+    '**********************************************************
+    ' 指定したアカウントの下書きフォルダの指定メールを送信
+    '**********************************************************
     Function SendMailByAccountAndMailId(ByVal strOutlookAccount As String, ByVal strMailId As String) As Boolean
         
         'Outlookオブジェクト生成
@@ -1691,10 +1938,10 @@
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
-    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
-' シートやCSVファイルに対してSQLを実行するサンプル
+' シートやCSVファイルに対してSQLを実行
+' ※接続先を変更すればCSV、AccessDB区別なく処理可能
 '
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
@@ -1721,7 +1968,7 @@
     ' 本エクセルブック内のシートに対してSQL実行
     '************************************************
     Function AddDataBySql(ByVal wsDataTable As Worksheet, ByVal strSql As String, Optional ByVal blnRefresh As Boolean = False, Optional ByVal blnOverWrite As Boolean)
-                
+        
         Dim adoConnection As Object
         Dim adoRecordset As Object
         Set adoConnection = AdoConnectThisBook
@@ -1796,6 +2043,24 @@
         adoConnection.Open strCsvFolder
         
         Set AdoConnectCsvFolder = adoConnection
+                
+    End Function
+    
+    '************************************************
+    ' AccessDBに接続※パスワード対応
+    '************************************************
+    Function AdoConnectAccessDB(ByVal strAccessPath As String, Optional ByVal strPassword As String = "") As Object
+        
+        Dim adoConnection As Object
+        
+        Set adoConnection = CreateObject("ADODB.Connection")
+        If strPassword = "" Then
+            adoConnection.Open = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & strAccessPath
+        Else
+            adoConnection.Open = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & strAccessPath & ";Password=" & strPassword & ";"
+        End If
+        
+        Set AdoConnectAccessDB = adoConnection
                 
     End Function
                     </pre>
