@@ -994,238 +994,238 @@
 ' ※本関数軍は依存関係が存在するのでコピペ注意！！
 '
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-
-'************************************************
-' 複数の文字列をPathとして「\」で連結
-'************************************************
-Function TextJoinAsPath(ParamArray aryString() As Variant) As String
     
-    Dim vntString As Variant
-    Dim strPath As String
-    
-    '「\」が既に存在するか？で条件分岐
-    For Each vntString In aryString
-        If strPath = "" Then
-            strPath = vntString
-        ElseIf Right(strPath, 1) = "\" And Left(vntString, 1) = "\" Then
-            strPath = strPath & Right(vntString, Len(vntString) - 1)
-        ElseIf Right(strPath, 1) = "\" Or Left(vntString, 1) = "\" Then
-            strPath = strPath & vntString
-        Else
-            strPath = strPath & "\" & vntString
-        End If
-    Next
-    
-    TextJoinAsPath = strPath
-End Function
-
-'************************************************
-' 指定したフォルダパスをたどり、発見された最も深いフォルダを返却
-'************************************************
-Function DigFolder(ByVal strTargetFolder As String) As String
-    
-    Do While True
+    '************************************************
+    ' 複数の文字列をPathとして「\」で連結
+    '************************************************
+    Function TextJoinAsPath(ParamArray aryString() As Variant) As String
         
-        '指定フォルダが存在したら終了
-        If IsFolderExists(strTargetFolder) = True Then
-            Exit Do
-            
-        'サーバなど「"\\"」始まりの場合はサーバまでさかのぼったら終了
-        '※「\\tdmfsv」はフォルダではないのでそれ以上さかのぼることはできない
-        ElseIf InStr(strTargetFolder, "\\") = 1 And InStrRev(strTargetFolder, "\") = 2 Then
-            Exit Do
-            
-        '「\」が一切なくなったら場合「ドライブ」の存在確認
-        '※「C:ドライブ」はフォルダとして認識されている
-        ElseIf InStr(strTargetFolder, "\") < 1 Then
-            
-            '指定ドライブが存在しなかったら空文字返却
-            If IsFolderExists(strTargetFolder) = False Then
-                DigFolder = ""
-                Exit Function
+        Dim vntString As Variant
+        Dim strPath As String
+        
+        '「\」が既に存在するか？で条件分岐
+        For Each vntString In aryString
+            If strPath = "" Then
+                strPath = vntString
+            ElseIf Right(strPath, 1) = "\" And Left(vntString, 1) = "\" Then
+                strPath = strPath & Right(vntString, Len(vntString) - 1)
+            ElseIf Right(strPath, 1) = "\" Or Left(vntString, 1) = "\" Then
+                strPath = strPath & vntString
             Else
+                strPath = strPath & "\" & vntString
+            End If
+        Next
+        
+        TextJoinAsPath = strPath
+    End Function
+    
+    '************************************************
+    ' 指定したフォルダパスをたどり、発見された最も深いフォルダを返却
+    '************************************************
+    Function DigFolder(ByVal strTargetFolder As String) As String
+        
+        Do While True
+            
+            '指定フォルダが存在したら終了
+            If IsFolderExists(strTargetFolder) = True Then
                 Exit Do
-            End If
-        
-        '1階層さかのぼる
-        Else
-            strTargetFolder = GetParentPath(strTargetFolder)
-        End If
-    Loop
-    
-    DigFolder = strTargetFolder
-    
-End Function
-
-'************************************************
-' 指定パスの1階層上位のフォルダパスを取得
-'************************************************
-Function GetParentPath(ByVal strTagerFolder As String) As String
-    
-    If Right(strTagerFolder, 1) = "\" Then
-        strTagerFolder = Left(strTagerFolder, Len(strTagerFolder) - 1)
-    End If
-    
-    GetParentPath = Left(strTagerFolder, InStrRev(strTagerFolder, "\") - 1)
-    
-End Function
-
-'************************************************
-' 元ファイルフルパス + コピー先「フォルダ」指定でファイルをコピー
-'************************************************
-Sub CopyFileToFolder(ByVal strOriginFilePath As String, ByVal strCopyToFolder)
-    Dim strFileName As String
-    strFileName = GetFileNameFromFullPath(strOriginFilePath)
-    FileCopy strOriginFilePath, TextJoinAsPath(strCopyToFolder, strFileName)
-End Sub
-
-'************************************************
-' フルパスからファイル名を抽出
-'************************************************
-Function GetFileNameFromFullPath(ByVal strFullPath As String) As String
-    GetFileNameFromFullPath = CreateObject("Scripting.FileSystemObject").GetFileName(strFullPath)
-End Function
-
-'************************************************
-' 【ファイル】の存在確認
-'************************************************
-Function IsFileExists(ByVal strFilePath As String) As Boolean
-    
-    'ワイルドカードが含まれていたら
-    If InStr(strFilePath, "*") Then
-        
-        'Dir関数はフォルダが不正だとエラーが発生する
-        On Error Resume Next
-        Dim strFindFile As String
-        strFindFile = Dir(strFilePath)
-        
-        'あいまい検索の結果を返却
-        If strFindFile = "" Or Err.Number <> 0 Then
-            IsFileExists = False
-        Else
-            IsFileExists = True
-        End If
-        On Error GoTo 0
-    
-    '完全一致の検索結果
-    Else
-        IsFileExists = CreateObject("Scripting.FileSystemObject").FileExists(strFilePath)
-    End If
-End Function
-
-'************************************************
-' 【フォルダ】の存在確認
-'************************************************
-Function IsFolderExists(ByVal strFolderPath As String) As Boolean
-    
-    'ワイルドカードが含まれていたら
-    If InStr(strFolderPath, "*") Then
-        
-        'Dir関数はフォルダが不正だとエラーが発生する
-        On Error Resume Next
-        Dim strFindFolder As String
-        strFindFolder = Dir(strFolderPath, vbDirectory)
-        
-        'あいまい検索の結果を返却
-        If strFindFolder = "" Or Err.Number <> 0 Then
-            IsFolderExists = False
-        Else
-            IsFolderExists = True
-        End If
-        On Error GoTo 0
-    
-    '完全一致の検索結果
-    Else
-        IsFolderExists = CreateObject("Scripting.FileSystemObject").FolderExists(strFolderPath)
-    End If
-End Function
-
-'************************************************
-' 初期表示フォルダの切り替え
-'************************************************
-Function ChangeDefaultFolder(ByVal strDefaultFolder As String, Optional ByVal strNextFolder As String = "") As Boolean
-    
-    'フォルダが存在しなければエラーが発生する
-    On Error Resume Next
-    CreateObject("WScript.Shell").CurrentDirectory = strDefaultFolder
-    
-    '関数の戻り値で処理を分岐したいときのために返り値を用意
-    If Err.Number <> 0 Then
-        
-        'エラー時の第二候補がなければ終了
-        If strNextFolder = "" Then
-            ChangeDefaultFolder = False
-        
-        'エラー時の第二候補のフォルダに挑戦
-        Else
-            On Error GoTo 0
-            On Error Resume Next
-            CreateObject("WScript.Shell").CurrentDirectory = strNextFolder
-            If Err.Number <> 0 Then
-                ChangeDefaultFolder = False
+                
+            'サーバなど「"\\"」始まりの場合はサーバまでさかのぼったら終了
+            '※「\\tdmfsv」はフォルダではないのでそれ以上さかのぼることはできない
+            ElseIf InStr(strTargetFolder, "\\") = 1 And InStrRev(strTargetFolder, "\") = 2 Then
+                Exit Do
+                
+            '「\」が一切なくなったら場合「ドライブ」の存在確認
+            '※「C:ドライブ」はフォルダとして認識されている
+            ElseIf InStr(strTargetFolder, "\") < 1 Then
+                
+                '指定ドライブが存在しなかったら空文字返却
+                If IsFolderExists(strTargetFolder) = False Then
+                    DigFolder = ""
+                    Exit Function
+                Else
+                    Exit Do
+                End If
+            
+            '1階層さかのぼる
             Else
-                ChangeDefaultFolder = True
+                strTargetFolder = GetParentPath(strTargetFolder)
             End If
-        End If
-        
-    'エラー値が「0」なら成功
-    Else
-        ChangeDefaultFolder = True
-    End If
-    On Error GoTo 0
-End Function
-
-'************************************************
-' 指定フォルダ内の全ファイルを削除
-' ※ファイルフィルタ設定可能
-'************************************************
-Function DeleteAllFileInFolder(ByVal strTargetFolder As String, Optional ByVal strFileFilter As String = "*")
-    
-    'Dir関数でファイル検索を実施するため末尾に「\」を付加
-    If Right(strTargetFolder, 1) <> "\" Then
-        strTargetFolder = strTargetFolder & "\"
-    End If
-    
-    Dim strFindFile As String
-    strFindFile = Dir(strTargetFolder & strFileFilter)
-    
-    'フォルダ内で発見されたファイルを順次削除
-    Do While strFindFile <> ""
-        Kill strTargetFolder & strFindFile
-        strFindFile = Dir()
-    Loop
-    
-End Function
-
-'************************************************
-' 指定フォルダ内のファイル数を確認
-'************************************************
-Function GetFilesCountInFolder(ByVal strTargetFolder As String, Optional ByVal strFileFilter As String = "") As Integer
-    
-    'ファイルフィルタが存在しなければループ無しでファイル数を取得
-    If strFileFilter = "" Then
-        
-        'フォルダが存在しないなど、エラーが発生したら0を返却
-        On Error Resume Next
-        GetFilesCountInFolder = CreateObject("Scripting.FileSystemObject").GetFolder(strTargetFolder).Files.Count
-        On Error GoTo 0
-    
-    'ファイルフィルタが存在したらDir関数のループでカウント
-    Else
-        Dim intFilesCount As Integer
-        Dim strFindFileName As String
-        strFindFileName = Dir(TextJoinAsPath(strTargetFolder, strFileFilter))
-        
-        Do While strFindFileName <> ""
-            intFilesCount = intFilesCount + 1
-            strFindFileName = Dir()
         Loop
         
-        GetFilesCountInFolder = intFilesCount
+        DigFolder = strTargetFolder
         
-    End If
+    End Function
     
-End Function
+    '************************************************
+    ' 指定パスの1階層上位のフォルダパスを取得
+    '************************************************
+    Function GetParentPath(ByVal strTagerFolder As String) As String
+        
+        If Right(strTagerFolder, 1) = "\" Then
+            strTagerFolder = Left(strTagerFolder, Len(strTagerFolder) - 1)
+        End If
+        
+        GetParentPath = Left(strTagerFolder, InStrRev(strTagerFolder, "\") - 1)
+        
+    End Function
+    
+    '************************************************
+    ' 元ファイルフルパス + コピー先「フォルダ」指定でファイルをコピー
+    '************************************************
+    Sub CopyFileToFolder(ByVal strOriginFilePath As String, ByVal strCopyToFolder)
+        Dim strFileName As String
+        strFileName = GetFileNameFromFullPath(strOriginFilePath)
+        FileCopy strOriginFilePath, TextJoinAsPath(strCopyToFolder, strFileName)
+    End Sub
+    
+    '************************************************
+    ' フルパスからファイル名を抽出
+    '************************************************
+    Function GetFileNameFromFullPath(ByVal strFullPath As String) As String
+        GetFileNameFromFullPath = CreateObject("Scripting.FileSystemObject").GetFileName(strFullPath)
+    End Function
+    
+    '************************************************
+    ' 【ファイル】の存在確認
+    '************************************************
+    Function IsFileExists(ByVal strFilePath As String) As Boolean
+        
+        'ワイルドカードが含まれていたら
+        If InStr(strFilePath, "*") Then
+            
+            'Dir関数はフォルダが不正だとエラーが発生する
+            On Error Resume Next
+            Dim strFindFile As String
+            strFindFile = Dir(strFilePath)
+            
+            'あいまい検索の結果を返却
+            If strFindFile = "" Or Err.Number <> 0 Then
+                IsFileExists = False
+            Else
+                IsFileExists = True
+            End If
+            On Error GoTo 0
+        
+        '完全一致の検索結果
+        Else
+            IsFileExists = CreateObject("Scripting.FileSystemObject").FileExists(strFilePath)
+        End If
+    End Function
+    
+    '************************************************
+    ' 【フォルダ】の存在確認
+    '************************************************
+    Function IsFolderExists(ByVal strFolderPath As String) As Boolean
+        
+        'ワイルドカードが含まれていたら
+        If InStr(strFolderPath, "*") Then
+            
+            'Dir関数はフォルダが不正だとエラーが発生する
+            On Error Resume Next
+            Dim strFindFolder As String
+            strFindFolder = Dir(strFolderPath, vbDirectory)
+            
+            'あいまい検索の結果を返却
+            If strFindFolder = "" Or Err.Number <> 0 Then
+                IsFolderExists = False
+            Else
+                IsFolderExists = True
+            End If
+            On Error GoTo 0
+        
+        '完全一致の検索結果
+        Else
+            IsFolderExists = CreateObject("Scripting.FileSystemObject").FolderExists(strFolderPath)
+        End If
+    End Function
+    
+    '************************************************
+    ' 初期表示フォルダの切り替え
+    '************************************************
+    Function ChangeDefaultFolder(ByVal strDefaultFolder As String, Optional ByVal strNextFolder As String = "") As Boolean
+        
+        'フォルダが存在しなければエラーが発生する
+        On Error Resume Next
+        CreateObject("WScript.Shell").CurrentDirectory = strDefaultFolder
+        
+        '関数の戻り値で処理を分岐したいときのために返り値を用意
+        If Err.Number <> 0 Then
+            
+            'エラー時の第二候補がなければ終了
+            If strNextFolder = "" Then
+                ChangeDefaultFolder = False
+            
+            'エラー時の第二候補のフォルダに挑戦
+            Else
+                On Error GoTo 0
+                On Error Resume Next
+                CreateObject("WScript.Shell").CurrentDirectory = strNextFolder
+                If Err.Number <> 0 Then
+                    ChangeDefaultFolder = False
+                Else
+                    ChangeDefaultFolder = True
+                End If
+            End If
+            
+        'エラー値が「0」なら成功
+        Else
+            ChangeDefaultFolder = True
+        End If
+        On Error GoTo 0
+    End Function
+    
+    '************************************************
+    ' 指定フォルダ内の全ファイルを削除
+    ' ※ファイルフィルタ設定可能
+    '************************************************
+    Function DeleteAllFileInFolder(ByVal strTargetFolder As String, Optional ByVal strFileFilter As String = "*")
+        
+        'Dir関数でファイル検索を実施するため末尾に「\」を付加
+        If Right(strTargetFolder, 1) <> "\" Then
+            strTargetFolder = strTargetFolder & "\"
+        End If
+        
+        Dim strFindFile As String
+        strFindFile = Dir(strTargetFolder & strFileFilter)
+        
+        'フォルダ内で発見されたファイルを順次削除
+        Do While strFindFile <> ""
+            Kill strTargetFolder & strFindFile
+            strFindFile = Dir()
+        Loop
+        
+    End Function
+    
+    '************************************************
+    ' 指定フォルダ内のファイル数を確認
+    '************************************************
+    Function GetFilesCountInFolder(ByVal strTargetFolder As String, Optional ByVal strFileFilter As String = "") As Integer
+        
+        'ファイルフィルタが存在しなければループ無しでファイル数を取得
+        If strFileFilter = "" Then
+            
+            'フォルダが存在しないなど、エラーが発生したら0を返却
+            On Error Resume Next
+            GetFilesCountInFolder = CreateObject("Scripting.FileSystemObject").GetFolder(strTargetFolder).Files.Count
+            On Error GoTo 0
+        
+        'ファイルフィルタが存在したらDir関数のループでカウント
+        Else
+            Dim intFilesCount As Integer
+            Dim strFindFileName As String
+            strFindFileName = Dir(TextJoinAsPath(strTargetFolder, strFileFilter))
+            
+            Do While strFindFileName <> ""
+                intFilesCount = intFilesCount + 1
+                strFindFileName = Dir()
+            Loop
+            
+            GetFilesCountInFolder = intFilesCount
+            
+        End If
+        
+    End Function
                     </pre>
                 </div>
                 <div class="vba-code">
@@ -1904,12 +1904,13 @@ End Function
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' PDF加工関数
+' ※PowerShellコマンドを生成して実行
+' ※itextsharp.dllを使用
 '
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
     '************************************************
     ' PDF用パスワード設定関数
-    ' ※PowerShellコマンドを生成して実行
-    ' ※itextsharp.dllを使用
     '************************************************
     Function SetPasswordPDF(ByVal strInFilePath As String, ByVal strOutFilePath As String, ByVal strPassword As String, ByVal strDllPath As String) As Boolean
                         
@@ -1934,6 +1935,116 @@ End Function
         SetPasswordPDF = CreateObject("Scripting.FileSystemObject").FileExists(strOutFilePath)
         
     End Function
+    
+    '********************************************************************
+   ' PDFファイルページ数を取得
+    '********************************************************************
+    Function GetPdfPageCount(ByVal strTargetFilePath As String, ByVal strDllPath As String) As Long
+        
+        '※コマンド最後のExitは本来はステータスを返却するためのものなので、
+        '　エラーが発生した際など、意図しない数値を返却する恐れあり
+        Dim strCommand As String
+        
+        '変数設定
+        strCommand = "" & _
+            "$dllpath = '" & strDllPath & "';" & _
+            "$targetpath = '" & strTargetFilePath & "';"
+        
+        'PDFファイルのページ数を取得
+        strCommand = strCommand & _
+            "Add-Type -Path ($dllpath);" & _
+            "$reader = New-Object iTextSharp.text.pdf.PdfReader($targetpath);" & _
+            "$pages = $reader.NumberOfPages;" & _
+            "$reader.Close();" & _
+            "exit $pages"
+        
+        'コマンドを実行し返り値を返却
+        GetPdfPageCount = CreateObject("WScript.Shell").Run("PowerShell " & strCommand, 0, True)
+        
+    End Function
+    
+    '********************************************************************
+    ' PDFファイルをページ範囲を指定して分割別ファイル出力
+    '********************************************************************
+    Sub SplitPdfByPageNumber(ByVal strTargetFilePath As String, ByVal strOutFilePath As String, ByVal intStartPage As Integer, ByVal intEndPage As Integer, ByVal strDllPath As String)
+        
+        Dim strCommand As String
+        
+        '変数設定
+        strCommand = "" & _
+                    "$infilepath = '" & strTargetFilePath & "';" & _
+                    "$outfilepath = '" & strOutFilePath & "';" & _
+                    "$dllpath = '" & strDllPath & "';" & _
+                    "$startpage = " & intStartPage & ";" & _
+                    "$endpage = " & intEndPage & ";"
+        
+        'DLL読み込み⇒実行
+        strCommand = strCommand & _
+                    "Add-Type -Path ($dllpath);" & _
+                    "$pdfReader = New-Object iTextSharp.text.pdf.PdfReader($infilepath);" & _
+                    "$pageTo = $page + 3;" & _
+                    "$document = New-Object iTextSharp.text.Document;" & _
+                    "$filestream = New-Object System.IO.FileStream($outfilepath, [System.IO.FileMode]::Create);" & _
+                    "$pdfCopy = New-Object iTextSharp.text.pdf.PdfSmartCopy($document, $filestream);" & _
+                    "$document.Open();" & _
+                    "foreach ($addPage in $startpage..$endpage) {" & _
+                        "$pdfcopy.AddPage($pdfcopy.GetImportedPage($pdfReader, $addPage));" & _
+                    "}" & _
+                   "$document.Close();" & _
+                    "$pdfCopy.Close();" & _
+                    "$filestream.Close();" & _
+                    "$pdfReader.Close();"
+        
+        '指定ページ範囲の分割出力を実行
+        Call CreateObject("WScript.Shell").Run("PowerShell " & strCommand, 0, True)
+        
+    End Sub
+    
+    
+    '********************************************************************
+    ' 配列にて指定されたすべてのPDFファイルを結合して出力
+    '********************************************************************
+    Sub JoinPdfFiles(ByVal strOutFilePath As String, ByRef aryPdfFilePath As Variant, ByVal strDllPath As String)
+        
+        Dim intIndex As Integer
+        Dim strAllPdfFileNamesArray As String
+        
+        'PowerShellの配列形式に変換 @('A', 'B', 'C')
+        strAllPdfFileNamesArray = "@("
+        For intIndex = LBound(aryPdfFilePath) To UBound(aryPdfFilePath)
+            strAllPdfFileNamesArray = strAllPdfFileNamesArray & _
+                        "'" & aryPdfFilePath(intIndex) & "',"
+        Next
+        strAllPdfFileNamesArray = Left(strAllPdfFileNamesArray, Len(strAllPdfFileNamesArray) - 1) & ")"
+        
+        Dim strCommand As String
+        
+        '変数設定
+        strCommand = "" & _
+                    "$outfilepath = '" & strOutFilePath & "';" & _
+                    "$dllpath = '" & strDllPath & "';" & _
+                    "$infiles = " & strAllPdfFileNamesArray & ";"
+        
+        '配列に格納されたファイルをすべて開き結合
+        strCommand = strCommand & _
+                    "Add-Type -Path ($dllpath);" & _
+                    "$filestream = New-Object System.IO.FileStream($outfilepath, [System.IO.FileMode]::Create);" & _
+                    "$document = New-Object iTextSharp.text.Document;" & _
+                    "$pdfCopy = New-Object iTextSharp.text.pdf.PdfSmartCopy($document, $fileStream);" & _
+                    "$document.Open();" & _
+                    "foreach($infile in $infiles) {" & _
+                        "$reader = New-Object iTextSharp.text.pdf.PdfReader($infile);" & _
+                        "$pdfCopy.AddDocument($reader);" & _
+                        "$reader.Close();" & _
+                    "}" & _
+                    "$pdfCopy.Close();" & _
+                    "$document.Close();" & _
+                    "$filestream.Close();"
+        
+        'ファイル結合コマンドの実行
+        Call CreateObject("WScript.Shell").Run("PowerShell " & strCommand, 0, True)
+        
+    End Sub
                     </pre>
                 </div>
                 <div class="vba-code">
