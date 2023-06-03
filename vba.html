@@ -2179,6 +2179,216 @@
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
     
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' AccessDBをデータ格納用として使用するサンプル
+' ※1ファイル1テーブルの単純設計
+' ※「テーブル名」＝「DBファイル名」＝「エクセルシート名」で設計
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Const strAccessExtension As String = ".accdb"
+    
+    'AccessDB設定
+    Type MstDB
+        Path As String
+        TableName As String
+        CreateSQL As String
+        FromToPairs As Variant
+    End Type
+        
+    'Access定数
+    Const adOpenForwardOnly As Integer = 0
+    Const adOpenKeyset As Integer = 1
+    Const adLockReadOnly As Integer = 1
+    Const adLockPessimistic As Integer = 2
+    Const adLockOptimistic As Integer = 3
+    
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 構造体に処理対象シート・設定などを格納
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Sub AccessSample()
+        
+        Dim typTestDB As MstDB
+        
+        With typTestDB
+            
+            '************************************
+            ' 処理対象AccessDB・テーブルの設定
+            ' ※「テーブル名」＝「DBファイル名」＝「エクセルシート名」で設計
+            '************************************
+            .TableName = "TestTable"
+            .Path = ThisWorkbook.Path & "\" & .TableName & ".accdb"
+            
+            'テーブル生成SQL
+            .CreateSQL = "" & _
+                    "CREATE TABLE " & _
+                        .TableName & " (" & _
+                            "氏名 TEXT(20), " & _
+                            "点数 LONG, " & _
+                            "誕生日 DATE)"
+                            
+            'シートの列⇒テーブルのフィールドの対応関係
+            .FromToPairs = Array( _
+                            Array("A", "氏名"), _
+                            Array("D", "点数"), _
+                            Array("K", "誕生日"))
+            
+            '************************************
+            ' 処理開始開始
+            '************************************
+            
+            '【0】実行前確認
+            If MsgBox("「" & .TableName & "」の更新を実行してよろしいですか？", vbQuestion + vbYesNo) <> vbYes Then
+                MsgBox "実行を中止します。"
+                Exit Sub
+            End If
+                        
+            '【1】既存テーブルを破棄
+            Call DropTable(typTestDB)
+            
+            '【2】新規作成
+            Call CreateTable(typTestDB)
+            
+            '【3】エクセル表をDBに格納
+            Call InsertMst(typTestDB)
+            
+            '【4】AccessDBの最適化
+            Call OptimizeAccessDb(typTestDB)
+            
+            MsgBox "「" & .TableName & "」の更新が完了しました。"
+            
+        End With
+        
+    End Sub
+    
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' AccessDB操作関数
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    '******************************************
+    ' テーブルの削除関数
+    '******************************************
+    Sub DropTable(ByRef typMstDb As MstDB)
+        
+        'AccessDBへ接続
+        Dim AdoConnection As Object
+        Set AdoConnection = AdoConnectAccessDB(typMstDb.Path)
+        
+        'テーブルを削除
+        AdoConnection.Execute "DROP TABLE " & typMstDb.TableName
+        AdoConnection.Close
+        Set AdoConnection = Nothing
+        
+    End Sub
+    
+    '******************************************
+    ' テーブル生成関数
+    '******************************************
+    Sub CreateTable(ByRef typMstDb As MstDB)
+        
+        'AccessDBへ接続
+        Dim AdoConnection As Object
+        Set AdoConnection = AdoConnectAccessDB(typMstDb.Path)
+        
+        'テーブルを生成
+        AdoConnection.Execute typMstDb.CreateSQL
+        AdoConnection.Close
+        Set AdoConnection = Nothing
+        
+    End Sub
+    
+    '******************************************
+    ' テーブルへのデータ格納関数
+    '******************************************
+    Sub InsertMst(ByRef typMstDb As MstDB)
+        
+        With ThisWorkbook.Worksheets(typMstDb.TableName)
+            
+            'AccessDBに接続
+            Dim AdoConnection As Object
+            Set AdoConnection = AdoConnectAccessDB(typMstDb.Path)
+            
+            '対象テーブルに書き込み開始
+            Dim adoRecordset As Object
+            Set adoRecordset = CreateObject("ADODB.Recordset")
+            adoRecordset.Open "[" & typMstDb.TableName & "]", AdoConnection, , adLockOptimistic
+            
+            'シート上のデータを順次投入
+            Dim lngRow As Long
+            For lngRow = 2 To GetLastRow(.Cells.Parent, "A")
+                
+                '新レコード（行）生成
+                adoRecordset.addNew
+                
+                'エクセル列⇒DB列に転記
+                Dim intIndex As Integer
+                For intIndex = LBound(typMstDb.FromToPairs) To UBound(typMstDb.FromToPairs)
+                    adoRecordset.Fields(typMstDb.FromToPairs(intIndex)(1)) = .Cells(lngRow, typMstDb.FromToPairs(intIndex)(0)).Value
+                Next
+                
+                '行に値を適用
+                adoRecordset.Update
+                
+            Next
+            
+            'オブジェクト破棄
+            adoRecordset.Close
+            Set adoRecordset = Nothing
+            AdoConnection.Close
+            Set AdoConnection = Nothing
+            
+        End With
+        
+    End Sub
+    
+    '******************************************
+    ' AccessDBファイルの最適化・軽量化
+    ' ※Accessファイルが「ファイルを閉じる際に最適化を実行する設定」
+    ' 　になっているので、ファイルを開いて閉じるだけ。
+    '******************************************
+    Sub OptimizeAccessDb(ByRef typMstDb As MstDB)
+        
+        Dim objAccess As Object
+        Set objAccess = CreateObject("Access.Application")
+        
+        With objAccess
+            .OpenCurrentDatabase typMstDb.Path
+            .CloseCurrentDatabase
+            .Quit
+        End With
+        
+    End Sub
+    
+    '************************************************
+    ' AccessDBに接続※パスワード対応
+    '************************************************
+    Function AdoConnectAccessDB(ByVal strAccessPath As String, Optional ByVal strPassword As String = "") As Object
+        
+        Dim AdoConnection As Object
+        
+        Set AdoConnection = CreateObject("ADODB.Connection")
+        If strPassword = "" Then
+            AdoConnection.Open = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & strAccessPath
+        Else
+            AdoConnection.Open = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & strAccessPath & ";Jet OLEDB:Database Password=" & strPassword & ";"
+        End If
+        
+        Set AdoConnectAccessDB = AdoConnection
+                
+    End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 '　WebAPIを使用したスクレイピング・クローリング備忘録
