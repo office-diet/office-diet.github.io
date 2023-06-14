@@ -900,7 +900,62 @@
         
         GetRGB = Array(intR, intG, intB)
         
-    End Function                    
+    End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 色を16進数⇔10進数変換
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    '16進数⇒10進数
+    Function ColorHexToLong(ByVal strHexColor As String) As Long
+        
+        If Left(strHexColor, 1) = "#" Then
+            strHexColor = Mid(strHexColor, 2, Len(strHexColor) - 1)
+        ElseIf strHexColor = "" Then
+            strHexColor = "ffffff"
+        End If
+        
+        If Len(strHexColor) = 3 Then
+            Dim strR As String
+            Dim strG As String
+            Dim strB As String
+            strR = Left(strHexColor, 1)
+            strG = Mid(strHexColor, 2, 1)
+            strB = Right(strHexColor, 1)
+        Else
+            strR = Left(strHexColor, 2)
+            strG = Mid(strHexColor, 3, 2)
+            strB = Right(strHexColor, 2)
+        End If
+        
+        '※RGBをBGRに並べ替える必要あり！！
+        strHexColor = strB & strG & strR
+        
+        ColorHexToLong = CLng("&H" & strHexColor)
+        
+    End Function
+    
+    '10進数⇒16進数
+    Function ColorLongToHex(ByVal lngColor As Long) As String
+        
+        Dim intBlue As Integer
+        Dim intGreen As Integer
+        Dim intRed As Integer
+        
+        intBlue = Application.WorksheetFunction.RoundDown(lngColor / (256 ^ 2), 0)
+        lngColor = lngColor Mod (256 ^ 2)
+        intGreen = Application.WorksheetFunction.RoundDown(lngColor / 256, 0)
+        intRed = lngColor Mod 256
+        
+        ColorLongToHex = Right("0" & Hex(intRed), 2) & Right("0" & Hex(intGreen), 2) & Right("0" & Hex(intBlue), 2)
+        
+    End Function
                     </pre>
                 </div>
                 <div class="vba-code">
@@ -2504,39 +2559,6 @@
         Loop
         
         ChangeDecimalToBinary = Int(strDecimal)
-        
-    End Function
-                    </pre>
-                </div>
-                <div class="vba-code">
-                    <pre class="prettyprint lang-vb linenums" lang="vb">
-    
-'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-'
-' 色を16進数⇒Longに変更
-'
-'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-    
-    Function ColorHexToLong(ByVal strHexColor As String) As Long
-        
-        If Left(strHexColor, 1) = "#" Then
-            strHexColor = Mid(strHexColor, 2, Len(strHexColor) - 1)
-        ElseIf strHexColor = "" Then
-            strHexColor = "ffffff"
-        End If
-        
-        If Len(strHexColor) = 3 Then
-            Dim strR As String
-            Dim strG As String
-            Dim strB As String
-            strR = Right(strHexColor, 1)
-            strG = Mid(strHexColor, 2, 1)
-            strB = Left(strHexColor, 1)
-            
-            strHexColor = String(2, strB) & String(2, strG) & String(2, strR)
-        End If
-        
-        ColorHexToLong = CLng("&H" & strHexColor)
         
     End Function
                     </pre>
