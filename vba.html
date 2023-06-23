@@ -2566,6 +2566,185 @@
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
     
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' ★標準Module★
+' マスタの情報をすべて格納して管理するClassのテスト
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Sub MasterClassTest()
+        
+        Dim clsMasterData As ClassMasterData
+        Set clsMasterData = New ClassMasterData
+        
+        clsMasterData.Add = ThisWorkbook.Worksheets("MST_1")
+        clsMasterData.Add = ThisWorkbook.Worksheets("MST_2")
+        MsgBox clsMasterData.GetValue("MST_1", "1", "生年月日")
+        MsgBox clsMasterData.GetValue("MST_2", "1001", "生年月日")
+        
+    End Sub
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' ★ClassModule★ClassMasterData
+' マスタとして使用するシートの情報をクラス内に保存し
+' シートにアクセスすることなく値を取得するクラス
+' ※テスト作成。Dictionaryより配列のほう方が早いかも？
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    '*****************************************
+    '{"SheetNameA": {"Key1" : {"Fields1" : "Value1",
+    '                           "Fields2" : "Value2",
+    '                           "Fields3" : "Value3",
+    '                           "Fields4" : "Value4"},
+    '               "Key2" : {"Fields1" : "Value1",
+    '                           "Fields2" : "Value2",
+    '                           "Fields3" : "Value3",
+    '                           "Fields4" : "Value4"}},
+    ' "SheetNameB": {"Key1" : {"Fields1" : "Value1",
+    '                           "Fields2" : "Value2",
+    '                           "Fields3" : "Value3",
+    '                           "Fields4" : "Value4"},
+    '               "Key2" : {"Fields1" : "Value1",
+    '                           "Fields2" : "Value2",
+    '                           "Fields3" : "Value3",
+    '                           "Fields4" : "Value4"}}
+    '}
+    '*****************************************
+    
+    Dim dctMasterDatas As Object
+    
+    
+    '*****************************************
+    ' Masterのデータを保持するDictionaryを生成
+    '*****************************************
+    Private Sub Class_Initialize()
+        
+        Set dctMasterDatas = CreateObject("Scripting.Dictionary")
+        
+    End Sub
+    
+    
+    '*****************************************
+    ' シートを指定するとMasterとしてデータを収集・保持する
+    '【条件】
+    ' ・1行目は必ずヘッダ
+    ' ・1列目は必ずID
+    '*****************************************
+    
+    Property Let Add(ByVal wsMasterSheet As Worksheet)
+        
+        'シート名をDictionaryのKeyに使用する
+        Dim strWsMasterSheet As String
+        strWsMasterSheet = wsMasterSheet.Name
+        
+        'Dictionaryに未登録のシートだったら
+        If dctMasterDatas.Exists(strWsMasterSheet) = False Then
+            
+            'Dictionary内に「シート名Dictionary」を生成
+            dctMasterDatas.Add strWsMasterSheet, CreateObject("Scripting.Dictionary")
+            
+            Dim lngRow As Long
+            For lngRow = 2 To GetLastRow(wsMasterSheet, "A")
+                
+                '1列目をIDとする
+                Dim strKey As String
+                strKey = wsMasterSheet.Cells(lngRow, "A").Value
+                
+                'ID登録済みの場合は無視する
+                If dctMasterDatas(strWsMasterSheet).Exists(strKey) = False Then
+                    
+                    'シート名Dictionary内に「IDDictionary」を生成
+                    dctMasterDatas(strWsMasterSheet).Add strKey, CreateObject("Scripting.Dictionary")
+                    
+                    '「IDDictionary」内に「Key:Value」を格納
+                    '※Keyはヘッダの項目のため、ヘッダの重複厳禁！！
+                    Dim intColumn As Integer
+                    For intColumn = 2 To GetLastColumn(wsMasterSheet, 1)
+                        
+                        Dim strField As String
+                        Dim strValue As String
+                        strField = wsMasterSheet.Cells(1, intColumn).Value
+                        strValue = wsMasterSheet.Cells(lngRow, intColumn).Value
+                        
+                        dctMasterDatas(strWsMasterSheet)(strKey).Add strField, strValue
+                        
+                    Next
+                End If
+                
+            Next
+            
+        End If
+        
+    End Property
+    
+    
+    '*****************************************
+    ' Dictionaryの階層をたどって値を取得
+    '*****************************************
+    
+    Property Get GetValue(ByVal strMasterName As String, ByVal strKey As String, ByVal strField As String) As String
+        
+        '階層をたどるためにDictionaryを変数に格納
+        Dim objTmp As Object
+        Set objTmp = dctMasterDatas
+        
+        'パラメータを配列化
+        Dim aryParams As Variant
+        aryParams = Array(strMasterName, strKey, strField)
+        
+        '最後のParamから「値」を取得するためにインデックス管理
+        Dim intIndex As Integer
+        For intIndex = LBound(aryParams) To UBound(aryParams)
+            
+            'DictionaryにKeyが存在しなければ「空文字」を返却して終了
+            If objTmp.Exists(aryParams(intIndex)) = False Then
+                GetValue = ""
+            End If
+            
+            '最終パラメータになるまでDictionary内のDictionaryを掘り下げる
+            If intIndex <> UBound(aryParams) Then
+                Set objTmp = objTmp(aryParams(intIndex))
+            
+            '最終パラメータなら値を返却
+            Else
+                GetValue = objTmp(aryParams(intIndex))
+            End If
+        Next
+        
+    End Property
+    
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 最終行・列を取得
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Private Function GetLastRow(ByVal ws As Worksheet, Optional ByVal strColumn As String = "") As Long
+                
+        If strColumn = "" Then
+            GetLastRow = ws.UsedRange.Cells(ws.UsedRange.Cells.Count).Row
+        ElseIf IsNumeric(strColumn) Then
+            GetLastRow = ws.Cells(ws.Rows.Count, strColumn * 1).End(xlUp).Row
+        Else
+            GetLastRow = ws.Cells(ws.Rows.Count, strColumn).End(xlUp).Row
+        End If
+        
+    End Function
+    
+    Private Function GetLastColumn(ByVal ws As Worksheet, ByVal lngRow As Long) As Long
+        
+        GetLastColumn = ws.Cells(lngRow, ws.Columns.Count).End(xlToLeft).Column
+        
+    End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
 ' ****************************************************************
 ' TinySegmenter 0.1 Excel VBA Version
 '  by arihagne
