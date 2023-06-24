@@ -2580,8 +2580,15 @@
         
         clsMasterData.Add = ThisWorkbook.Worksheets("MST_1")
         clsMasterData.Add = ThisWorkbook.Worksheets("MST_2")
-        MsgBox clsMasterData.GetValue("MST_1", "1", "生年月日")
-        MsgBox clsMasterData.GetValue("MST_2", "1001", "生年月日")
+        
+        Dim intIndex As Integer
+        For intIndex = 1 To 20
+            Debug.Print clsMasterData.GetValue("MST_1", intIndex, "氏名")
+        Next
+        
+        For intIndex = 1001 To 1020
+            Debug.Print clsMasterData.GetValue("MST_2", intIndex, "氏名")
+        Next
         
     End Sub
     
@@ -2590,31 +2597,36 @@
 ' ★ClassModule★ClassMasterData
 ' マスタとして使用するシートの情報をクラス内に保存し
 ' シートにアクセスすることなく値を取得するクラス
-' ※テスト作成。Dictionaryより配列のほう方が早いかも？
+' ※データ全てをDictionaryに格納したら重かったため、配列にて実装
+' 　集計関数とか必要かなぁ・・・？
 '
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
     
     '*****************************************
-    '{"SheetNameA": {"Key1" : {"Fields1" : "Value1",
-    '                           "Fields2" : "Value2",
-    '                           "Fields3" : "Value3",
-    '                           "Fields4" : "Value4"},
-    '               "Key2" : {"Fields1" : "Value1",
-    '                           "Fields2" : "Value2",
-    '                           "Fields3" : "Value3",
-    '                           "Fields4" : "Value4"}},
-    ' "SheetNameB": {"Key1" : {"Fields1" : "Value1",
-    '                           "Fields2" : "Value2",
-    '                           "Fields3" : "Value3",
-    '                           "Fields4" : "Value4"},
-    '               "Key2" : {"Fields1" : "Value1",
-    '                           "Fields2" : "Value2",
-    '                           "Fields3" : "Value3",
-    '                           "Fields4" : "Value4"}}
-    '}
+    '{"SheetNameA": {"Columns" : {"Column1": 1, "Column2": 2, "Column3": 3, "Column4": 4},
+    '                   "Keys" : {"Key1": 1, "Key2": 2, "Key3": 3, "Key4": 4},
+    '                   "Values" : (( "Key1", "Value1", "Value2", "Value3"),
+    '                               ( "Key2", "Value1", "Value2", "Value3"),
+    '                               ( "Key3", "Value1", "Value2", "Value3"),
+    '                               ( "Key4", "Value1", "Value2", "Value3")),
+    ' "SheetNameB": {"Columns" : {"Column1": 1, "Column2": 2, "Column3": 3, "Column4": 4},
+    '                   "Keys" : {"Key1": 1, "Key2": 2, "Key3": 3, "Key4": 4},
+    '                   "Values" : (( "Key1", "Value1", "Value2", "Value3"),
+    '                               ( "Key2", "Value1", "Value2", "Value3"),
+    '                               ( "Key3", "Value1", "Value2", "Value3"),
+    '                               ( "Key4", "Value1", "Value2", "Value3"))}
     '*****************************************
     
     Dim dctMasterDatas As Object
+    Const strKey_ As String = "Keys"
+    Const strColumns_ As String = "Columns"
+    Const strValues_ As String = "Values"
+    '*****************************************
+    ' アンダースコアが見えるようにここにメモ。
+    ' Key　　　⇒　ID　：配列の行番号
+    ' Columns　⇒　列名：配列の列番号
+    ' Values　 ⇒　全ての値を格納した配列
+    '*****************************************
     
     
     '*****************************************
@@ -2645,7 +2657,9 @@
             
             'Dictionary内に「シート名Dictionary」を生成
             dctMasterDatas.Add strWsMasterSheet, CreateObject("Scripting.Dictionary")
-            
+            dctMasterDatas(strWsMasterSheet).Add strColumns_, CreateObject("Scripting.Dictionary")
+            dctMasterDatas(strWsMasterSheet).Add strKey_, CreateObject("Scripting.Dictionary")
+                        
             Dim lngRow As Long
             For lngRow = 2 To GetLastRow(wsMasterSheet, "A")
                 
@@ -2653,28 +2667,41 @@
                 Dim strKey As String
                 strKey = wsMasterSheet.Cells(lngRow, "A").Value
                 
-                'ID登録済みの場合は無視する
-                If dctMasterDatas(strWsMasterSheet).Exists(strKey) = False Then
-                    
-                    'シート名Dictionary内に「IDDictionary」を生成
-                    dctMasterDatas(strWsMasterSheet).Add strKey, CreateObject("Scripting.Dictionary")
-                    
-                    '「IDDictionary」内に「Key:Value」を格納
-                    '※Keyはヘッダの項目のため、ヘッダの重複厳禁！！
-                    Dim intColumn As Integer
-                    For intColumn = 2 To GetLastColumn(wsMasterSheet, 1)
-                        
-                        Dim strField As String
-                        Dim strValue As String
-                        strField = wsMasterSheet.Cells(1, intColumn).Value
-                        strValue = wsMasterSheet.Cells(lngRow, intColumn).Value
-                        
-                        dctMasterDatas(strWsMasterSheet)(strKey).Add strField, strValue
-                        
-                    Next
+                'Key：行番号を保存（ヘッダは除外するので-1）
+                If dctMasterDatas(strWsMasterSheet)(strKey_).Exists(strKey) = False Then
+                    dctMasterDatas(strWsMasterSheet)(strKey_).Add strKey, lngRow - 1
                 End If
-                
             Next
+            
+            
+            '「IDDictionary」内に「Key:Value」を格納
+            '※Keyはヘッダの項目のため、ヘッダの重複厳禁！！
+            Dim intColumn As Integer
+            For intColumn = 1 To GetLastColumn(wsMasterSheet, 1)
+                
+                'ヘッダ名：列番号を保存
+                Dim strColumn As String
+                strColumn = wsMasterSheet.Cells(1, intColumn).Value
+                If dctMasterDatas(strWsMasterSheet)(strColumns_).Exists(strColumn) = False Then
+                    dctMasterDatas(strWsMasterSheet)(strColumns_).Add strColumn, intColumn
+                End If
+            Next
+            
+            Dim lngMasterLastRow As Long
+            Dim intMasterLastColumn As Integer
+            lngMasterLastRow = GetLastRow(wsMasterSheet, "A")
+            intMasterLastColumn = GetLastColumn(wsMasterSheet, 1)
+            
+            'データを収集するための配列を宣言
+            ReDim strTmpArray(1 To lngMasterLastRow, 1 To intMasterLastColumn) As String
+            For lngRow = 2 To GetLastRow(wsMasterSheet, "A")
+                For intColumn = 2 To GetLastColumn(wsMasterSheet, 1)
+                    strTmpArray(lngRow - 1, intColumn) = wsMasterSheet.Cells(lngRow, intColumn).Value
+                Next
+            Next
+            
+            '配列に収集したデータをDictionaryに格納
+            dctMasterDatas(strWsMasterSheet).Add strValues_, strTmpArray
             
         End If
         
@@ -2685,37 +2712,28 @@
     ' Dictionaryの階層をたどって値を取得
     '*****************************************
     
-    Property Get GetValue(ByVal strMasterName As String, ByVal strKey As String, ByVal strField As String) As String
+    Property Get GetValue(ByVal strMasterName As String, ByVal strKey As String, ByVal strColumn As String) As String
         
-        '階層をたどるためにDictionaryを変数に格納
-        Dim objTmp As Object
-        Set objTmp = dctMasterDatas
+        'Dictionaryに存在しない場合はアクセス不可
+        If dctMasterDatas.Exists(strMasterName) = False Then
+            GetValue = ""
+            Exit Property
+        ElseIf dctMasterDatas(strMasterName)(strKey_).Exists(strKey) = False Then
+            GetValue = ""
+            Exit Property
+        ElseIf dctMasterDatas(strMasterName)(strColumns_).Exists(strColumn) = False Then
+            GetValue = ""
+            Exit Property
+        End If
         
-        'パラメータを配列化
-        Dim aryParams As Variant
-        aryParams = Array(strMasterName, strKey, strField)
-        
-        '最後のParamから「値」を取得するためにインデックス管理
-        Dim intIndex As Integer
-        For intIndex = LBound(aryParams) To UBound(aryParams)
-            
-            'DictionaryにKeyが存在しなければ「空文字」を返却して終了
-            If objTmp.Exists(aryParams(intIndex)) = False Then
-                GetValue = ""
-            End If
-            
-            '最終パラメータになるまでDictionary内のDictionaryを掘り下げる
-            If intIndex <> UBound(aryParams) Then
-                Set objTmp = objTmp(aryParams(intIndex))
-            
-            '最終パラメータなら値を返却
-            Else
-                GetValue = objTmp(aryParams(intIndex))
-            End If
-        Next
+        'Key、Columnsから配列の位置を特定して値を返却
+        Dim lngRow As Long
+        Dim intColumn As Integer
+        lngRow = dctMasterDatas(strMasterName)(strKey_)(strKey)
+        intColumn = dctMasterDatas(strMasterName)(strColumns_)(strColumn)
+        GetValue = dctMasterDatas(strMasterName)(strValues_)(lngRow, intColumn)
         
     End Property
-    
     
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
