@@ -430,6 +430,7 @@ window.addEventListener("load", function(){
     ["2023/06/10", "https://office-diet.github.io/tweets/20230610.html", "菊川⇒浜町⇒南大沢⇒鑓水⇒小山内裏公園⇒堀之内⇒永山", "--km", "https://pbs.twimg.com/media/FyNtMCJaQAAfhsB?format=jpg&name=small"], 
     ["2023/06/14", "https://office-diet.github.io/tweets/20230614.html", "東陽町⇒西大島⇒笹塚⇒明大前⇒千歳烏山", "--km", "https://pbs.twimg.com/media/Fyihus0aYAA79p-?format=jpg&name=small"], 
     ["2023/06/17", "https://office-diet.github.io/tweets/20230617.html", "東陽町⇒浦安⇒妙典⇒西船橋⇒南船橋", "--km", "https://pbs.twimg.com/media/FyyHzkDaUAA7oNk?format=jpg&name=small"], 
+    ["2023/11/03", "https://office-diet.github.io/tweets/20231103.html", "東陽町⇒新長島川親水公園⇒浦安公園⇒行徳", "--km", "https://pbs.twimg.com/media/F99u6KlaQAAH6Gm?format=jpg&name=small"], 
   ];
   
   const formSearch = document.getElementById("search-form");
