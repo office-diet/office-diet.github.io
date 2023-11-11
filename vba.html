@@ -1840,6 +1840,62 @@
     
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
+' 散布図作成の手抜き機能
+' 全データを別系列として登録することにより、ラベルを付加できる！！
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Sub ScatterPlot(ByVal rngLabel As Range, ByVal rngX As Range, ByVal rngY As Range)
+        
+        'データと同じシート上にグラフを生成
+        Dim wsTarget As Worksheet
+        Set wsTarget = rngLabel.Parent
+        
+        'グラフを追加
+        Dim objScatterPlot As Object
+        Set objScatterPlot = wsTarget.Shapes.AddChart2
+        
+        With objScatterPlot.Chart
+            
+            .ChartType = xlXYScatter
+            .HasTitle = False
+            .HasLegend = False
+            
+            'グラフ内のデフォルトデータを削除
+            Dim intIndex As Integer
+            For intIndex = .SeriesCollection.Count To 1 Step -1
+                .SeriesCollection(intIndex).Delete
+            Next
+            
+            'グラフのデータ範囲指定が「文字列」のためシート名を取得
+            Dim strWsName As String
+            strWsName = wsTarget.Name
+            
+            Dim lngRow As Long
+            For lngRow = 1 To rngLabel.Rows.Count
+                
+                '新しい系列としてデータを追記
+                With .SeriesCollection.NewSeries
+                    .Name = "='" & strWsName & "'!" & rngLabel.Cells(lngRow, 1).Address
+                    .XValues = "='" & strWsName & "'!" & rngX.Cells(lngRow, 1).Address
+                    .Values = "='" & strWsName & "'!" & rngY.Cells(lngRow, 1).Address
+                    .HasDataLabels = True
+                    .HasLeaderLines = True
+                    .DataLabels.Position = xlLabelPositionRight
+                    .DataLabels.ShowSeriesName = True
+                    .DataLabels.ShowValue = False
+                End With
+                
+            Next
+        End With
+    End Sub
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
 ' PowerPointを使用した動画編集
 '
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
