@@ -219,6 +219,42 @@
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
     
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' ヘッダの固定＋シートの最上段を表示
+' ※ヘッダの固定時にシートの選択＋最上段の表示が必須！！
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    'ヘッダの固定
+    Sub FreezeHeader(ByVal rngEdgeCell As Range)
+        
+        Call ScrollToTop(rngEdgeCell.Parent)
+        With ActiveWindow
+            
+            '既存のヘッダ固定を除去
+            If .FreezePanes = True Then
+                .FreezePanes = False
+            End If
+            
+            '固定する境目のセルを選択⇒固定
+            rngEdgeCell.Select
+            .FreezePanes = True
+        End With
+        
+    End Sub
+    
+    'シート最上段を表示
+    Sub ScrollToTop(ByVal wsTarget As Worksheet)
+        wsTarget.Parent.Activate
+        wsTarget.Activate
+        Application.Goto Reference:=wsTarget.Range("A1"), Scroll:=True
+    End Sub
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' TextJoinの汎用化
