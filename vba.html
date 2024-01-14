@@ -435,6 +435,134 @@
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
+
+Option Explicit
+
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' WINAPIを使用して画像サイズを取得する
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Private Declare PtrSafe Function GdiplusStartup Lib "gdiplus" ( _
+                                            ByRef token As LongPtr, _
+                                            ByRef inputBuf As GdiplusStartupInput, _
+                                            ByVal outputBuf As Long) As Long
+    Private Declare PtrSafe Sub GdiplusShutdown Lib "gdiplus" ( _
+                                            ByVal token As LongPtr)
+    Private Declare PtrSafe Function GdipLoadImageFromFile Lib "gdiplus" ( _
+                                            ByVal FileName As LongPtr, _
+                                            ByRef image As LongPtr) As Long
+    Private Declare PtrSafe Function GdipGetImageDimension Lib "gdiplus" ( _
+                                            ByVal image As LongPtr, _
+                                            ByRef width As Single, _
+                                            ByRef height As Single) As Long
+    Private Type GdiplusStartupInput
+        GdiplusVersion As Long
+        DebugEventCallback As LongPtr
+        SuppressBackgroundThread As Long
+        SuppressExternalCodecs As Long
+    End Type
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' ファイルを参照し幅・高さを返却
+' ※変数の参照を受け取り、値を格納して返却する。
+' 　返り値は成否
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function GetImageSize(ByVal sImageFilePath As String, ByRef width As Single, ByRef height As Single) As Boolean
+        
+        Dim uGdiStartupInput As GdiplusStartupInput
+        Dim nGdiToken As LongPtr
+        Dim nStatus As Long
+        Dim hImage As LongPtr
+        
+        GetImageSize = False
+        
+        uGdiStartupInput.GdiplusVersion = 1
+        nStatus = GdiplusStartup(nGdiToken, uGdiStartupInput, 0&)
+        If nStatus = 0 Then
+            nStatus = GdipLoadImageFromFile(ByVal StrPtr(sImageFilePath), hImage)
+            If nStatus = 0 Then
+                nStatus = GdipGetImageDimension(hImage, width, height)
+                If nStatus = 0 Then
+                    GetImageSize = True
+                End If
+            End If
+            Call GdiplusShutdown(nGdiToken)
+        End If
+    End Function
+    
+    
+    '**********************************************
+    ' 対象セルにファイルパスを記入すると同時にコメントに画像を挿入
+    '**********************************************
+    Function AddImageComment(ByVal strFilePath As String, ByVal rngTargetCell As Range, Optional ByVal blnOverWrite As Boolean = False) As Boolean
+        
+        '本関数途中終了は「エラー」
+        AddImageComment = False
+                
+        'ファイルの存在確認
+        '※ファイルが存在しなかったらエラーのまま終了
+        If CreateObject("Scripting.FileSystemObject").FileExists(strFilePath) = True Then
+            
+            '画像サイズを受け取る変数
+            Dim sglWidth As Single
+            Dim sglHeight As Single
+            
+            '画像ファイルのデータ取得に失敗したら途中終了
+            If GetImageSize(strFilePath, sglWidth, sglHeight) = False Then
+                Exit Function
+            End If
+            
+            '対象セルの加工
+            With rngTargetCell
+                
+                '「要上書き」の場合はファイルパスをセルに記入
+                If blnOverWrite = True Then
+                    .Value = strFilePath
+                End If
+                
+                'コメントがすでに存在する場合は削除
+                On Error Resume Next
+                .Comment.Delete
+                On Error GoTo 0
+                
+                '画像縦横の最大値を取得
+                Dim intMax As Integer
+                intMax = Application.WorksheetFunction.Max(sglHeight, sglWidth)
+                
+                '画像の最大値が上限を超えていた場合は調整
+                Const intMaxImageSize As Integer = 300
+                If intMax > intMaxImageSize Then
+                    If sglHeight > sglWidth Then
+                        sglWidth = sglWidth * intMaxImageSize / sglHeight
+                        sglHeight = intMaxImageSize
+                    Else
+                        sglHeight = sglHeight * intMaxImageSize / sglWidth
+                        sglWidth = intMaxImageSize
+                    End If
+                End If
+                
+                'コメントに画像を表示⇒コメントのサイズを画像に合わせる
+                .AddComment.Shape.Fill.UserPicture strFilePath
+                .Comment.Shape.width = sglWidth
+                .Comment.Shape.height = sglHeight
+                
+            End With
+            
+            '関数成功なのでTrue
+            AddImageComment = True
+            
+        End If
+        
+    End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
     
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
