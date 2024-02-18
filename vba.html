@@ -731,6 +731,91 @@ Option Explicit
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
     
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' セル内の指定文字列を着色
+' ※重複未対応
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Sub ColoringTargetTextInCell(ByVal strTargetText As String, ByVal rngTarget As Range, Optional ByVal lngColor As Long = rgbRed, Optional ByVal blnBold As Boolean = True)
+        
+        '相手セル内に自セル内のキーワードが存在しなかったら
+        If InStr(rngTarget.Value, strTargetText) > 0 Then
+            
+            '自セル内の着色すべき文字範囲を特定
+            Dim intStartIndex As Integer
+            Dim intLength As Integer
+            intStartIndex = InStr(rngTarget.Value, strTargetText)
+            intLength = Len(strTargetText)
+            
+            '自セル内の文字列の指定範囲を着色
+            rngTarget.Characters(Start:=intStartIndex, Length:=intLength).Font.Color = lngColor
+            rngTarget.Characters(Start:=intStartIndex, Length:=intLength).Font.Bold = blnBold
+            
+        End If
+        
+    End Sub
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' セル・文字色を設定
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function SetCellColor(ByVal rngTarget As Range, ByVal lngFontColor As Long, ByVal lngCellColor As Long, Optional ByVal blnBold As Boolean = True)
+        With rngTarget
+            .Interior.Color = lngCellColor
+            .Font.Color = lngFontColor
+            .Font.Bold = blnBold
+        End With
+    End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' エラーのセルが存在するか？
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function IsExistsErrorCell(ByVal rngTarget As Range, Optional ByVal blnSelectErrorCell As Boolean = False) As Boolean
+        
+        Dim rngCell As Range
+        For Each rngCell In rngTarget
+            
+            'エラーセルが一つでも存在したら「あり」
+            If IsError(rngCell) = True Then
+                
+                '「エラーセルを選択」する場合
+                If blnSelectErrorCell = True Then
+                    
+                    '対象シートが表示されているとは限らないためエラー回避
+                    On Error Resume Next
+                    rngCell.Select
+                    Application.Goto rngCell, True
+                    On Error GoTo 0
+                End If
+                
+                IsExistsErrorCell = True
+                Exit Function
+            End If
+        Next
+        
+        'エラーが発見されなかったら「なし」
+        IsExistsErrorCell = False
+    End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' Replaceのコーディングを簡略化
@@ -1740,6 +1825,35 @@ Option Explicit
         rngCell.Value = strUpdateValue
         rngCell.Interior.Color = rgbYellow
     End Sub
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' コメントを追加するだけ
+' ※コメントが既に存在した際は「追記」に切り替え
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Sub AddComment(ByVal rngTarget As Range, ByVal strText As String)
+        
+        'コメントが存在するとエラーが発生するので回避
+        On Error Resume Next
+        
+        'コメントを新規追加
+        rngTarget.AddComment strText
+        
+        'コメントが既に存在しているとエラー発生
+        '⇒「文字追記」に切り替え
+        If Err.Number <> 0 Then
+            rngTarget.Comment.Text rngTarget.Comment.Text & vbCrLf & _
+                                    strText
+        End If
+        On Error GoTo 0
+        
+    End Sub     
                     </pre>
                 </div>
                 <div class="vba-code">
