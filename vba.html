@@ -219,6 +219,22 @@
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
     
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 空のDictionaryを生成
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function CreateNewDictionary() As Object
+        
+        Set CreateNewDictionary = CreateObject("Scripting.Dictionary")
+        
+    End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' ヘッダの固定＋シートの最上段を表示
@@ -2111,6 +2127,413 @@ Option Explicit
         objMailItem.Save
         
     End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' ShapeFormの生成・コントロール
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    'ヘッダの色・定型文
+    Const rgbHeaderBlue As Long = 13998939
+    Const strOpenMark As String = "〇"
+    Const strCloseMark As String = "―"
+    Const intMaxCount As Integer = 10
+    
+    Const strParentName As String = "f_Parent_"
+    Const strHeaderName As String = "f_Header_"
+    Const strOpenName As String = "f_Open_"
+    Const strCloseName As String = "f_Close_"
+    Const strBodyName As String = "f_Body_"
+    Const strShadowName As String = "f_Shadow_"
+    
+    
+    '初期表示時のサイズ表示
+    Enum DefaultSize
+        HeaderHeight = 20
+        HeaderWidth = 200
+        BodyHeight = 100
+    End Enum
+    
+    'フォームのパーツを管理する構造体
+    Type ShapeForm
+        
+        Parent As Shape
+        Header As Shape
+        Open As Shape
+        Close As Shape
+        Body As Shape
+        Shadow As Shape
+        
+        ParentName As String
+        HeaderName As String
+        OpenName As String
+        CloseName As String
+        BodyName As String
+        ShadowName As String
+        
+    End Type
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' ShapeFormの新規作成
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Sub AddNewShape()
+        
+        'オートシェイプの名称が一致しない「番号」を探す
+        Dim intFormNumber As Integer
+        For intFormNumber = 1 To intMaxCount
+            
+            '「f_00_partsname」でフォーム番号を管理
+            Dim strFormNumber As String
+            strFormNumber = Format(intFormNumber, "00")
+            
+            Dim blnNumberDuplicate As Boolean
+            blnNumberDuplicate = False
+            
+            '既存のAutoShapeと名称が一致するか？チェック
+            Dim vntShape As Variant
+            For Each vntShape In ActiveSheet.Shapes
+                If vntShape.Name Like "f_*_" & strFormNumber Then
+                    blnNumberDuplicate = True
+                    Exit For
+                End If
+            Next
+            
+            '名称の重複がなかったらループを終了しその番号を使用
+            If blnNumberDuplicate = False Then
+                Exit For
+            End If
+            
+            '上限に達したらフォーム生成断念
+            If intFormNumber = intMaxCount Then
+                MsgBox "フォームが" & intMaxCount & "個以上生成されているます。" & vbCrLf & _
+                        "実行を中止します。", vbExclamation
+                Exit Sub
+            End If
+            
+        Next
+        
+        Dim typShapeForm As ShapeForm
+        With typShapeForm
+            
+            '各種パーツを新規作成
+            Set .Shadow = MakeShadow(strFormNumber)
+            Set .Body = MakeBody(strFormNumber)
+            Set .Header = MakeHeader(strFormNumber)
+            Set .Open = MakeOpen(strFormNumber)
+            Set .Close = MakeClose(strFormNumber)
+            
+            '各種パーツの名称を改めて取得
+            .ShadowName = .Shadow.Name
+            .BodyName = .Body.Name
+            .HeaderName = .Header.Name
+            .OpenName = .Open.Name
+            .CloseName = .Close.Name
+            .ParentName = strParentName & strFormNumber
+            
+            '新規作成したパーツを基本位置に配置
+            .Body.Top = .Header.Top + .Header.Height
+            .Body.Left = .Header.Left
+            .Shadow.Height = .Header.Height + .Body.Height
+            .Open.Left = .Header.Left + .Header.Width - (DefaultSize.HeaderHeight * 2)
+            .Close.Left = .Header.Left + .Header.Width - DefaultSize.HeaderHeight
+            
+        End With
+        
+        '個々のパーツをグループ化
+        Call FormGrouping(typShapeForm)
+        
+    End Sub
+    
+    '*******************************************
+    ' ヘッダの生成
+    '*******************************************
+    Function MakeHeader(ByVal strCallerNumber As String) As Shape
+        
+        Dim shpHeader As Shape
+        Set shpHeader = ActiveSheet.Shapes.AddShape(msoShapeRectangle, 0, 0, 200, DefaultSize.HeaderHeight)
+            
+        With shpHeader
+            .Fill.ForeColor.RGB = rgbHeaderBlue
+            .Line.ForeColor.RGB = rgbGray
+            
+            .TextFrame2.TextRange.Font.NameFarEast = "Meiryo UI"
+            .TextFrame.Characters.Font.Color = rgbWhite
+            .TextFrame.Characters.Font.Bold = True
+            .TextFrame.Characters.Font.Size = 10
+            .TextFrame.Characters.Text = "　シェイプフォーム"
+            
+            .TextFrame.MarginBottom = 0
+            .TextFrame.MarginLeft = 0
+            .TextFrame.MarginRight = 0
+            .TextFrame.MarginTop = 0
+            .TextFrame.VerticalAlignment = xlVAlignCenter
+            .Name = strHeaderName & strCallerNumber
+        End With
+        
+        Set MakeHeader = shpHeader
+        
+    End Function
+    
+    '*******************************************
+    ' 展開ボタン
+    '*******************************************
+    Function MakeOpen(ByVal strCallerNumber As String) As Shape
+        
+        Dim shpOpen As Shape
+        Set shpOpen = ActiveSheet.Shapes.AddShape(msoShapeRectangle, 0, 0, DefaultSize.HeaderHeight, DefaultSize.HeaderHeight)
+            
+        With shpOpen
+            .Fill.ForeColor.RGB = rgbGold
+            .Line.ForeColor.RGB = rgbGray
+            .TextFrame.Characters.Font.Color = rgbWhite
+            .TextFrame.Characters.Font.Bold = True
+            .TextFrame.Characters.Font.Size = 10
+            .TextFrame.Characters.Text = strOpenMark
+            
+            .TextFrame.MarginBottom = 0
+            .TextFrame.MarginLeft = 0
+            .TextFrame.MarginRight = 0
+            .TextFrame.MarginTop = 0
+            .TextFrame.VerticalAlignment = xlVAlignCenter
+            .TextFrame.HorizontalAlignment = xlHAlignCenter
+            .Name = strOpenName & strCallerNumber
+            .OnAction = "FormOpen"
+        End With
+        
+        Set MakeOpen = shpOpen
+        
+    End Function
+    
+    '*******************************************
+    ' 最小化ボタン
+    '*******************************************
+    Function MakeClose(ByVal strCallerNumber As String) As Shape
+        
+        Dim shpClose As Shape
+        Set shpClose = ActiveSheet.Shapes.AddShape(msoShapeRectangle, 0, 0, DefaultSize.HeaderHeight, DefaultSize.HeaderHeight)
+            
+        With shpClose
+            .Fill.ForeColor.RGB = rgbRed
+            .Line.ForeColor.RGB = rgbFireBrick
+            .TextFrame.Characters.Font.Color = rgbWhite
+            .TextFrame.Characters.Font.Bold = True
+            .TextFrame.Characters.Font.Size = 14
+            .TextFrame.Characters.Text = "×"
+            
+            .TextFrame.MarginBottom = 0
+            .TextFrame.MarginLeft = 0
+            .TextFrame.MarginRight = 0
+            .TextFrame.MarginTop = 0
+            .TextFrame.VerticalAlignment = xlVAlignCenter
+            .TextFrame.HorizontalAlignment = xlHAlignCenter
+            .Name = strCloseName & strCallerNumber
+            .OnAction = "FormClose"
+        End With
+        
+        Set MakeClose = shpClose
+        
+    End Function
+    
+    '*******************************************
+    ' 本文部分
+    '*******************************************
+    Function MakeBody(ByVal strCallerNumber As String) As Shape
+        
+        Dim shpBody As Shape
+        Set shpBody = ActiveSheet.Shapes.AddShape(msoShapeRectangle, 0, 0, 200, DefaultSize.BodyHeight)
+            
+        With shpBody
+            .Fill.ForeColor.RGB = rgbWhite
+            .Line.ForeColor.RGB = rgbGray
+            
+            .TextFrame2.TextRange.Font.NameFarEast = "Meiryo UI"
+            .TextFrame.Characters.Font.Color = RGB(70, 70, 70)
+            .TextFrame.Characters.Font.Size = 10
+            .TextFrame.Characters.Text = "ヘッダとこの部分は自由に記入することが出来ます。" & vbCrLf & _
+                                            "サイズの伸縮も可能で、フォームが崩れても開閉すると自動調整されます。"
+            
+            .TextFrame.MarginBottom = 2
+            .TextFrame.MarginLeft = 6
+            .TextFrame.MarginRight = 6
+            .TextFrame.MarginTop = 2
+            .Name = strBodyName & strCallerNumber
+        End With
+        
+        Set MakeBody = shpBody
+        
+    End Function
+    
+    '*******************************************
+    ' 最背面の影
+    '*******************************************
+    Function MakeShadow(ByVal strCallerNumber As String) As Shape
+        
+        Dim shpShadow As Shape
+        Set shpShadow = ActiveSheet.Shapes.AddShape(msoShapeRectangle, 0, 0, 200, DefaultSize.BodyHeight + DefaultSize.HeaderHeight)
+            
+        With shpShadow
+            .Fill.ForeColor.RGB = rgbWhite
+            .Line.ForeColor.RGB = rgbGray
+            .TextFrame.Characters.Font.Color = RGB(80, 80, 80)
+            .TextFrame.Characters.Font.Bold = True
+            .TextFrame.Characters.Font.Size = 10
+            
+            .TextFrame.MarginBottom = 0
+            .TextFrame.MarginLeft = 0
+            .TextFrame.MarginRight = 0
+            .TextFrame.MarginTop = 0
+            .Name = strShadowName & strCallerNumber
+            .Shadow.Type = msoShadow21
+        End With
+        
+        Set MakeShadow = shpShadow
+        
+    End Function
+    
+    '*******************************************
+    ' 全てのパーツをグループ化
+    '*******************************************
+    Sub FormGrouping(ByRef typShapeForm As ShapeForm)
+        
+        '全てをグループ化し1つのフォームへ
+        With ActiveSheet.Shapes.Range(Array(typShapeForm.HeaderName, typShapeForm.OpenName, typShapeForm.CloseName, typShapeForm.BodyName, typShapeForm.ShadowName)).Group
+            .Name = typShapeForm.ParentName
+            .Placement = xlFreeFloating
+        End With
+        
+    End Sub
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' ShapeFormの表示切り替え機能
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    '*******************************************
+    ' 最小化
+    '*******************************************
+    Sub FormClose()
+        
+        'フォームの枝番を取得
+        Dim strCallerNumber As String
+        strCallerNumber = Split(Application.Caller, "_")(2)
+        
+        Dim typShapeForm As ShapeForm
+        Call SetFormDefault(strCallerNumber, typShapeForm, True)
+        
+    End Sub
+    
+    '*******************************************
+    ' 展開
+    '*******************************************
+    Sub FormOpen()
+        
+        'フォームの枝番を取得
+        Dim strCallerNumber As String
+        strCallerNumber = Split(Application.Caller, "_")(2)
+        
+        Dim typShapeForm As ShapeForm
+        Call SetFormDefault(strCallerNumber, typShapeForm, False)
+        
+    End Sub
+    
+    '*******************************************
+    ' 最小化
+    '*******************************************
+    Sub SetFormDefault(ByVal strCallerNumber As String, ByRef typShapeForm As ShapeForm, ByVal blnClose As Boolean)
+        
+        With typShapeForm
+            
+            '枝番から各種パーツの名称を特定
+            .ParentName = strParentName & strCallerNumber
+            .HeaderName = strHeaderName & strCallerNumber
+            .OpenName = strOpenName & strCallerNumber
+            .CloseName = strCloseName & strCallerNumber
+            .BodyName = strBodyName & strCallerNumber
+            .ShadowName = strShadowName & strCallerNumber
+            
+            '各種パーツを取得
+            Set .Parent = ActiveSheet.Shapes(.ParentName)
+            Set .Header = ActiveSheet.Shapes(.HeaderName)
+            Set .Close = ActiveSheet.Shapes(.CloseName)
+            Set .Open = ActiveSheet.Shapes(.OpenName)
+            Set .Body = ActiveSheet.Shapes(.BodyName)
+            Set .Shadow = ActiveSheet.Shapes(.ShadowName)
+            
+            'グループ化を解除
+            '※グループ化を解除しないとパーツのサイズ変更が全て連動してしまう！！
+            .Parent.Ungroup
+            
+            'ヘッダの調整
+            .Header.Height = DefaultSize.HeaderHeight
+            If .Header.Width > .Body.Width Then
+                .Body.Width = .Header.Width
+            Else
+                .Header.Width = .Body.Width
+            End If
+            
+            '「〇」ボタンの調整
+            .Open.Height = DefaultSize.HeaderHeight
+            .Open.Width = DefaultSize.HeaderHeight
+            
+            '「×」ボタンの調整
+            .Close.Height = DefaultSize.HeaderHeight
+            .Close.Width = DefaultSize.HeaderHeight
+            
+            '本文部分の調整
+            .Body.Left = .Header.Left
+            .Body.Top = .Header.Top + DefaultSize.HeaderHeight
+            
+            '閉じる際に「閉じる前のサイズ」を保存
+            If blnClose = True Then
+                
+                '本文が「展開状態」だったらサイズを「Shadow」に保存
+                If .Body.Height > 0 Then
+                    .Shadow.TextFrame.Characters.Text = .Body.Height
+                End If
+                .Body.Height = 0
+                
+            '「展開」の場合は「Shadow」に保存された数値から復元
+            ElseIf .Body.Height = 0 Then
+                
+                If IsNumeric(.Shadow.TextFrame.Characters.Text) = True Then
+                    .Body.Height = .Shadow.TextFrame.Characters.Text
+                Else
+                    .Body.Height = DefaultSize.BodyHeight
+                End If
+                
+            '「展開」を何度もクリックされていたらサイズを保存
+            '※サイズ微調整の可能性があるため
+            Else
+                .Shadow.TextFrame.Characters.Text = .Body.Height
+            End If
+            
+            'ボタンをヘッダ右端に寄せる
+            .Close.Top = .Header.Top
+            .Open.Top = .Header.Top
+            .Close.Left = .Header.Left + .Header.Width - DefaultSize.HeaderHeight
+            .Open.Left = .Close.Left - DefaultSize.HeaderHeight
+            
+            '「Shadow」最背面で全体のサイズと一致させる
+            .Shadow.Top = .Header.Top
+            .Shadow.Left = .Header.Left
+            .Shadow.Height = .Header.Height + .Body.Height
+            .Shadow.Width = .Header.Width
+            
+        End With
+        
+        '全てのパーツをグループ化
+        Call FormGrouping(typShapeForm)
+        
+    End Sub
                     </pre>
                 </div>
                 <div class="vba-code">
