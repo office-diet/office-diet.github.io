@@ -5306,6 +5306,266 @@ Option Explicit
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
     
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' ★ClassModule★
+' CountVectorizerクラス
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Dim dctTexts As Object
+    Dim dctCharToIndex As Object
+    Dim dctAnswers As Object
+    
+    Const intNGram As Integer = 2
+    Const strTEXT_VECTOR As String = "TEXT_VECTOR"
+    Const strTEXT_ANSWER As String = "TEXT_ANSWER"
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' クラス初期化時各種変数を設定
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Private Sub Class_Initialize()
+        
+        Set dctTexts = CreateNewDictionary
+        Set dctCharToIndex = CreateNewDictionary
+        Set dctAnswers = CreateNewDictionary
+        
+    End Sub
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 文字列を追記
+' ※最大文字数が不明なためこの段階ではベクトル化しない！！
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Sub AddText(ByVal strTextOrigin As String, ByVal strTextAnswer As String)
+        
+        Dim strText As String
+        strText = FormatText(strTextOrigin)
+        
+        If dctTexts.Exists(strText) = False Then
+            dctTexts.Add strText, CreateNewDictionary
+            dctTexts(strText).Add strTEXT_ANSWER, strTextAnswer
+            dctTexts(strText).Add strTEXT_VECTOR, ""
+        End If
+        
+        If dctAnswers.Exists(strTextAnswer) = False Then
+            dctAnswers.Add strTextAnswer, strTextOrigin
+        End If
+        
+    End Sub
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 存在する文字全ての収集が完了したら
+' 「文字：ID対応表生成」⇒「ベクトル化」
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Sub Vectorize()
+        
+        Call MakeCharToIndex
+        Call MakeVectors
+        
+    End Sub
+    
+    '******************************************
+    ' 文字⇒IDの対応表を生成
+    '******************************************
+    Sub MakeCharToIndex()
+        
+        '文字が蓄積されていない状態では実行不可能
+        If dctTexts.Count = 0 Then
+            Exit Sub
+        End If
+        
+        '「1文字として扱う長さ」を変化させながら対応表を生成
+        '【UniGram】{ A:0, B:1 }
+        '【BiGram 】{ A:0, B:1, AA:2, AB:3, BA:4, BB:5 }
+        Dim intCharCount As Integer
+        For intCharCount = 1 To intNGram
+            
+            Dim vntText As Variant
+            For Each vntText In dctTexts.Keys()
+                
+                Dim intCharIndex As Integer
+                For intCharIndex = 1 To Len(vntText) - intCharCount + 1
+                    
+                    '文字列中の指定文字数を抽出
+                    Dim strChar As String
+                    strChar = Mid(vntText, intCharIndex, intCharCount)
+                    
+                    '「文字:ID」の対応表を生成
+                    If dctCharToIndex.Exists(strChar) = False Then
+                        dctCharToIndex.Add strChar, dctCharToIndex.Count
+                    End If
+                    
+                Next
+                
+            Next
+            
+        Next
+        
+    End Sub
+    
+    '******************************************
+    ' 検索対象となる文字列をVectorize
+    '******************************************
+    Sub MakeVectors()
+        
+        Dim vntText As Variant
+        For Each vntText In dctTexts.Keys()
+            dctTexts(vntText)(strTEXT_VECTOR) = ConvertVector(vntText)
+        Next
+        
+    End Sub
+    
+    '******************************************
+    ' 文字列をVectorize
+    '******************************************
+    Function ConvertVector(ByVal strText As String) As Integer()
+        
+        '文字列のフォーマットを統一
+        strText = FormatText(strText)
+        
+        '存在する文字数と同一のVectorを生成
+        Dim intVector() As Integer
+        ReDim intVector(dctCharToIndex.Count - 1)
+        
+        '抽出する「文字数」を変化させる
+        Dim intCharCount As Integer
+        For intCharCount = 1 To intNGram
+            
+            '文字列中の「抽出開始位置」を変化させる
+            Dim intCharIndex As Integer
+            For intCharIndex = 1 To Len(strText) - intCharCount + 1
+                
+                '文字列中の指定位置の文字を抽出
+                Dim strChar As String
+                strChar = Mid(strText, intCharIndex, intCharCount)
+                
+                'Vector内の対象文字Indexをカウントアップ
+                If dctCharToIndex.Exists(strChar) = True Then
+                    intVector(dctCharToIndex(strChar)) = intVector(dctCharToIndex(strChar)) + 1
+                End If
+                
+            Next
+            
+        Next
+        
+        'Vectorを返却
+        ConvertVector = intVector
+        
+    End Function
+    
+    '******************************************
+    ' 文字列のフォーマットを統一
+    '******************************************
+    Function FormatText(ByVal strText As String)
+        
+        FormatText = StrConv(StrConv(strText, vbWide), vbUpperCase)
+        
+    End Function
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 最も似ている文字列ベスト10を返却
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function GetSimilarTexts(ByVal strText As String) As String()
+        
+        '検索対象文字列をベクトル化
+        Dim intVector() As Integer
+        intVector = ConvertVector(strText)
+        
+        '「距離配列」「回答配列」を生成
+        Dim lngDistances() As Long
+        Dim strAnswers() As String
+        ReDim lngDistances(dctTexts.Count - 1)
+        ReDim strAnswers(dctTexts.Count - 1)
+        
+        Dim objFunction As WorksheetFunction
+        Set objFunction = Application.WorksheetFunction
+        
+        Dim vntText As Variant
+        For Each vntText In dctTexts.Keys()
+            
+            '「距離」「回答」を配列上の同じ位置に格納
+            Dim intIndex As Integer
+            lngDistances(intIndex) = objFunction.SumXMY2(intVector, dctTexts(vntText)(strTEXT_VECTOR)) - objFunction.SumProduct(intVector, dctTexts(vntText)(strTEXT_VECTOR))
+            strAnswers(intIndex) = dctTexts(vntText)(strTEXT_ANSWER)
+            intIndex = intIndex + 1
+            
+        Next
+        
+        '「回答」を重複返却しないようDictionaryでユニーク管理
+        Dim dctResults As Object
+        Set dctResults = CreateNewDictionary
+        
+        '最も似ているベスト10を収集
+        Dim strResults(9) As String
+        
+        Dim intAnswerCount As Integer
+        Do While intAnswerCount < 10
+            
+            Dim lngMinDistance As Integer
+            Dim lngMinIndex As Integer
+            
+            '配列内の「最短距離」の場所を特定
+            lngMinDistance = objFunction.Min(lngDistances)
+            lngMinIndex = objFunction.Match(lngMinDistance, lngDistances, False) - 1
+            
+            '「最短距離」と同じ場所にある「回答」文字列を特定
+            Dim strResult As String
+            strResult = strAnswers(lngMinIndex)
+            
+            '「回答」がユニークならベスト10に追加
+            If dctResults.Exists(strResult) = False Then
+                
+                strResults(intAnswerCount) = strResult
+                dctResults.Add strResult, ""
+                intAnswerCount = intAnswerCount + 1
+                
+            End If
+            
+            '収集済みの「回答」を遠くに追いやる
+            lngDistances(lngMinIndex) = 100000
+            
+        Loop
+        
+        '似ているベスト10を返却
+        GetSimilarTexts = strResults
+        
+    End Function
+        
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 「答え」から「元のテキスト」を返却
+'　※「答え」は重複するためID管理できない
+'　　例：ITエンジニア⇒IT関係
+'　　　　プログラマー⇒IT関係　変換結果は重複する！！
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function GetOriginText(ByVal strAnswer As String) As String
+        
+        If dctAnswers.Exists(strAnswer) = True Then
+            
+            GetOriginText = dctAnswers(strAnswer)
+            
+        End If
+        
+    End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' 文字列をベクトル化してあいまい検索（未完成）
