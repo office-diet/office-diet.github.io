@@ -2132,6 +2132,179 @@ Option Explicit
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
     
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 「角」の座標配列を渡すと「角丸」図形を生成する
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    '座標管理用構造体
+    Type CornerPoints
+        X As Double
+        Y As Double
+        OffsetX As Double
+        OffsetY As Double
+        HandleX As Double
+        HandleY As Double
+    End Type
+    
+    '座標計算用構造体
+    Type ShapePoints
+        From As CornerPoints
+        To As CornerPoints
+        Distance As Double
+    End Type
+    
+    '*************************************************
+    ' サンプルコード
+    '*************************************************
+    Sub ShowSmoothShape()
+        
+        Dim aryXYs(7, 1) As Double
+        aryXYs(0, 0) = Range("C2").Left
+        aryXYs(0, 1) = Range("C2").Top
+        
+        aryXYs(1, 0) = Range("I2").Left
+        aryXYs(1, 1) = Range("I2").Top
+        
+        aryXYs(2, 0) = Range("I7").Left
+        aryXYs(2, 1) = Range("I7").Top
+        
+        aryXYs(3, 0) = Range("E7").Left
+        aryXYs(3, 1) = Range("E7").Top
+        
+        aryXYs(4, 0) = Range("E6").Left
+        aryXYs(4, 1) = Range("E6").Top
+        
+        aryXYs(5, 0) = Range("D6").Left
+        aryXYs(5, 1) = Range("D6").Top
+        
+        aryXYs(6, 0) = Range("D5").Left
+        aryXYs(6, 1) = Range("D5").Top
+        
+        aryXYs(7, 0) = Range("C5").Left
+        aryXYs(7, 1) = Range("C5").Top
+        
+        Call MakeSmoothShape(aryXYs, "TEST_SHAPE", ActiveSheet)
+        
+    End Sub
+    
+    '*************************************************
+    ' ポイント配列を受け取り「角丸」図形を生成する
+    '*************************************************
+    
+    Function MakeSmoothShape(ByVal aryXYs As Variant, ByVal strShapeName As String, ByVal wsTarget As Worksheet) As Object
+        
+        Dim typShapePoints As ShapePoints
+        Dim typShapePointsNext As ShapePoints
+            
+        Dim intPoint As Integer
+        For intPoint = 0 To UBound(aryXYs, 1)
+            
+            '対象配列⇒次の配列を取得し「始点・終点」を取得
+            '※配列末尾は先頭に戻る
+            Dim intNextPoint As Integer
+            intNextPoint = (intPoint + 1) Mod (UBound(aryXYs, 1) + 1)
+            
+            With typShapePoints
+                
+                '始点終点を取得
+                .From.X = aryXYs(intPoint, 0)
+                .From.Y = aryXYs(intPoint, 1)
+                .To.X = aryXYs(intNextPoint, 0)
+                .To.Y = aryXYs(intNextPoint, 1)
+                
+                '角丸を作るために長さを調整した値を計算
+                Call CalcPoints(typShapePoints)
+                
+                '「完全初回」は「始点」を生成
+                Dim shpFreeForm As Object
+                If shpFreeForm Is Nothing Then
+                    Set shpFreeForm = wsTarget.Shapes.BuildFreeform(msoEditingAuto, .From.OffsetX, .From.OffsetY)
+                End If
+                
+                '「始点ハンドルx, y, 終点ハンドルx, y, 終点x, y」の順に座標を指定
+                shpFreeForm.AddNodes msoSegmentCurve, msoEditingCorner, .From.HandleX, .From.HandleY, .To.HandleX, .To.HandleY, .To.OffsetX, .To.OffsetY
+                
+                '角丸を作るために「実際の角」にハンドルを設置
+                .From.HandleX = aryXYs(intNextPoint, 0)
+                .From.HandleY = aryXYs(intNextPoint, 1)
+                .To.HandleX = .From.HandleX
+                .To.HandleY = .From.HandleY
+            
+            End With
+            
+            Dim intNextNextPoint As Integer
+            intNextNextPoint = (intPoint + 2) Mod (UBound(aryXYs, 1) + 1)
+            
+            '「角丸」作成のために「次の始点」を計算
+            With typShapePointsNext
+                .From.X = aryXYs(intNextPoint, 0)
+                .From.Y = aryXYs(intNextPoint, 1)
+                .To.X = aryXYs(intNextNextPoint, 0)
+                .To.Y = aryXYs(intNextNextPoint, 1)
+                Call CalcPoints(typShapePointsNext)
+            End With
+            
+            '「次の始点」に向けて角丸を生成
+            With typShapePoints
+                
+                .To.OffsetX = typShapePointsNext.From.OffsetX
+                .To.OffsetY = typShapePointsNext.From.OffsetY
+                
+                shpFreeForm.AddNodes msoSegmentCurve, msoEditingCorner, .From.HandleX, .From.HandleY, .To.HandleX, .To.HandleY, .To.OffsetX, .To.OffsetY
+                
+            End With
+            
+        Next
+        
+        '線をシェイプに変換⇒名称を設定して返却
+        Dim shpSmoothShape As Shape
+        Set shpSmoothShape = shpFreeForm.ConvertToShape
+        shpSmoothShape.Name = strShapeName
+        Set MakeSmoothShape = shpSmoothShape
+        
+    End Function
+    
+    '*************************************************
+    ' 始点・終点から内分点を計算
+    '*************************************************
+    Sub CalcPoints(ByRef typShapePoints As ShapePoints, Optional ByVal intOffset As Integer = 10)
+        
+        With typShapePoints
+            
+            'From⇒Toの長さ
+            .Distance = Sqr((.From.X - .To.X) ^ 2 + (.From.Y - .To.Y) ^ 2)
+            
+            '内分点を計算し総延長を短縮
+            .From.OffsetX = (intOffset / .Distance) * .To.X + ((.Distance - intOffset) / .Distance) * .From.X
+            .From.OffsetY = (intOffset / .Distance) * .To.Y + ((.Distance - intOffset) / .Distance) * .From.Y
+            .To.OffsetX = (intOffset / .Distance) * .From.X + ((.Distance - intOffset) / .Distance) * .To.X
+            .To.OffsetY = (intOffset / .Distance) * .From.Y + ((.Distance - intOffset) / .Distance) * .To.Y
+            
+            '内分点を計算しハンドル位置を計算
+            .From.HandleX = (intOffset * 2 / .Distance) * .To.X + ((.Distance - intOffset * 2) / .Distance) * .From.X
+            .From.HandleY = (intOffset * 2 / .Distance) * .To.Y + ((.Distance - intOffset * 2) / .Distance) * .From.Y
+            .To.HandleX = (intOffset * 2 / .Distance) * .From.X + ((.Distance - intOffset * 2) / .Distance) * .To.X
+            .To.HandleY = (intOffset * 2 / .Distance) * .From.Y + ((.Distance - intOffset * 2) / .Distance) * .To.Y
+            
+        End With
+        
+    End Sub
+    
+    '*************************************************
+    ' ポイント計算を可視化するため「点」を表示する
+    '*************************************************
+    Function AddPoint(ByVal dblX As Double, ByVal dblY As Double, ByVal wsTarget As Worksheet, Optional ByVal intSize As Integer = 4)
+        
+        Call wsTarget.Shapes.AddShape(msoShapeRectangle, dblX - intSize / 2, dblY - intSize / 2, intSize, intSize)
+        
+    End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' ShapeFormの生成・コントロール
