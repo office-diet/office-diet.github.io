@@ -2040,6 +2040,140 @@ Option Explicit
     
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
+'　セル内文字を個別に調査しHTMLに変換
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function ConvertHtmlFromCell(ByVal rngTarget As Range) As String
+        
+        Dim dctText As Object
+        Set dctText = CreateNewDictionary
+        
+        Dim intIndex As Integer
+        intIndex = 0
+        
+        '「0文字目」には既定値を設定
+        dctText.Add intIndex, CreateNewDictionary
+        dctText(intIndex).Add strTEXT, ""
+        dctText(intIndex).Add strCOLOR, rgbBlack
+        dctText(intIndex).Add strBOLD, False
+        dctText(intIndex).Add strUNDERLINE, False
+        dctText(intIndex).Add strTAG_START, ""
+        dctText(intIndex).Add strTAG_END, ""
+        
+        'セル内の全文字の詳細を調査
+        For intIndex = 1 To Len(rngTarget.Value)
+            
+            With rngTarget.Characters(Start:=intIndex, Length:=1)
+                
+                '1文字ずつ状態を確認
+                dctText.Add intIndex, CreateNewDictionary
+                dctText(intIndex).Add strTEXT, .Text
+                dctText(intIndex).Add strCOLOR, .Font.Color
+                dctText(intIndex).Add strBOLD, .Font.Bold
+                
+                '下線は「有無」のみ判別
+                If .Font.Underline = xlUnderlineStyleNone Then
+                    dctText(intIndex).Add strUNDERLINE, False
+                Else
+                    dctText(intIndex).Add strUNDERLINE, True
+                End If
+                
+                '開始タグ・終了タグを格納
+                dctText(intIndex).Add strTAG_START, ""
+                dctText(intIndex).Add strTAG_END, ""
+                
+            End With
+            
+        Next
+        
+        '「末尾+1文字目」にも既定値を設定
+        intIndex = dctText.Count
+        dctText.Add intIndex, CreateNewDictionary
+        dctText(intIndex).Add strTEXT, ""
+        dctText(intIndex).Add strCOLOR, rgbBlack
+        dctText(intIndex).Add strBOLD, False
+        dctText(intIndex).Add strUNDERLINE, False
+        dctText(intIndex).Add strTAG_START, ""
+        dctText(intIndex).Add strTAG_END, ""
+        
+        '「0文字目」「末尾+1文字」以外を走査し「変化部分」にタグを追加する
+        For intIndex = 1 To Len(rngTarget.Value)
+            
+            '「n-1文字目」と色が違う
+            If dctText(intIndex - 1)(strCOLOR) <> dctText(intIndex)(strCOLOR) And dctText(intIndex)(strCOLOR) <> vbBlack Then
+                dctText(intIndex)(strTAG_START) = dctText(intIndex)(strTAG_START) & "<font style='color:" & GetCssColor(dctText(intIndex)(strCOLOR)) & ";'>"
+            End If
+            
+            '「n+1文字目」と色が違う
+            If dctText(intIndex + 1)(strCOLOR) <> dctText(intIndex)(strCOLOR) And dctText(intIndex)(strCOLOR) <> vbBlack Then
+                dctText(intIndex)(strTAG_END) = dctText(intIndex)(strTAG_END) & "</font>"
+            End If
+            
+            '「n-1文字目」と太さが違う
+            If dctText(intIndex - 1)(strBOLD) <> dctText(intIndex)(strBOLD) And dctText(intIndex)(strBOLD) = True Then
+                dctText(intIndex)(strTAG_START) = dctText(intIndex)(strTAG_START) & "<b>"
+            End If
+            
+            '「n+1文字目」と太さが違う
+            If dctText(intIndex + 1)(strBOLD) <> dctText(intIndex)(strBOLD) And dctText(intIndex)(strBOLD) = True Then
+                dctText(intIndex)(strTAG_END) = dctText(intIndex)(strTAG_END) & "</b>"
+            End If
+            
+            '「n-1文字目」と下線
+            If dctText(intIndex - 1)(strUNDERLINE) <> dctText(intIndex)(strUNDERLINE) And dctText(intIndex)(strUNDERLINE) = True Then
+                dctText(intIndex)(strTAG_START) = dctText(intIndex)(strTAG_START) & "<u>"
+            End If
+            
+            '「n+1文字目」と下線
+            If dctText(intIndex + 1)(strUNDERLINE) <> dctText(intIndex)(strUNDERLINE) And dctText(intIndex)(strUNDERLINE) = True Then
+                dctText(intIndex)(strTAG_END) = dctText(intIndex)(strTAG_END) & "</u>"
+            End If
+            
+        Next
+        
+        '全ての「文字＋タグ」を連結し、最終的な文字列を生成
+        Dim strResultHtml As String
+        For intIndex = 1 To Len(rngTarget.Value)
+            strResultHtml = strResultHtml & dctText(intIndex)(strTAG_START) & dctText(intIndex)(strTEXT) & dctText(intIndex)(strTAG_END)
+        Next
+        
+        'セルごとに改行を挿入
+        ConvertHtmlFromCell = strResultHtml & "<br>"
+        
+    End Function
+    
+    
+    '**********************************************************
+    ' エクセルの色（Long型）をCSSの16進数（#ffffff）に変換
+    '**********************************************************
+    Function GetCssColor(ByVal lngColor As Long)
+        
+        Dim strResult As String
+        strResult = "#"
+        
+        Dim intLoop As Integer
+        For intLoop = 1 To 3
+            
+            Dim lngRGB As Long
+            lngRGB = lngColor Mod 256
+            
+            strResult = strResult & Right("00" & Hex(lngColor), 2)
+            
+            lngColor = lngColor / 256
+            
+        Next
+        
+        GetCssColor = strResult
+        
+    End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
 ' Outlook操作各種
 '
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
@@ -2881,6 +3015,56 @@ Option Explicit
         End With
                 
     End Sub
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' Lhaplusを使用してフォルダをパスワードZipに圧縮
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    '**********************************
+    ' Lhaplusがインストールされているか？
+    '**********************************
+    Function IsLhaplusExists() As Boolean
+        
+        If Dir(strLhaplusPath) = "" Then
+            IsLhaplusExists = False
+        Else
+            IsLhaplusExists = True
+        End If
+        
+    End Function
+    
+    '**********************************
+    ' 「対象フォルダ」「出力先フォルダ」「パスワード」を設定してZip出力
+    '**********************************
+    Function CompressPasswordZip(ByVal strTargetFolder As String, ByVal strOutputFolder As String, Optional ByVal strPassword As String = "") As Boolean
+        
+        'コマンドを連結⇒まずは「出力先フォルダ」を指定
+        Dim strCommand As String
+        strCommand = strLhaplusPath & " /c:zip /o:""" & strOutputFolder & """"
+        
+        'パスワードの指定があれば追加
+        If strPassword <> "" Then
+            strCommand = strCommand & " /p:" & strPassword
+        End If
+        
+        '圧縮対象フォルダを選択
+        strCommand = strCommand & " " & """" & strTargetFolder & """"
+        
+        Dim objExec As Object
+        
+        'コマンド実行⇒完了まで待ち
+        Set objExec = CreateObject("WScript.Shell").Exec(strCommand)
+        Do Until objExec.Status
+            DoEvents
+        Loop
+        
+    End Function
                     </pre>
                 </div>
                 <div class="vba-code">
