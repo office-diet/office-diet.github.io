@@ -1877,6 +1877,28 @@ Option Explicit
     
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
+' 文字列をクリップボードに送信
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Sub SendClipboard(ByVal strText as string)
+        
+        With CreateObject("Forms.TextBox.1")
+            .MultiLine = True
+            .Text = strText
+            .SelStart = 0
+            .SelLength = .TextLength
+            .Copy
+        End With
+        
+    End Sub
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
 '　OutlookMail作成
 '
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
