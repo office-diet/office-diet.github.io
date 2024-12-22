@@ -237,6 +237,32 @@
     
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
+' 参照する必要のない列等をグレーアウト＋細くする
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Sub GrayOutColumns(ByVal wsTarget As Worksheet, ByVal intColumnWidth As Integer, ParamArray aryColumns() As Variant)
+        
+        With wsTarget
+            
+            Dim vntColumn As Variant
+            For Each vntColumn In aryColumns
+                
+                .Columns(vntColumn).ColumnWidth = intColumnWidth
+                .Columns(vntColumn).Interior.Color = rgbGray
+                
+            Next
+            
+        End With
+        
+    End Sub
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
 ' ヘッダの固定＋シートの最上段を表示
 ' ※ヘッダの固定時にシートの選択＋最上段の表示が必須！！
 '
@@ -855,6 +881,41 @@ Option Explicit
                     <pre class="prettyprint lang-vb linenums" lang="vb">
     
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'　VBE上で表示出来ない「①の亜種」を「①（一般的な文字）」に置換
+'　※「①の亜種」は「VBEで表示出来ない」だけで「変数への格納」や「比較」などの使用は出来る。
+'　　ただし「人間には判別できな不一致」等を混入させないために置換推奨！！
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function ReplaceCircleNumber(ByVal strOrigin As String) As String
+            
+            Dim aryReplacePairs As Variant
+            aryReplacePairs = Array( _
+                                Array(10112, 9312), _
+                                Array(9461, 9312), _
+                                Array(9462, 9313), _
+                                Array(9463, 9314), _
+                                Array(9464, 9315), _
+                                Array(9465, 9316), _
+                                Array(9466, 9317), _
+                                Array(9467, 9318), _
+                                Array(9468, 9319), _
+                                Array(9469, 9320), _
+                                Array(9470, 9321))
+            
+            Dim vntReplacePair As Variant
+            For Each vntReplacePair In aryReplacePairs
+                strOrigin = Replace(strOrigin, ChrW(vntReplacePair(0)), ChrW(vntReplacePair(1)))
+            Next
+            
+            ReplaceCircleNumber = strOrigin
+            
+        End Function                
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 '　空白なのに、謎の値が入っているセルの中身を削除
 '　※空白なのにCtrl+方向キーで停止しないセル
@@ -1113,6 +1174,30 @@ Option Explicit
             On Error GoTo 0
             
         End With
+    End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 正規表現にマッチする数をカウント
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function CountRegExp(ByVal strOrigin As String, ByVal strRegExp As String) As Long
+        
+        Dim ojbRegExp As Object
+        Set ojbRegExp = CreateObject("VBScript.RegExp")
+        
+        With ojbRegExp
+            .Pattern = strRegExp
+            .IgnoreCase = True
+            .Global = True
+            CountRegExp = .Execute(strOrigin).Count
+        End With
+        
     End Function
                     </pre>
                 </div>
@@ -2068,6 +2153,19 @@ Option Explicit
     
     Function ConvertHtmlFromCell(ByVal rngTarget As Range) As String
         
+        Const strTEXT As String = "TEXT"
+        Const strCOLOR As String = "COLOR"
+        Const strBOLD As String = "BOLD"
+        Const strUNDERLINE As String = "UNDERLINE"
+        Const strTAG_START As String = "TAG_START"
+        Const strTAG_END As String = "TAG_END"
+        
+        '空文字だったら改行のみ
+        If rngTarget.Value = "" Then
+            ConvertHtmlFromCell = "&ltbr>"
+            Exit Function
+        End If
+        
         Dim dctText As Object
         Set dctText = CreateNewDictionary
         
@@ -2091,7 +2189,7 @@ Option Explicit
                 '1文字ずつ状態を確認
                 dctText.Add intIndex, CreateNewDictionary
                 dctText(intIndex).Add strTEXT, .Text
-                dctText(intIndex).Add strCOLOR, .Font.Color
+                dctText(intIndex).Add strCOLOR, .Font.color
                 dctText(intIndex).Add strBOLD, .Font.Bold
                 
                 '下線は「有無」のみ判別
@@ -2124,32 +2222,32 @@ Option Explicit
             
             '「n-1文字目」と色が違う
             If dctText(intIndex - 1)(strCOLOR) <> dctText(intIndex)(strCOLOR) And dctText(intIndex)(strCOLOR) <> vbBlack Then
-                dctText(intIndex)(strTAG_START) = dctText(intIndex)(strTAG_START) & "<font style='color:" & GetCssColor(dctText(intIndex)(strCOLOR)) & ";'>"
+                dctText(intIndex)(strTAG_START) = dctText(intIndex)(strTAG_START) & "&ltfont style='color:" & GetCssColor(dctText(intIndex)(strCOLOR)) & ";'>"
             End If
             
             '「n+1文字目」と色が違う
             If dctText(intIndex + 1)(strCOLOR) <> dctText(intIndex)(strCOLOR) And dctText(intIndex)(strCOLOR) <> vbBlack Then
-                dctText(intIndex)(strTAG_END) = dctText(intIndex)(strTAG_END) & "</font>"
+                dctText(intIndex)(strTAG_END) = dctText(intIndex)(strTAG_END) & "&lt/font>"
             End If
             
             '「n-1文字目」と太さが違う
             If dctText(intIndex - 1)(strBOLD) <> dctText(intIndex)(strBOLD) And dctText(intIndex)(strBOLD) = True Then
-                dctText(intIndex)(strTAG_START) = dctText(intIndex)(strTAG_START) & "<b>"
+                dctText(intIndex)(strTAG_START) = dctText(intIndex)(strTAG_START) & "&ltb>"
             End If
             
             '「n+1文字目」と太さが違う
             If dctText(intIndex + 1)(strBOLD) <> dctText(intIndex)(strBOLD) And dctText(intIndex)(strBOLD) = True Then
-                dctText(intIndex)(strTAG_END) = dctText(intIndex)(strTAG_END) & "</b>"
+                dctText(intIndex)(strTAG_END) = dctText(intIndex)(strTAG_END) & "&lt/b>"
             End If
             
             '「n-1文字目」と下線
             If dctText(intIndex - 1)(strUNDERLINE) <> dctText(intIndex)(strUNDERLINE) And dctText(intIndex)(strUNDERLINE) = True Then
-                dctText(intIndex)(strTAG_START) = dctText(intIndex)(strTAG_START) & "<u>"
+                dctText(intIndex)(strTAG_START) = dctText(intIndex)(strTAG_START) & "&ltu>"
             End If
             
             '「n+1文字目」と下線
             If dctText(intIndex + 1)(strUNDERLINE) <> dctText(intIndex)(strUNDERLINE) And dctText(intIndex)(strUNDERLINE) = True Then
-                dctText(intIndex)(strTAG_END) = dctText(intIndex)(strTAG_END) & "</u>"
+                dctText(intIndex)(strTAG_END) = dctText(intIndex)(strTAG_END) & "&lt/u>"
             End If
             
         Next
@@ -2161,32 +2259,36 @@ Option Explicit
         Next
         
         'セルごとに改行を挿入
-        ConvertHtmlFromCell = strResultHtml & "<br>"
+        ConvertHtmlFromCell = strResultHtml & "&ltbr>"
         
     End Function
     
+    '*******************************************
+    ' エクセル上のHTML用の16進数に変換
+    '※RGBの順番が逆なので注意！
+    '*******************************************
     
-    '**********************************************************
-    ' エクセルの色（Long型）をCSSの16進数（#ffffff）に変換
-    '**********************************************************
-    Function GetCssColor(ByVal lngColor As Long)
+    Function GetCssColor(ByVal lngColor As Long) As String
         
-        Dim strResult As String
-        strResult = "#"
-        
-        Dim intLoop As Integer
-        For intLoop = 1 To 3
+        With Application.WorksheetFunction
             
-            Dim lngRGB As Long
-            lngRGB = lngColor Mod 256
+            Dim intRed As Integer
+            Dim intGreen As Integer
+            Dim intBlue As Integer
+            intRed = lngColor Mod 256
+            intGreen = .RoundDown(lngColor / 256, 0) Mod 256
+            intBlue = .RoundDown(.RoundDown(lngColor / 256, 0) / 256, 0)
             
-            strResult = strResult & Right("00" & Hex(lngColor), 2)
+            Dim strRed As String
+            Dim strGreen As String
+            Dim strBlue As String
+            strRed = Right("00" & Hex(intRed), 2)
+            strGreen = Right("00" & Hex(intGreen), 2)
+            strBlue = Right("00" & Hex(intBlue), 2)
             
-            lngColor = lngColor / 256
+            GetCssColor = "#" & strRed & strGreen & strBlue
             
-        Next
-        
-        GetCssColor = strResult
+        End With
         
     End Function
                     </pre>
@@ -6202,6 +6304,44 @@ Option Explicit
         
         '最小距離の文字列とDictionary内の位置を返却
         FuzzySearch = Array(strResultWord, lngResultIndex)
+        
+    End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 重回帰分析のWeightを計算(biasはx=1の項目を設ける事により算出）
+' ※セル範囲の配列化、ワークシート関数の返り値は「1開始配列」になるので注意
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function GetLinearRegressionWeights(ByVal rngX As Range, ByVal rngY As Range) As Variant
+        
+        'セル範囲を配列化
+        Dim aryX As Variant
+        Dim aryY As Variant
+        aryX = rngX.Value
+        aryY = rngY.Value
+        
+        With Application.WorksheetFunction
+            
+            Dim aryTrX As Variant
+            aryTrX = .Transpose(aryX)
+            
+            '**************************************
+            ' ★ムーア-ペンローズの疑似逆行列★
+            ' W = inv( tr(X) * X ) * tr(X) * Y
+            '**************************************
+            Dim aryW As Variant
+            aryW = .MMult(.MMult(.MInverse(.MMult(aryTrX, aryX)), aryTrX), aryY)
+            
+        End With
+        
+        '配列を返却
+        GetLinearRegressionWeights = aryW
         
     End Function
                     </pre>
