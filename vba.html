@@ -738,6 +738,189 @@ Option Explicit
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
     
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 単純な暗号化処理
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    '変換DictionaryのKey
+    Const strENCRYPT As String = "ENCRYPT"
+    Const strDECRYPT As String = "DECRYPT"
+    Const strHead As String = "HEAD"
+    
+    '******************************************
+    ' 暗号化例
+    '******************************************
+    Sub EncryptTest()
+        
+        Dim dctCipher As Object
+        Set dctCipher = GetCipherDictionary()
+        
+        Dim intIndex As Integer
+        For intIndex = 12300 To 12320
+            
+            Dim strOriginText As String
+            Dim strEncryptText As String
+            Dim strDecryptText As String
+            strOriginText = Format(intIndex, "00000000")
+            strEncryptText = EncryptString(strOriginText, dctCipher)
+            strDecryptText = DecryptString(strEncryptText, dctCipher)
+            
+            Debug.Print strOriginText & " ⇒ " & strEncryptText & " ⇒ " & strDecryptText
+            
+        Next
+        
+    End Sub
+    
+    '******************************************
+    ' 暗号・復号に使用するDictionary
+    '******************************************
+    Function GetCipherDictionary()
+        
+        Dim aryEncrypt As Variant
+        Dim aryDecrypt As Variant
+        Dim aryHead As Variant
+        aryEncrypt = Split("0,1,2,3,4,5,6,7,8,9,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z", ",")
+        aryDecrypt = Split("a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,0,1,2,3,4,5,6,7,8,9", ",")
+        aryHead = Split("a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z", ",")
+        
+        Dim dctCipher As Object
+        Set dctCipher = CreateObject("Scripting.Dictionary")
+        
+        dctCipher.Add strENCRYPT, CreateObject("Scripting.Dictionary")
+        dctCipher.Add strDECRYPT, CreateObject("Scripting.Dictionary")
+        dctCipher.Add strHead, aryHead
+        
+        Dim intIndex As Integer
+        For intIndex = LBound(aryEncrypt) To UBound(aryEncrypt)
+            dctCipher(strENCRYPT).Add aryEncrypt(intIndex), aryDecrypt(intIndex)
+            dctCipher(strDECRYPT).Add aryDecrypt(intIndex), aryEncrypt(intIndex)
+        Next
+        
+        Set GetCipherDictionary = dctCipher
+        
+    End Function
+    
+    '******************************************
+    ' 暗号化関数
+    '******************************************
+    Function EncryptString(ByVal strOrigin As String, ByRef dctCipher As Object) As String
+        
+        '「変換回数」「ランダムノイズ」をルールを決定
+        Dim intHint As Integer
+        intHint = Application.WorksheetFunction.RandBetween(1, 9)
+        
+        strOrigin = StrReverse(strOrigin)
+        
+        Dim intIndex As Integer
+        For intIndex = 1 To Len(strOrigin)
+            
+            '1文字取り出し
+            Dim strChar As String
+            strChar = Mid(strOrigin, intIndex, 1)
+            
+            '変換を「変換回数」分繰り返す
+            Dim intEncryptCount As Integer
+            For intEncryptCount = 1 To intIndex * intHint
+                strChar = dctCipher(strENCRYPT)(strChar)
+            Next
+            
+            '変換結果を連結
+            Dim strResult As String
+            strResult = strResult & strChar
+            
+        Next
+        
+        'ノイズを混合する
+        For intIndex = 1 To Len(strResult)
+            
+            '1文字取り出し
+            strChar = Mid(strResult, intIndex, 1)
+            
+            'ノイズ文字
+            Dim strRandom As String
+            strRandom = GetRandom(dctCipher)
+            
+            'ヒントに応じて「ノイズの前後関係」を切替
+            Dim strMixResult As String
+            If intHint Mod 2 = 0 Then
+                strMixResult = strMixResult & strChar & strRandom
+            Else
+                strMixResult = strMixResult & strRandom & strChar
+            End If
+            
+        Next
+        
+        '変換回数を末尾に追加
+        EncryptString = strMixResult & intHint
+        
+    End Function
+    
+    '******************************************
+    ' 復号関数
+    '******************************************
+    Function DecryptString(ByVal strOrigin As String, ByRef dctCipher As Object) As String
+        
+        '末尾1桁から「変換回数」「ランダムノイズ」をルールを判別
+        Dim intHint As Integer
+        intHint = Right(strOrigin, 1)
+        
+        '文字列を切り抜き
+        strOrigin = Left(strOrigin, Len(strOrigin) - 1)
+        
+        Dim intIndex As Integer
+        For intIndex = 1 To Len(strOrigin)
+            
+            '1文字取り出し
+            Dim strChar As String
+            strChar = Mid(strOrigin, intIndex, 1)
+            
+            'ノイズ以外の文字を取り出し
+            If intHint Mod 2 = 0 And intIndex Mod 2 = 1 Then
+                Dim strPickUp As String
+                strPickUp = strPickUp & strChar
+            ElseIf intHint Mod 2 = 1 And intIndex Mod 2 = 0 Then
+                strPickUp = strPickUp & strChar
+            End If
+            
+        Next
+        
+        For intIndex = 1 To Len(strPickUp)
+            
+            '1文字取り出し
+            strChar = Mid(strPickUp, intIndex, 1)
+            
+            '変換を「変換回数」分繰り返す
+            Dim intDecryptCount As Integer
+            For intDecryptCount = 1 To intIndex * intHint
+                strChar = dctCipher(strDECRYPT)(strChar)
+            Next
+            
+            '文字列を連結
+            Dim strResult As String
+            strResult = strResult & strChar
+            
+        Next
+        
+        '復号済みの文字列を返却
+        DecryptString = StrReverse(strResult)
+        
+    End Function
+    
+    '******************************************
+    ' ランダムノイズを混ぜる
+    '******************************************
+    Function GetRandom(ByRef dctCipher As Object) As String
+        Dim intRandom As Integer
+        intRandom = Application.WorksheetFunction.RandBetween(LBound(dctCipher(strHead)), UBound(dctCipher(strHead)))
+        GetRandom = dctCipher(strHead)(intRandom)
+    End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' 指定したセル範囲の完全一致を確認
@@ -1847,6 +2030,36 @@ Option Explicit
     
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
+' 日時の〇分刻み関数
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    '************************************
+    ' 〇分切り捨て
+    '************************************
+    Function MinuteFloor(ByVal dteTarget As Date, ByVal intFloorMinute As Integer) As Date
+        
+        MinuteFloor = DateSerial(Year(dteTarget), Month(dteTarget), Day(dteTarget)) + _
+                        TimeSerial(Hour(dteTarget), Application.WorksheetFunction.Floor(Minute(dteTarget), intFloorMinute), 0)
+        
+    End Function
+    
+    '************************************
+    ' 〇分切り上げ
+    '************************************
+    Function MinuteCeiling(ByVal dteTarget As Date, ByVal intCeilingMinute As Integer) As Date
+        
+        MinuteCeiling = DateSerial(Year(dteTarget), Month(dteTarget), Day(dteTarget)) + _
+                        TimeSerial(Hour(dteTarget), Application.WorksheetFunction.Ceiling(Minute(dteTarget), intCeilingMinute), 0)
+        
+    End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
 ' 対象月の週数（カレンダーの行数）をカウント
 ' ※月またぎ週時間外を計算するため
 '
@@ -2383,6 +2596,18 @@ Option Explicit
         Set objMailItem = objOutlookAccount(strOutlookAccount).DeliveryStore.GetDefaultFolder(16).items(2)
         objMailItem.htmlbody = "<font face=""メイリオ"" style=""background-color: lightskyblue; color: white; border: 1px solid black; margin: 10px;"">楽しい</font>だろうか？"
         objMailItem.Save
+        
+    End Function
+
+    '「下書き」フォルダ内にマクロ用フォルダを生成して返却
+    Function GetMacroFolder(ByVal strOutlookAccount As String, ByVal strFolderName As String) As Object
+        
+        On Error Resume Next
+        With CreateObject("Outlook.Application").GetNamespace("MAPI").Folders(strOutlookAccount).Folders("下書き")
+            .Folders.Add strFolderName
+            Set GetMacroFolder = .Folders(strFolderName)
+        End With
+        On Error GoTo 0
         
     End Function
                     </pre>
@@ -2972,6 +3197,46 @@ Option Explicit
     
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
+' 「○○シートに戻る」ボタンを生成
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function MakeBackLinkButton(ByVal wsTarget As Worksheet, ByVal wsHome As Worksheet) As Shape
+        
+        Dim shpLinkButton As Shape
+        Set shpLinkButton = wsTarget.Shapes.AddShape(msoShapeRectangle, 0, 0, 130, 16)
+            
+        With shpLinkButton
+            .Fill.ForeColor.RGB = rgbYellow
+            .Line.ForeColor.RGB = rgbRed
+            
+            '.TextFrame2.TextRange.Font.NameFarEast = "Meiryo UI"
+            .TextFrame.Characters.Font.Color = rgbRed
+            .TextFrame.Characters.Font.Bold = True
+            .TextFrame.Characters.Font.Size = 9
+            .TextFrame.Characters.Text = "←「" & wsHome.Name & "」シートに戻る"
+            
+            .TextFrame.MarginBottom = 0
+            .TextFrame.MarginLeft = 0
+            .TextFrame.MarginRight = 0
+            .TextFrame.MarginTop = 0
+            .TextFrame.VerticalAlignment = xlVAlignCenter
+            .TextFrame.HorizontalAlignment = xlHAlignCenter
+            
+            .Left = wsTarget.Range("B1").Left
+            
+            wsTarget.Hyperlinks.Add shpLinkButton, "", "'" & wsHome.Name & "'!A1"
+            
+        End With
+        
+    End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
 ' 散布図作成の手抜き機能
 ' 全データを別系列として登録することにより、ラベルを付加できる！！
 '
@@ -3342,6 +3607,63 @@ Option Explicit
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 指定シートをそのままCSVファイルとして出力
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function OutputCsvFromWorksheet(ByVal wsTarget As Worksheet, ByVal strFileName As String) As Boolean
+        
+        With wsTarget
+            
+            '本関数途中終了はエラー
+            OutputCsvFromWorksheet = False
+            
+            Dim lngLastRow As Long
+            Dim lngLastColumn As Long
+            lngLastRow = GetLastRow(.Cells.Parent, "A")
+            lngLastColumn = GetLastColumn(.Cells.Parent, 1)
+            
+            'データが存在しないので出力不要
+            If lngLastRow = 1 Then
+                Exit Function
+            End If
+            
+            'CSV生成開始
+            Dim intFileNumber As Integer
+            intFileNumber = FreeFile
+            Open ThisWorkbook.Path & "\" & strFileName For Output As #intFileNumber
+            
+            Dim lngRow As Long
+            For lngRow = 1 To lngLastRow
+                
+                Dim lngColumn As Long
+                For lngColumn = 1 To lngLastColumn
+                    
+                    If lngColumn <> lngLastColumn Then
+                        Print #intFileNumber, """" & .Cells(lngRow, lngColumn).Value & """,";
+                    Else
+                        Print #intFileNumber, """" & .Cells(lngRow, lngColumn).Value & """" & vbLf;
+                    End If
+                    
+                Next
+            Next
+            
+        End With
+        
+        Close #intFileNumber
+        
+        '全ての処理が完了したので処理継続OK
+        OutputCsvFromWorksheet = True
+        
+    End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' シートやCSVファイルに対してSQLを実行
