@@ -3411,12 +3411,42 @@ Option Explicit
     
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
-' Lhaplusを使用してフォルダをパスワードZipに圧縮
+' 「7-Zip」or「Lhaplus」を使用してフォルダをパスワードZipに圧縮
 '
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
     
+    '標準的なインストール先
+    Const strLhaplusPath As String = "C:\Program Files (x86)\Lhaplus\Lhaplus.exe"
+    Const str7ZipPath As String = "C:\Program Files\7-Zip\7z.exe"
+    
     '**********************************
-    ' Lhaplusがインストールされているか？
+    ' 「7-Zip」or「Lhaplus」がインストールされているか？
+    '**********************************
+    Function IsZipApplicationExists() As Boolean
+        
+        If Is7ZipExists = False And IsLhaplusExists = False Then
+            IsZipApplicationExists = False
+        Else
+            IsZipApplicationExists = True
+        End If
+        
+    End Function
+    
+    '**********************************
+    ' 「7-Zip」がインストールされているか？
+    '**********************************
+    Function Is7ZipExists() As Boolean
+        
+        If Dir(str7ZipPath) = "" Then
+            Is7ZipExists = False
+        Else
+            Is7ZipExists = True
+        End If
+        
+    End Function
+    
+    '**********************************
+    ' 「Lhaplus」がインストールされているか？
     '**********************************
     Function IsLhaplusExists() As Boolean
         
@@ -3427,11 +3457,52 @@ Option Explicit
         End If
         
     End Function
+        
+    '**********************************
+    ' 「7-Zip」or「Lhaplus」による出力
+    ' ※事前チェック実施済みが前提
+    ' 　「Else」にメッセージを追加しても良いかも？
+    '**********************************
+    Function CompressPasswordZip(ByVal strTargetFolder As String, ByVal strOutputFolder As String, ByVal strPassword As String, ByVal blnUse7Zip As Boolean, ByVal blnUseLhaplus As Boolean)
+        
+        If blnUse7Zip = True Then
+            Call CompressPasswordZipBy7Zip(strTargetFolder, strOutputFolder, strPassword)
+        ElseIf blnUseLhaplus = True Then
+            Call CompressPasswordZipByLhaplus(strTargetFolder, strOutputFolder, strPassword)
+        End If
+        
+    End Function
     
     '**********************************
-    ' 「対象フォルダ」「出力先フォルダ」「パスワード」を設定してZip出力
+    ' 「7-Zip」による出力
     '**********************************
-    Function CompressPasswordZip(ByVal strTargetFolder As String, ByVal strOutputFolder As String, Optional ByVal strPassword As String = "") As Boolean
+    Function CompressPasswordZipBy7Zip(ByVal strTargetFolder As String, ByVal strOutputFolder As String, Optional ByVal strPassword As String = "") As Boolean
+        
+        'パスワード指定なし
+        If strPassword = "" Then
+        
+            Dim strCommand As String
+            strCommand = """" & str7ZipPath & """ a -tzip """ & strOutputFolder & """ """ & strTargetFolder & """"
+        
+        'パスワード指定あり
+        Else
+            strCommand = """" & str7ZipPath & """ a -tzip -p" & strPassword & " """ & strOutputFolder & """ """ & strTargetFolder & """"
+        End If
+        
+        'コマンド実行⇒完了まで待ち
+        Dim objExec As Object
+        Set objExec = CreateObject("WScript.Shell").Exec(strCommand)
+        
+        Do Until objExec.Status
+            DoEvents
+        Loop
+        
+    End Function
+    
+    '**********************************
+    ' 「Lhaplus」による出力
+    '**********************************
+    Function CompressPasswordZipByLhaplus(ByVal strTargetFolder As String, ByVal strOutputFolder As String, Optional ByVal strPassword As String = "") As Boolean
         
         'コマンドを連結⇒まずは「出力先フォルダ」を指定
         Dim strCommand As String
@@ -3445,9 +3516,8 @@ Option Explicit
         '圧縮対象フォルダを選択
         strCommand = strCommand & " " & """" & strTargetFolder & """"
         
-        Dim objExec As Object
-        
         'コマンド実行⇒完了まで待ち
+        Dim objExec As Object
         Set objExec = CreateObject("WScript.Shell").Exec(strCommand)
         Do Until objExec.Status
             DoEvents
