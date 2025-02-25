@@ -477,7 +477,106 @@
                 </div>
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
-
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' ★要改造★ ワードを画像出力する基本関数
+'
+' 参考：https://www.ka-net.org/blog/?p=6505
+' ※「Word.Applicationの起動が遅い」「出力ファイル名を収集したい」
+'　 「出力画像の重複回避」など必要な機能が多いので要改造！
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Sub ConvertWordToEmf(ByVal strWordFilePath As String)
+        
+        'ワードアプリケーションの起動（起動が遅いので1回にしたい！）
+        Dim objWord As Object
+        Set objWord = CreateObject("Word.Application")
+        
+        'ファイルを開く（パスワード対応も必要）
+        Dim objDocument As Object
+        Set objDocument = objWord.Documents.Open(strWordFilePath)
+        
+        'ワードを1ページずつ画像出力
+        Dim vntPage As Variant
+        For Each vntPage In objDocument.ActiveWindow.ActivePane.Pages
+            
+            'ページ番号で重複を回避
+            '※ただし元ファイルが多い場合は上書きしてしまう！
+            Dim intPage As Integer
+            intPage = intPage + 1
+            
+            With CreateObject("ADODB.Stream")
+                .Type = 1   'adTypeBinary = 1
+                .Open
+                .Position = 0
+                .Write vntPage.EnhMetaFileBits
+                .SaveToFile ThisWorkbook.Path & "\Page_" & intPage & ".emf", 2
+                .Close
+            End With
+            
+        Next
+        
+        'ファイル・アプリを閉じて終了
+        objDocument.Close
+        objWord.Quit
+        Set objDocument = Nothing
+        Set objWord = Nothing
+        
+    End Sub
+                                
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' EMFファイルをグラフに張り付け画像として保存
+' ※画像加工用シートは「表示倍率100%」が必須！
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function EmfToJpg(ByVal strEmfPath As String, ByVal strExportPath As String, ByVal wsGraph As Worksheet, Optional ByVal intDefaultWidth As Integer = 1200) As Variant
+        
+        Dim aryResultSizes(3) As Integer
+        
+        '元画像のサイズを取得
+        Dim objPicture As Object
+        Set objPicture = LoadPicture(strEmfPath)
+        Dim sglWidth As Single
+        Dim sglHeight As Single
+        
+        sglWidth = objPicture.width
+        sglHeight = objPicture.height
+        aryResultSizes(0) = sglWidth
+        aryResultSizes(1) = sglHeight
+        
+        '横幅を基準にサイズ調整
+        sglHeight = Int(sglHeight / sglWidth * intDefaultWidth)
+        sglWidth = Int(sglWidth / sglWidth * intDefaultWidth)
+        
+        aryResultSizes(2) = sglWidth
+        aryResultSizes(3) = sglHeight
+        
+        '画像加工用シートは「表示倍率100%」が必須！
+        Dim objChart As Object
+        Set objChart = wsGraph.ChartObjects.Add(0, 0, Int(sglWidth * 0.75), Int(sglHeight * 0.75)).Chart
+        
+        With objChart
+            .SetBackgroundPicture strEmfPath
+            .Parent.ShapeRange.Fill.TextureTile = False
+            .Export strExportPath
+            .Parent.Delete
+        End With
+        
+        Set objPicture = Nothing
+        Set objChart = Nothing
+        
+        EmfToJpg = aryResultSizes
+        
+    End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
 Option Explicit
 
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
@@ -536,7 +635,6 @@ Option Explicit
             Call GdiplusShutdown(nGdiToken)
         End If
     End Function
-    
     
     '**********************************************
     ' 対象セルにファイルパスを記入すると同時にコメントに画像を挿入
