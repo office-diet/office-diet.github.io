@@ -1056,6 +1056,145 @@ Option Explicit
     
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
+' 2つのセルの差分を強調表示
+' ※blnBlankSkip = Trueで「空白の不一致は無視」
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function CompareColoringCellsLCS(ByVal rngA As Range, ByVal rngB As Range, Optional ByVal blnBlankSkip As Boolean = True) As Boolean
+        
+        '「本関数通過」は一致
+        CompareColoringCellsLCS = True
+        
+        '「完全一致」は終了
+        If rngA.Value = rngB.Value Then
+            Exit Function
+        End If
+        
+        '文字列を変数に格納
+        Dim strTextA As String
+        Dim strTextB As String
+        strTextA = StrConv(rngA.Value, vbWide)
+        strTextB = StrConv(rngB.Value, vbWide)
+        
+        '「index:0」を利用する
+        Dim aryLcsMatrix() As Integer
+        ReDim aryLcsMatrix(Len(strTextA), Len(strTextB))
+        
+        '「index0 = 0」を仕様して加算するため1スタート
+        Dim intA As Integer
+        Dim intB As Integer
+        For intA = 1 To Len(strTextA)
+            For intB = 1 To Len(strTextB)
+                If SimpleConvert(Mid(strTextA, intA, 1)) = SimpleConvert(Mid(strTextB, intB, 1)) Then
+                    aryLcsMatrix(intA, intB) = aryLcsMatrix(intA - 1, intB - 1) + 1
+                Else
+                    aryLcsMatrix(intA, intB) = Application.WorksheetFunction.Max(aryLcsMatrix(intA - 1, intB), aryLcsMatrix(intA, intB - 1))
+                End If
+            Next
+        Next
+        
+        ' LCSを末尾から追跡して不一致部分をハイライト
+        intA = Len(strTextA)
+        intB = Len(strTextB)
+        Do While intA > 0 And intB > 0
+            
+            '文字が一致したらMatrixを左上に
+            If SimpleConvert(Mid(strTextA, intA, 1)) = SimpleConvert(Mid(strTextB, intB, 1)) Then
+                
+                If Mid(strTextA, intA, 1) <> Mid(strTextB, intB, 1) Then
+                    rngA.Characters(intA, 1).Font.Color = rgbBlue
+                    rngB.Characters(intB, 1).Font.Color = rgbBlue
+                End If
+                
+                intA = intA - 1
+                intB = intB - 1
+            
+            '一致しなかった場合Matrix内の「大きな数字」にそって移動
+            '※一致してい文字が見つかるまで
+            ElseIf aryLcsMatrix(intA - 1, intB) >= aryLcsMatrix(intA, intB - 1) Then
+                
+                Dim strChar As String
+                strChar = rngA.Characters(intA, 1).Text
+                
+                If (strChar = "　" Or strChar = " ") And blnBlankSkip = True Then
+                    '空白は無視
+                Else
+                    rngA.Characters(intA, 1).Font.Color = rgbRed
+                    CompareColoringCellsLCS = False
+                End If
+                intA = intA - 1
+                
+            Else
+                
+                strChar = rngB.Characters(intB, 1).Text
+                
+                If (strChar = "　" Or strChar = " ") And blnBlankSkip = True Then
+                    '空白は無視
+                Else
+                    rngB.Characters(intB, 1).Font.Color = rgbRed
+                    CompareColoringCellsLCS = False
+                End If
+                intB = intB - 1
+                
+            End If
+            
+        Loop
+        
+        ' 残りの文字はすべて「一致していない」
+        Do While intA > 0
+            strChar = rngA.Characters(intA, 1).Text
+            If (strChar = "　" Or strChar = " ") And blnBlankSkip = True Then
+                '空白は無視
+            Else
+                rngA.Characters(intA, 1).Font.Color = rgbRed
+                CompareColoringCellsLCS = False
+            End If
+            intA = intA - 1
+        Loop
+        
+        Do While intB > 0
+            strChar = rngB.Characters(intB, 1).Text
+            If (strChar = "　" Or strChar = " ") And blnBlankSkip = True Then
+                '空白は無視
+            Else
+                rngB.Characters(intB, 1).Font.Color = rgbRed
+                CompareColoringCellsLCS = False
+            End If
+            intB = intB - 1
+        Loop
+        
+    End Function
+    
+    '***********************************************
+    ' 住所表示等で良くある文字を変換
+    ' ※必要に応じてテーブルを活用した変換に修正せよ！
+    '***********************************************
+    Function SimpleConvert(ByVal strChar As String) As String
+        
+        Dim strResult As String
+        strResult = strChar
+        strResult = StrConv(strResult, vbWide)
+        strResult = StrConv(strResult, vbUpperCase)
+        strResult = Replace(strResult, "一", "１")
+        strResult = Replace(strResult, "二", "２")
+        strResult = Replace(strResult, "三", "３")
+        strResult = Replace(strResult, "四", "４")
+        strResult = Replace(strResult, "五", "５")
+        strResult = Replace(strResult, "六", "６")
+        strResult = Replace(strResult, "七", "７")
+        strResult = Replace(strResult, "八", "８")
+        strResult = Replace(strResult, "九", "９")
+        SimpleConvert = strResult
+        
+    End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
 ' セル内の指定文字列を着色
 ' ※重複未対応
 '

@@ -253,9 +253,13 @@
                 reader.onload = async function(event) {
                     const pdfData = new Uint8Array(event.target.result);
                     const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
+                    const pageTotal = pdf.numPages;
 
                     // 読み込みは「1～」
-                    for (let i = 1; i <= pdf.numPages; i++) {
+                    for (let i = 1; i <= pageTotal; i++) {
+                        
+                        updateOverLay(`PDFファイル読み込み中だよ。<br>${i}/${pageTotal}`);
+
                         const page = await pdf.getPage(i);
                         const scale = 2;
                         const viewport = page.getViewport({ scale: scale });
