@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>PDF加工ツール</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.0/pdf-lib.min.js"></script>
+    <style type="text/css">
+        :root {
+            --frame-width: 410px;
+            --canvas-width: 400px;
+        }
+
+        * {
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            background-color: lightgray;
+        }
+
+        .header {
+            text-align: center;
+            background-color: black;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            position: fixed;
+            height: 60px;
+            width: 100%;
+            top: 0;
+            z-index: 999;
+        }
+
+        .fileInput {
+            display: none;
+        }
+        .button {
+            background-color: blue;
+            color: white;
+            font-weight: bold;
+            padding: 2px 20px;
+            margin: 5px 10px;
+            border-radius: 5px;
+            height: 30px;
+            line-height: 30px;
+            user-select: none;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: rgb(0, 100, 255);
+        }
+
+        .container {
+            max-width: calc(100% - 60px);
+            margin: 70px 30px 80px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+        }
+        #pdfCanvas {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(var(--frame-width), var(--frame-width)));
+            gap: 10px;
+            justify-content: center;
+        }
+
+        canvas {
+            border: 1px solid lightgray;
+            width: var(--canvas-width);
+            height: auto;
+            box-shadow: 0 0 5px gray;
+        }
+        canvas:hover {
+            cursor: grab;
+        }
+
+        canvas:active {
+            cursor: grabbing;
+        }
+
+        canvas.delete {
+            filter: brightness(0.5);
+        }
+        .canvaslast {
+            background-color: gray;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            width: var(--canvas-width);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 5px gray;
+            min-height: 100px;
+        }
+        .frame {
+            display: flex;
+            position: relative;
+            width: var(--frame-width);
+            height: auto;
+            padding: 5px;
+            overflow: hidden;
+            justify-self: center;
+            align-self: start;
+        }
+
+        .framelast {
+            justify-self: auto;
+            align-self: auto;
+        }
+
+        .deleteButton,
+        .rotateButton {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            background-color: red;
+            font-weight: bold;
+            color: white;
+            right: 10px;
+            text-align: center;
+            border-radius: 5px;
+            box-shadow: 0 0 5px gray;
+            user-select: none;
+            cursor: pointer;
+        }
+        .deleteButton:hover, 
+        .rotateButton:hover {
+            background-color: rgb(255, 80, 80);
+        }
+        .deleteButton {
+            top: 10px;
+        }
+        .rotateButton {
+            bottom: 10px;
+        }
+
+        .pageNumber {
+            display: flex;
+            justify-content: center;
+            position: absolute;
+            width: 120px;
+            height: 30px;
+            line-height: 30px;
+            background-color: red;
+            font-weight: bold;
+            color: white;
+            left: 10px;
+            bottom: 10px;
+            text-align: center;
+            border-radius: 5px;
+            box-shadow: 0 0 5px gray;
+            user-select: none;
+        }
+        .page {
+            height: 30px;
+            line-height: 30px;
+            font-size: 12px;
+            display: block;
+        }
+
+        canvas.rotate90 {
+            transform:rotate(90deg);
+        }
+        canvas.rotate180 {
+            transform:rotate(180deg);
+        }
+        canvas.rotate270 {
+            transform:rotate(270deg);
+        }
+        
+    </style>
+
+</head>
+<body>
+    <div class="header">
+        <label for="fileInput" class="button">PDFファイルを選択</label><input type="file" id="fileInput" accept="application/pdf" class="fileInput">
+        <div id="deleteReverse" class="button">削除を反転</div>
+        <div id="generatePDF" class="button">PDFを生成</div>
+    </div>
+    <div class="container">
+        <div id="pdfCanvas" class="pdfCanvas"></div>
+    </div>
+
+    <script>
+
+        ////////////////////////////////////////////////
+        // ボタンに関数埋め込み
+        ////////////////////////////////////////////////
+        document.getElementById("fileInput").addEventListener("change", showImages);
+        document.getElementById("deleteReverse").addEventListener("click", deleteReverse);
+        document.getElementById("generatePDF").addEventListener("click", generatePDF);
+
+        ////////////////////////////////////////////////
+        // ページの有効無効切替
+        ////////////////////////////////////////////////
+        function grayout() {
+            if (this.classList.contains("delete") == true) {
+                this.textContent = "〇"
+            } else {
+                this.textContent = "✕"
+            }
+            const id = this.id.replace("deleteButton","");
+            this.classList.toggle("delete")
+            document.getElementById(`canvas${id}`).classList.toggle("delete");
+            document.getElementById(`pageNumber${id}`).classList.toggle("delete");
+        }
+
+        ////////////////////////////////////////////////
+        // ページの回転
+        ////////////////////////////////////////////////
+        function rotation(){
+            const id = this.id.replace("rotateButton","");
+            const canvas = document.getElementById(`canvas${id}`);
+            if (canvas.classList.contains("rotate90")) {
+                canvas.classList.remove("rotate90");
+                canvas.classList.add("rotate180");
+            } else if (canvas.classList.contains("rotate180")) {
+                canvas.classList.remove("rotate180");
+                canvas.classList.add("rotate270");
+            } else if (canvas.classList.contains("rotate270")) {
+                canvas.classList.remove("rotate270");
+            } else {
+                canvas.classList.add("rotate90");
+            }
+        }
+
+        ////////////////////////////////////////////////
+        // PDFファイルを読み込みページを表示
+        ////////////////////////////////////////////////
+        async function showImages() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            // ファイルが選択されていたら
+            if (file) {
+
+                // 読み込み中に余計な作業をされないようにオーバーレイ
+                makeOverLay("PDFファイル読み込み中だよ。");
+
+                const { jsPDF } = window.jspdf;
+                const canvasArea = document.getElementById('pdfCanvas');
+                canvasArea.innerHTML = "";
+                
+                const reader = new FileReader();
+                reader.onload = async function(event) {
+                    const pdfData = new Uint8Array(event.target.result);
+                    const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
+
+                    // 読み込みは「1～」
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const scale = 2;
+                        const viewport = page.getViewport({ scale: scale });
+
+                        // canvas
+                        const canvas = document.createElement("canvas");
+                        const context = canvas.getContext('2d');
+                        canvas.id = "canvas" + i;
+                        canvas.height = viewport.height;
+                        canvas.width = viewport.width;
+                        canvas.setAttribute("rotate", 0);
+                        
+                        // canvasの外枠
+                        const frame = document.createElement("div");
+                        frame.id = "frame" + i;
+                        frame.classList.add("frame");
+                        frame.setAttribute("draggable", true);
+
+                        // ドラッグアンドドロップイベント
+                        frame.ondragstart = function (event) {
+                            event.dataTransfer.setData('text/plain', event.target.id);
+                        };                      
+                        frame.ondragover = function (event) {
+                            event.preventDefault();
+                            this.style.borderLeft = '3px dashed blue';
+                        };
+                        frame.ondragleave = function () {
+                            this.style.borderLeft = '';
+                        };
+                        frame.ondrop = function (event) {
+                            event.preventDefault();
+                            let id = event.dataTransfer.getData('text');
+                            let element_drag = document.getElementById(id);
+                            this.parentNode.insertBefore(element_drag, this);
+                            this.style.borderLeft = '';
+                        };
+
+                        // 削除切替
+                        const button = document.createElement("div");
+                        button.id = "deleteButton" + i;
+                        button.classList.add("deleteButton");
+                        button.textContent = "✕";
+                        button.addEventListener("click", grayout)
+
+                        // ページ切替
+                        const number = document.createElement("div");
+                        number.id = "page" + i;
+                        number.classList.add("pageNumber");
+                        number.innerHTML = `<span class="page">page-</span>${i}`;
+
+                        // 削除切替
+                        const rotate = document.createElement("div");
+                        rotate.id = "rotateButton" + i;
+                        rotate.classList.add("rotateButton");
+                        rotate.textContent = "↻";
+                        rotate.addEventListener("click", rotation)
+
+                        // ページ表示を完成させる
+                        frame.appendChild(canvas);
+                        frame.appendChild(button);
+                        frame.appendChild(number);
+                        frame.appendChild(rotate);
+                        canvasArea.appendChild(frame);
+    
+                        const renderContext = {
+                            canvasContext: context,
+                            viewport: viewport
+                        };
+    
+                        await page.render(renderContext).promise;
+                    }
+
+                    // 末尾空白※ページを末尾にドラッグするために空間を作成
+                    const frame = document.createElement("div");
+                    frame.id = "framelast";
+                    frame.classList.add("frame");
+                    frame.classList.add("framelast");
+                    frame.ondragover = function (event) {
+                        event.preventDefault();
+                        this.style.borderLeft = '3px dashed blue';
+                    };
+                    frame.ondragleave = function () {
+                        this.style.borderLeft = '';
+                    };
+                    frame.ondrop = function (event) {
+                        event.preventDefault();
+                        let id = event.dataTransfer.getData('text');
+                        let element_drag = document.getElementById(id);
+                        this.parentNode.insertBefore(element_drag, this);
+                        this.style.borderLeft = '';
+                    };
+                    
+                    // 末尾空白に表示する文字
+                    const div = document.createElement("div");
+                    div.classList.add("canvaslast");
+                    div.innerHTML = "<div>まつび～</div>";
+                    div.style.height = document.querySelector("canvas").height;
+                    frame.appendChild(div);
+                    canvasArea.appendChild(frame);
+
+                    // 処理が完了したのでオーバーレイ除去
+                    removeOverLay();
+                };
+                reader.readAsArrayBuffer(file);
+            } else {
+                alert('PDFファイルを選択してください。');
+            }
+        }
+       
+        ////////////////////////////////////////////////
+        // 画面上の設定を読み解きPDFファイル出力
+        ////////////////////////////////////////////////
+        async function generatePDF() {
+            const { PDFDocument } = PDFLib;
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+
+            // 出力ページの有無確認
+            const canvases = document.querySelectorAll("#pdfCanvas canvas");
+            const canvasesDelete = document.querySelectorAll("#pdfCanvas canvas.delete");            
+            if (canvases.length == canvasesDelete.length) {
+                alert("出力ページがありません。");
+                return;
+            }
+
+            // ファイル・ページが存在したら
+            if (file && canvases) {
+                const reader = new FileReader();
+                reader.onload = async function(event) {
+                    const originPdfBytes = event.target.result;
+                    const originPdf = await PDFDocument.load(originPdfBytes);
+                    const newPdf = await PDFDocument.create();
+                    const totalPages = originPdf.getPageCount();
+
+                    // ページ出力は「0～」
+                    for (let i = 0; i < canvases.length; i++) {
+                        if (canvases[i].classList.contains("delete") == false) {
+                            const id = parseInt(canvases[i].id.replace("canvas", "")) - 1;
+                            if (canvases[i].classList.contains("rotate90")) {
+                                const d = originPdf.getPages()[id].getRotation();
+                                d.angle = 90;
+                                originPdf.getPages()[id].setRotation(d);
+                            } else if (canvases[i].classList.contains("rotate180")) {
+                                const d = originPdf.getPages()[id].getRotation();
+                                d.angle = 180;
+                                originPdf.getPages()[id].setRotation(d);
+                            } else if (canvases[i].classList.contains("rotate270")) {
+                                const d = originPdf.getPages()[id].getRotation();
+                                d.angle = 270;
+                                originPdf.getPages()[id].setRotation(d);
+                            }
+                            const [copiedPage] = await newPdf.copyPages(originPdf, [id]);
+                            newPdf.addPage(copiedPage);
+                        }
+                    }
+
+                    const newPdfBytes = await newPdf.save();
+                    const blob = new Blob([newPdfBytes], { type: 'application/pdf' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    const today = new Date();
+                    const year = today.getFullYear();
+                    const month = `0${today.getMonth() + 1}`.slice(-2);
+                    const day = `0${today.getDate()}`.slice(-2);
+                    const hours = `0${today.getHours()}`.slice(-2);
+                    const minutes = `0${today.getMinutes()}`.slice(-2);
+                    const seconds = `0${today.getSeconds()}`.slice(-2);
+                    const ymdhms = `${year}${month}${day}${hours}${minutes}${seconds}`;
+                    link.download = `output_${ymdhms}.pdf`;
+                    link.click();
+                };
+
+                reader.readAsArrayBuffer(file);
+
+            } else {
+                alert('PDFファイルを選択してください。');
+            }
+        }
+        
+        // ページ削除の反転
+        function deleteReverse() {
+            document.querySelectorAll(".deleteButton").forEach(function(button){
+                button.click();
+            });
+        }
+
+        ////////////////////////////////////////////////
+        // データ収集中に画面を操作されないよう
+        // オーバーレイを表示して操作をブロック
+        ////////////////////////////////////////////////
+        let overLay;
+        function makeOverLay(initMessage){
+            overLay = document.createElement('div');
+            overLay.style.display = "table";
+            overLay.style.position = "fixed";
+            overLay.style.left = "0";
+            overLay.style.top = "0";
+            overLay.style.width = "100vw";
+            overLay.style.height = "100vh";
+            overLay.style.backgroundColor = "black";
+            overLay.style.opacity = "0.7";
+            overLay.style.zIndex = "9999";
+            overLay.style.color = "white";
+            overLay.style.textAlign = "center";
+            overLay.style.fontWeight = "bold";
+            overLay.style.fontSize = "80px";
+            overLay.style.userSelect = "none";
+            document.body.appendChild(overLay);
+            if (initMessage != "") {
+                overLay.innerHTML = `<div style=display:table-cell;vertical-align:middle>${initMessage}</div>`
+            }
+        }
+
+        function updateOverLay(updateMessage) {
+            overLay.innerHTML = `<div style=clor:yellow;display:table-cell;vertical-align:middle>${updateMessage}</div>`;
+        }
+
+        function removeOverLay(finishMessage) {
+            overLay.remove();
+        }
+
+        ////////////////////////////////////////////////
+        // 処理終了後の処理
+        // オーバーレイを削除できるように切り替え
+        ////////////////////////////////////////////////
+        function removableOverLay(finishMessage) {
+            updateOverLay(finishMessage);
+            overLay.addEventListener("click", function(){
+                overLay.remove();
+            });
+        }
+
+
+    </script>
+</body>
+</html>
