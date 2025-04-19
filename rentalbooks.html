@@ -1,0 +1,109 @@
+﻿<!DOCTYPE html><html lang='ja'><head>    <meta charset='UTF-8'>    <meta name='viewport' content='width=device-width, initial-scale=1.0'>    <title>貸出書籍</title>    <style>        * {            margin: 0;            padding: 0;            box-sizing: border-box;            font-size: 12px;        }        body {            background-color: lightsteelblue;        }        .header {            background-color: black;            opacity: 0.9;            display: flex;            justify-content: center;            align-items: center;            height: 40px;            position: fixed;            width: 100%;            color: white;            top: 0px;            z-index: 9999;        }        .header input {            color: black;            opacity: 1;            width: 300px;            padding: 2px 5px;            border-radius: 5px;            margin-left: 10px;        }        .container {            width: 95%;            text-align: center;            margin-top: 40px;            margin-left: auto;            margin-right: auto;            display: grid;            grid-template-columns: repeat(auto-fit, minmax(160px,1fr));            gap: 10px;            padding: 10px;            padding-bottom: 300px;        }        .item {            min-width: 160px;            border: 1px solid rgba(0, 0, 0, 0.2);            border-radius: 3px;            padding: 10px;            box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.1);            position: relative;            background-color: white;        }        .item.hide {            display: none;        }        .type {            position: absolute;            left: 15px;            top: 15px;            border-radius: 3px;            border: 2px solid red;            background-color: yellow;            color: red;            font-weight: bold;            padding: 2px 8px;            z-index: 100;            box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.1);        }        img {            width: 120px;            height: auto;            border: 1px solid rgba(0, 0, 0, 0.2);            box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.1);            margin: 10px;        }        img:hover {            transform: scale(1.05, 1.05);            transition: 0.2s all;            opacity: 0.8;        }        .infos {            display: flex;            justify-items: center;            justify-content: center;        }        .stars {            color: red;        }        .comment {            display: none;        }        .item:hover .comment {            display: block;            position: absolute;            border: 1px solid rgba(0, 0, 0, 0.2);            border-radius: 3px;            background-color: white;            box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.1);            padding: 5px;            z-index: 999;            text-align: left;            left: 5px;            width: calc(100% - 10px);        }    </style></head><body>    <div class='header'>        <div class='search'>            <input type='text' id='search' placeholder='検索'>        </div>    </div>    <div class='container'>        <div class='item'>
+<div class='type'>自己啓発</div>
+<a href='https://www.amazon.co.jp/%E3%81%BE%E3%82%93%E3%81%8C%E3%81%A7%E3%82%8F%E3%81%8B%E3%82%8B-7%E3%81%A4%E3%81%AE%E7%BF%92%E6%85%A3-%E3%83%95%E3%83%A9%E3%83%B3%E3%82%AF%E3%83%AA%E3%83%B3%E3%83%BB%E3%82%B3%E3%83%B4%E3%82%A3%E3%83%BC%E3%83%BB%E3%82%B8%E3%83%A3%E3%83%91%E3%83%B3/dp/4800215315/' target='_blank'>
+<img src='https://m.media-amazon.com/images/I/71++Dv1jhWL._AC_UL320_.jpg'>
+</a>
+<div class='infos'>
+<div class='stars'>★★★★☆</div>
+<div class='release'>（2013/10/11）</div>
+</div>
+<div class='title'>まんがでわかる 7つの習慣_1</div>
+<div class='comment'>在庫：1冊<br>著者：フランクリン・コヴィー・ジャパン<br>コメントはまだありません。</div>
+</div>
+<div class='item'>
+<div class='type'>自己啓発</div>
+<a href='https://www.amazon.co.jp/%E3%81%BE%E3%82%93%E3%81%8C%E3%81%A7%E3%82%8F%E3%81%8B%E3%82%8B7%E3%81%A4%E3%81%AE%E7%BF%92%E6%85%A32-%E3%83%91%E3%83%A9%E3%83%80%E3%82%A4%E3%83%A0%E3%81%A8%E5%8E%9F%E5%89%87-%E7%AC%AC1%E3%81%AE%E7%BF%92%E6%85%A3-%E7%AC%AC2%E3%81%AE%E7%BF%92%E6%85%A3-%E3%81%BE%E3%82%93%E3%81%8C%E3%81%A7%E3%82%8F%E3%81%8B%E3%82%8B%E3%82%B7%E3%83%AA%E3%83%BC%E3%82%BA/dp/4800223997/' target='_blank'>
+<img src='https://m.media-amazon.com/images/I/711IUMOqkHL._AC_UL320_.jpg'>
+</a>
+<div class='infos'>
+<div class='stars'>★★★★☆</div>
+<div class='release'>（2014/07/11）</div>
+</div>
+<div class='title'>まんがでわかる 7つの習慣_2</div>
+<div class='comment'>在庫：1冊<br>著者：フランクリン・コヴィー・ジャパン<br>コメントはまだありません。</div>
+</div>
+<div class='item'>
+<div class='type'>自己啓発</div>
+<a href='https://www.amazon.co.jp/%E3%81%BE%E3%82%93%E3%81%8C%E3%81%A7%E3%82%8F%E3%81%8B%E3%82%8B7%E3%81%A4%E3%81%AE%E7%BF%92%E6%85%A33-%E7%AC%AC3%E3%81%AE%E7%BF%92%E6%85%A3-%E7%AC%AC4%E3%81%AE%E7%BF%92%E6%85%A3-%E7%AC%AC5%E3%81%AE%E7%BF%92%E6%85%A3-%E3%81%BE%E3%82%93%E3%81%8C%E3%81%A7%E3%82%8F%E3%81%8B%E3%82%8B%E3%82%B7%E3%83%AA%E3%83%BC%E3%82%BA/dp/480022716X/' target='_blank'>
+<img src='https://m.media-amazon.com/images/I/71LmdyuDfSL._AC_UL320_.jpg'>
+</a>
+<div class='infos'>
+<div class='stars'>★★★★☆</div>
+<div class='release'>（2014/10/09）</div>
+</div>
+<div class='title'>まんがでわかる 7つの習慣_3</div>
+<div class='comment'>在庫：1冊<br>著者：フランクリン・コヴィー・ジャパン<br>コメントはまだありません。</div>
+</div>
+<div class='item'>
+<div class='type'>経営学</div>
+<a href='https://www.amazon.co.jp/%E3%81%BE%E3%82%93%E3%81%8C%E3%81%A7%E3%82%8F%E3%81%8B%E3%82%8B%E3%82%BB%E3%83%96%E3%83%B3%E2%80%90%E3%82%A4%E3%83%AC%E3%83%96%E3%83%B3%E3%81%AE16%E6%AD%B3%E3%81%8B%E3%82%89%E3%81%AE%E7%B5%8C%E5%96%B6%E5%AD%A6-%E8%BF%AB-%E3%83%9F%E3%82%B5%E3%82%AD/dp/4800230292/' target='_blank'>
+<img src='https://m.media-amazon.com/images/I/71fIxGOEn2L._AC_UL320_.jpg'>
+</a>
+<div class='infos'>
+<div class='stars'>★★★★☆</div>
+<div class='release'>（2014/10/02）</div>
+</div>
+<div class='title'>まんがでわかる セブンイレブンの16歳からの経営学</div>
+<div class='comment'>在庫：1冊<br>著者：セブンイレブン・ジャパン<br>コメントはまだありません。</div>
+</div>
+<div class='item'>
+<div class='type'>リーダーシップ</div>
+<a href='https://www.amazon.co.jp/%E3%81%BE%E3%82%93%E3%81%8C%E3%81%A7%E3%82%8F%E3%81%8B%E3%82%8B-%E3%83%89%E3%83%A9%E3%83%83%E3%82%AB%E3%83%BC%E3%81%AE%E3%83%AA%E3%83%BC%E3%83%80%E3%83%BC%E3%82%B7%E3%83%83%E3%83%97%E8%AB%96-%E8%97%A4%E5%B1%8B-%E4%BC%B8%E4%BA%8C/dp/4800223768/' target='_blank'>
+<img src='https://m.media-amazon.com/images/I/71Fpx-sFBVL._AC_UL320_.jpg'>
+</a>
+<div class='infos'>
+<div class='stars'>★★★★☆</div>
+<div class='release'>（2014/04/14）</div>
+</div>
+<div class='title'>まんがでわかる ドラッガーのリーダーシップ論</div>
+<div class='comment'>在庫：1冊<br>著者：藤屋伸二<br>コメントはまだありません。</div>
+</div>
+<div class='item'>
+<div class='type'>自己啓発</div>
+<a href='https://www.amazon.co.jp/%E3%83%9E%E3%83%B3%E3%82%AC%E3%81%A7%E3%82%8F%E3%81%8B%E3%82%8B-%E6%96%B0%E8%A8%B3-%E9%81%93%E3%81%AF%E9%96%8B%E3%81%91%E3%82%8B-D%E3%83%BB%E3%82%AB%E3%83%BC%E3%83%8D%E3%82%AE%E3%83%BC/dp/4041023602/' target='_blank'>
+<img src='https://m.media-amazon.com/images/I/71BwI9MqsxL._AC_UL320_.jpg'>
+</a>
+<div class='infos'>
+<div class='stars'>★★★★☆</div>
+<div class='release'>（2015/01/30）</div>
+</div>
+<div class='title'>マンガでわかる 道は開ける</div>
+<div class='comment'>在庫：1冊<br>著者：デール・カーネギー<br>コメントはまだありません。</div>
+</div>
+<div class='item'>
+<div class='type'>マネジメント</div>
+<a href='https://www.amazon.co.jp/%E3%83%9E%E3%83%B3%E3%82%AC%E3%81%A7%E3%82%88%E3%81%8F%E3%82%8F%E3%81%8B%E3%82%8B-%E6%95%99%E3%81%88%E3%82%8B%E6%8A%80%E8%A1%93-%E7%9F%B3%E7%94%B0-%E6%B7%B3/dp/4761270578/' target='_blank'>
+<img src='https://m.media-amazon.com/images/I/81MYoKKLaUL._AC_UL320_.jpg'>
+</a>
+<div class='infos'>
+<div class='stars'>★★★★☆</div>
+<div class='release'>（2015/01/19）</div>
+</div>
+<div class='title'>マンガでよくわかる 教える技術</div>
+<div class='comment'>在庫：1冊<br>著者：石田淳<br>コメントはまだありません。</div>
+</div>
+<div class='item'>
+<div class='type'>心理学</div>
+<a href='https://www.amazon.co.jp/%E3%81%BE%E3%82%93%E3%81%8C%E3%81%A7%E8%BA%AB%E3%81%AB%E3%81%A4%E3%81%8F%E3%82%A2%E3%83%89%E3%83%A9%E3%83%BC-%E6%98%8E%E6%97%A5%E3%82%92%E5%A4%89%E3%81%88%E3%82%8B%E5%BF%83%E7%90%86%E5%AD%A6-Business-ComicSeries-%E9%88%B4%E6%9C%A8%E7%BE%A9%E4%B9%9F-ebook/dp/B01JADEBX4/' target='_blank'>
+<img src='https://m.media-amazon.com/images/I/81WFo7wwYlL._AC_UL320_.jpg'>
+</a>
+<div class='infos'>
+<div class='stars'>★★★☆☆</div>
+<div class='release'>（2016/08/02）</div>
+</div>
+<div class='title'>まんがで身につく アドラー明日を変える心理学</div>
+<div class='comment'>在庫：1冊<br>著者：鈴木義也<br>コメントはまだありません。</div>
+</div>
+<div class='item'>
+<div class='type'>心理学</div>
+<a href='https://www.amazon.co.jp/%E3%82%B3%E3%83%9F%E3%83%83%E3%82%AF%E3%81%A7%E3%82%8F%E3%81%8B%E3%82%8B%E3%82%A2%E3%83%89%E3%83%A9%E3%83%BC%E5%BF%83%E7%90%86%E5%AD%A6-%E5%90%91%E5%BE%8C-%E5%8D%83%E6%98%A5/dp/4046010118/' target='_blank'>
+<img src='https://m.media-amazon.com/images/I/71obzmEt8gL._AC_UL320_.jpg'>
+</a>
+<div class='infos'>
+<div class='stars'>★★★★☆</div>
+<div class='release'>（2014/10/25）</div>
+</div>
+<div class='title'>コミックでわかる アドラー心理学</div>
+<div class='comment'>在庫：1冊<br>著者：向後千春<br>コメントはまだありません。</div>
+</div>
+    </div>    <script type='text/javascript'>        const input = document.getElementById('search');        input.addEventListener('keydown', function(e) {            let searchKey = input.value;            if (e.key === 'Enter') {                document.querySelectorAll('.item').forEach(function(item){                    if (item.textContent.indexOf(searchKey) >= 0) {                        item.classList.remove('hide');                    } else {                        item.classList.add('hide');                    }                });            }        });    </script></body></html>
