@@ -2438,8 +2438,11 @@ Option Explicit
 '
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
     
+    Const strSplitDelimiter As String = ";"
+    
     '構造体にメールセッティングをまとめる
     Type MailSettings
+        OutlookApp As Object
         From As String
         To As String
         Cc As String
@@ -2449,113 +2452,177 @@ Option Explicit
         
         '添付ファイル
         '※複数項目存在する場合は「SplitDelimiter」区切り
-        AttachFiles As String
+        AttachFolder As String
+        AttachFileNames As String
         
         '本文中の置換・画像の挿入
         '※複数項目存在する場合は「SplitDelimiter」区切り
         ReplaceContents As String
-        ContentsPlaceHolders As String
         InsertImages As String
-        ImagePlaceHolders As String
         
         '「添付ファイル」「置換文字」「挿入画像」の区切り文字
         SplitDelimiter As String
-        
+        MacroFolder As Object
         EntryId As String
+        ConversationIndex As String
     End Type
     
-    '**********************************************************
-    ' 構造体でデータを受け取り、メール作成・保存を行う
-    ' ※送信時に使用するためにメールのIDを返却
-    '**********************************************************
-    Sub MakeAndSaveMail(typMailSettings As MailSettings)
-        
-        Const olMailItem As Integer = 0
-        Const olFormatHTML As Integer = 2
-        
-        'Outlookオブジェクト生成
-        Dim objOutlook As Object
-        Dim objMailItem As Object
-        Set objOutlook = CreateObject("Outlook.Application")
-        Set objMailItem = objOutlook.CreateItem(olMailItem)   '【定数】olMailItem = 0
+    Public Const strMacroFolder As String = "マクロ用"
+    Const olMailItem As Integer = 0
+    Const olFormatHTML As Integer = 2
+    Const olFolderSentMail As Integer = 5
+    Const strImagePlaceHolderKey As String = "◆"
+    Const strTextPlaceHolderKey As String = "★"
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+'　構造体の設定に基づき個別メールを作成
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function CreateMailItem(ByRef typMailSettings As MailSettings, Optional ByVal blnRemind As Boolean = False) As Boolean
         
         With typMailSettings
             
-            'メール各設定
-            objMailItem.To = .To
-            objMailItem.Cc = .Cc
-            objMailItem.Bcc = .Bcc
-            objMailItem.Subject = .Subject
-            
-            'ファイルの添付
-            If .AttachFiles <> "" Then
-                Dim aryAttachFiles As Variant
-                aryAttachFiles = Split(.AttachFiles, .SplitDelimiter)
-                Dim intIndex As Integer
-                For intIndex = LBound(aryAttachFiles) To UBound(aryAttachFiles)
-                    objMailItem.Attachments.Add aryAttachFiles(intIndex)
-                Next
+            If blnRemind = False Then
+                
+                Dim objOutlookMailItem As Object
+                Set objOutlookMailItem = .OutlookApp.CreateItem(olMailItem)
+                objOutlookMailItem.To = .To
+                objOutlookMailItem.Cc = .Cc
+                objOutlookMailItem.Bcc = .Bcc
+                objOutlookMailItem.Subject = .Subject
+                objOutlookMailItem.HtmlBody = .HtmlBody
+                
+                '本文置換
+                If .ReplaceContents <> "" Then
+                    
+                    If InStr(.ReplaceContents, strSplitDelimiter) = 0 And InStr(.ReplaceContents, vbLf) > 0 Then
+                        .SplitDelimiter = vbLf
+                    Else
+                        .SplitDelimiter = strSplitDelimiter
+                    End If
+                    
+                    Dim aryReplaceContents As Variant
+                    aryReplaceContents = Split(.ReplaceContents, .SplitDelimiter)
+                    
+                    Dim intContentIndex As Integer
+                    For intContentIndex = LBound(aryReplaceContents) To UBound(aryReplaceContents)
+                        objOutlookMailItem.HtmlBody = Replace(objOutlookMailItem.HtmlBody, StrConv(strTextPlaceHolderKey & (intContentIndex + 1) & strTextPlaceHolderKey, vbWide), aryReplaceContents(intContentIndex))
+                        objOutlookMailItem.HtmlBody = Replace(objOutlookMailItem.HtmlBody, StrConv(strTextPlaceHolderKey & (intContentIndex + 1) & strTextPlaceHolderKey, vbNarrow), aryReplaceContents(intContentIndex))
+                    Next
+                    
+                End If
+                
+                '挿入画像も「添付」する必要がある
+                '※「空欄;ファイル名1;ファイル名2」となっていてもエラーが発生しない設計になっています。
+                If .InsertImages <> "" Then
+                    
+                    Const strImageRenameBase As String = "InsertImages"
+                    
+                    If InStr(.InsertImages, strSplitDelimiter) = 0 And InStr(.InsertImages, vbLf) > 0 Then
+                        .SplitDelimiter = vbLf
+                    Else
+                        .SplitDelimiter = strSplitDelimiter
+                    End If
+                    
+                    Dim aryInsertImageFiles As Variant
+                    aryInsertImageFiles = Split(.InsertImages, .SplitDelimiter)
+                    
+                    Dim intImageIndex As Integer
+                    For intImageIndex = LBound(aryInsertImageFiles) To UBound(aryInsertImageFiles)
+                        
+                        '挿入画像として別名を設定して添付⇒本文中に挿入
+                        If aryInsertImageFiles(intImageIndex) <> "" Then
+                            
+                            With objOutlookMailItem.Attachments.Add(.AttachFolder & aryInsertImageFiles(intImageIndex))
+                                .PropertyAccessor.SetProperty "http://schemas.microsoft.com/mapi/proptag/0x3712001F", strImageRenameBase & intImageIndex
+                            End With
+                            
+                            Dim strImageHtml As String
+                            strImageHtml = "<img src='cid:" & strImageRenameBase & intImageIndex & "'>"
+                            objOutlookMailItem.HtmlBody = Replace(objOutlookMailItem.HtmlBody, StrConv(strImagePlaceHolderKey & (intImageIndex + 1) & strImagePlaceHolderKey, vbWide), strImageHtml)
+                            objOutlookMailItem.HtmlBody = Replace(objOutlookMailItem.HtmlBody, StrConv(strImagePlaceHolderKey & (intImageIndex + 1) & strImagePlaceHolderKey, vbNarrow), strImageHtml)
+                            
+                        '空欄だったらPlaceHolderを削除
+                        Else
+                            objOutlookMailItem.HtmlBody = Replace(objOutlookMailItem.HtmlBody, StrConv(strImagePlaceHolderKey & (intImageIndex + 1) & strImagePlaceHolderKey, vbWide), "")
+                            objOutlookMailItem.HtmlBody = Replace(objOutlookMailItem.HtmlBody, StrConv(strImagePlaceHolderKey & (intImageIndex + 1) & strImagePlaceHolderKey, vbNarrow), "")
+                        End If
+                        
+                    Next
+                    
+                End If
+                
+                'ファイル添付 & 挿入画像も添付
+                If .AttachFileNames <> "" Then
+                    
+                    If InStr(.AttachFileNames, strSplitDelimiter) = 0 And InStr(.AttachFileNames, vbLf) > 0 Then
+                        .SplitDelimiter = vbLf
+                    Else
+                        .SplitDelimiter = strSplitDelimiter
+                    End If
+                    
+                    'セミコロンで区切って複数登録
+                    Dim vntAttachFile As Variant
+                    For Each vntAttachFile In Split(.AttachFileNames, .SplitDelimiter)
+                        
+                        'セミコロン区切りに空欄が含まれてい場合を考慮
+                        If vntAttachFile <> "" Then
+                            
+                            'エラーが発生したら終了
+                            On Error Resume Next
+                            objOutlookMailItem.Attachments.Add .AttachFolder & vntAttachFile
+                            If Err.Number <> 0 Then
+                                MsgBox "添付・挿入ファイル「 " & vntAttachFile & " 」が格納されていませんでした。" & vbCr & "処理を中断します。"
+                                CreateMailItem = False
+                                Exit Function
+                            End If
+                            On Error GoTo 0
+                        End If
+                    Next
+                End If
+                
+            Else
+                
+                Set objOutlookMailItem = GetMailItemByConversationIndex(.From, .ConversationIndex)
+                Dim objRemindItem As Object
+                Set objRemindItem = objOutlookMailItem.Forward
+                
+                objRemindItem.Subject = .Subject
+                objRemindItem.To = .To
+                objRemindItem.Cc = .Cc
+                objRemindItem.Bcc = .Bcc
+                objRemindItem.HtmlBody = .HtmlBody & objRemindItem.HtmlBody
+                
+                Set objOutlookMailItem = objRemindItem
+                
             End If
             
-            '区切り文字で配列に分割し、本文を置換する
-            If .ReplaceContents <> "" Then
-                Dim aryReplaceContents As Variant
-                Dim aryContentsPlaceHolders As Variant
-                aryReplaceContents = Split(.ReplaceContents, .SplitDelimiter)
-                aryContentsPlaceHolders = Split(.ContentsPlaceHolders, .SplitDelimiter)
-                
-                For intIndex = LBound(aryReplaceContents) To UBound(aryReplaceContents)
-                    .HtmlBody = Replace(.HtmlBody, aryContentsPlaceHolders(intIndex), aryReplaceContents(intIndex))
-                Next
-            End If
-            
-            '挿入画像は「ファイル添付」⇒「プロパティ変更」⇒「HTML用の別名設定」
-            If .InsertImages <> "" Then
-                Dim aryInsertImageFiles As Variant
-                Const strImageRenameBase As String = "InsertImages"
-                aryInsertImageFiles = Split(.InsertImages, .SplitDelimiter)
-                
-                For intIndex = LBound(aryInsertImageFiles) To UBound(aryInsertImageFiles)
-                    With objMailItem.Attachments.Add(aryInsertImageFiles(intIndex))
-                        .PropertyAccessor.SetProperty "http://schemas.microsoft.com/mapi/proptag/0x3712001F", strImageRenameBase & intIndex
-                    End With
-                Next
-                
-                '挿入画像は「HTML用の別名」を使用して挿入する
-                Dim aryImagePlaceHolders As Variant
-                aryImagePlaceHolders = Split(.ImagePlaceHolders, .SplitDelimiter)
-                For intIndex = LBound(aryInsertImageFiles) To UBound(aryInsertImageFiles)
-                    .HtmlBody = Replace(.HtmlBody, aryImagePlaceHolders(intIndex), "<img src=""cid:" & strImageRenameBase & intIndex & """>")
-                Next
-            End If
-            
-            '本文
-            objMailItem.BodyFormat = olFormatHTML
-            objMailItem.HtmlBody = .HtmlBody
-            
-            '下書きを保存するアカウントを指定
+            '指定アカウントの下書きフォルダに保存
             Dim objAccounts As Object
-            Set objAccounts = objOutlook.Session.Accounts.Item(.From)
-            Set objMailItem.SendUsingAccount = objAccounts
+            Set objAccounts = objOutlookMailItem.Parent.Session.Accounts.Item(.From)
+            Set objOutlookMailItem.SendUsingAccount = objAccounts
+            objOutlookMailItem.Save
+            Set objOutlookMailItem = objOutlookMailItem.Move(typMailSettings.MacroFolder)
             
-            'メール保存
-            objMailItem.Save
-            
-            'メールのIDを構造体に格納して返却
-            .EntryId = objMailItem.EntryId
+            '保存実施後にIDが発行されるのでIDを取得
+            .EntryId = objOutlookMailItem.EntryId
+            Set objOutlookMailItem = Nothing
             
         End With
         
-        'オブジェクト解放
-        Set objOutlook = Nothing
-        Set objMailItem = Nothing
+        CreateMailItem = True
         
-    End Sub
+    End Function
     
-    '**********************************************************
-    ' 指定したアカウントの下書きフォルダの指定メールを送信
-    '**********************************************************
-    Function SendMailByAccountAndMailId(ByVal strOutlookAccount As String, ByVal strMailId As String) As Boolean
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+'　指定したアカウントの下書きフォルダの指定メールを送信
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function SendMailByAccountAndMailId(ByVal strOutlookAccount As String, ByVal strMailId As String) As String
         
         'Outlookオブジェクト生成
         Dim objOutlook As Object
@@ -2576,10 +2643,14 @@ Option Explicit
             Exit Function
         End If
         
+        Dim strConversationIndex As String
+        strConversationIndex = objItem.ConversationIndex
+        
         'マクロでメール送信すると謎のエラーが発生することが多いため
         '表示してから送信することでエラーを回避
-        objItem.Display
-        'objItem.Send
+        objItem.display
+        objItem.Send
+        On Error GoTo 0
         
         'オブジェクト解放
         Set objOutlook = Nothing
@@ -2587,7 +2658,145 @@ Option Explicit
         Set objNameSpace = Nothing
         Set objItem = Nothing
         
-        SendMailByAccountAndMailId = True
+        SendMailByAccountAndMailId = strConversationIndex
+        
+    End Function
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' Outlook操作各種
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    'Outlook画面が開いているか？確認
+    Function IsOpenOutlookWindow(ByVal blnShowMessage As String)
+        
+        If CreateObject("Outlook.Application").Explorers.Count > 0 Then
+            IsOpenOutlookWindow = True
+        Else
+            If blnShowMessage = True Then
+                MsgBox "Outlookアプリが起動されていません。" & vbCrLf & _
+                    "Outlookアプリを手動で起動・ログインしてからマクロを実行してください。" & vbCrLf & _
+                    "実行を中止します。", vbExclamation
+            End If
+            
+            IsOpenOutlookWindow = False
+            
+        End If
+        
+    End Function
+    
+    'Outlookの指定アカウントにログインしているか確認
+    Function IsLoginOutlook(ByVal strOutlookAccount As String, ByVal blnShowMessage As Boolean) As Boolean
+        
+        '★Outlookの参照設定を行っていない場合、Accountsのインデックスを指定するとがエラーが発生します。
+        Dim objOutlookAccount As Object
+        Set objOutlookAccount = CreateObject("Outlook.Application").Session.Accounts
+        
+        '指定アカウントを操作できない⇒ログインしていないと判断
+        '※DisplayNameを取得する事に特別な意味はありません。
+        On Error Resume Next
+        Dim strDisplayName As String
+        strDisplayName = objOutlookAccount(strOutlookAccount).DisplayName
+        
+        If Err.Number <> 0 Then
+            IsLoginOutlook = False
+            If blnShowMessage = True Then
+                MsgBox "指定アカウント「" & strOutlookAccount & "」にログインしていません。" & vbCrLf & _
+                        "指定アカウントにログインしてから再度実行してください。" & vbCrLf & _
+                        "実行を中止します。", vbExclamation
+            End If
+            
+        Else
+            IsLoginOutlook = True
+        End If
+        On Error GoTo 0
+        
+    End Function
+    
+    'メインアカウントの確認
+    Function GetOutlookDefaultAccount() As String
+        
+        '★Outlookの参照設定を行っていない場合、Accountsのインデックスを指定するとがエラーが発生します。
+        Dim objOutlookAccount As Object
+        Set objOutlookAccount = CreateObject("Outlook.Application").Session.Accounts
+        GetOutlookDefaultAccount = objOutlookAccount(1).DisplayName
+        
+    End Function
+    
+    '下書きフォルダの現在の保存件数
+    Function CheckOutlookFolderItemsCount(ByVal strOutlookAccount As String)
+        
+        '★Outlookの参照設定を行っていない場合、Accountsのインデックスを指定するとがエラーが発生します。
+        Dim objOutlookAccount As Object
+        Set objOutlookAccount = CreateObject("Outlook.Application").Session.Accounts
+        CheckOutlookFolderItemsCount = objOutlookAccount(strOutlookAccount).DeliveryStore.GetDefaultFolder(16).Items.Count
+        
+    End Function
+    
+    '下書きフォルダの本文のHTMLを取得
+    Function GetHTML(ByVal strOutlookAccount As String)
+        
+        '★Outlookの参照設定を行っていない場合、Accountsのインデックスを指定するとがエラーが発生します。
+        Dim objOutlookAccount As Object
+        Set objOutlookAccount = CreateObject("Outlook.Application").Session.Accounts
+        GetHTML = objOutlookAccount(strOutlookAccount).DeliveryStore.GetDefaultFolder(16).Items(1).HtmlBody
+        
+    End Function
+    
+    '下書きフォルダの本文のHTMLを変更
+    Function SetHtml(ByVal strOutlookAccount As String)
+        
+        '★Outlookの参照設定を行っていない場合、Accountsのインデックスを指定するとがエラーが発生します。
+        Dim objOutlookAccount As Object
+        Dim objMailItem As Object
+        Set objOutlookAccount = CreateObject("Outlook.Application").Session.Accounts
+        Set objMailItem = objOutlookAccount(strOutlookAccount).DeliveryStore.GetDefaultFolder(16).Items(2)
+        objMailItem.HtmlBody = "楽しいだろうか？"
+        objMailItem.Save
+        
+    End Function
+    
+    '「下書き」フォルダ内にマクロ用フォルダを生成して返却
+    Function GetMacroFolder(ByVal strOutlookAccount As String, ByVal strFolderName As String) As Object
+        
+        On Error Resume Next
+        With CreateObject("Outlook.Application").GetNamespace("MAPI").Folders(strOutlookAccount).Folders("下書き")
+            .Folders.Add strFolderName
+            Set GetMacroFolder = .Folders(strFolderName)
+        End With
+        On Error GoTo 0
+        
+    End Function
+    
+    '***************************************
+    ' リマインドメール作成のために「送信済みアイテム」よりメールを作成
+    ' 送信しても変化しない「ConversationIndex」を利用し対象メールを探し出す
+    '***************************************
+    Function GetMailItemByConversationIndex(ByVal strOutlookAccount As String, ByVal strConversationIndex As String) As Object
+        
+        Dim objOutlookAccounts As Object
+        Dim objMailItems As Object
+        Set objOutlookAccounts = CreateObject("Outlook.Application").Session.Accounts
+        Set objMailItems = objOutlookAccounts(strOutlookAccount).DeliveryStore.GetDefaultFolder(olFolderSentMail).Items
+        
+        '直近100日分を調査
+        Dim strFilter As String
+        strFilter = "[CreationTime] > '" & Format(Now - 100, "ddddd h:nn AMPM") & "'"
+        
+        Dim objResultItems As Object
+        Set objResultItems = objMailItems.Restrict(strFilter)
+        
+        '直近から順に調査
+        Dim lngIndex As Long
+        For lngIndex = objResultItems.Count To 1 Step -1
+            
+            If objResultItems(lngIndex).ConversationIndex = strConversationIndex Then
+                Set GetMailItemByConversationIndex = objResultItems(lngIndex)
+                Exit Function
+            End If
+            
+        Next
         
     End Function
                     </pre>
@@ -2739,112 +2948,6 @@ Option Explicit
             GetCssColor = "#" & strRed & strGreen & strBlue
             
         End With
-        
-    End Function
-                    </pre>
-                </div>
-                <div class="vba-code">
-                    <pre class="prettyprint lang-vb linenums" lang="vb">
-    
-'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-'
-' Outlook操作各種
-'
-'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-    
-    'Outlook画面が開いているか？確認
-    Function IsOpenOutlookWindow(ByVal blnShowMessage as String)
-        
-        If CreateObject("Outlook.Application").Explorers.Count > 0 then
-            IsOpenOutlookWindow = True
-        Else
-            If blnShowMessage = True Then
-                MsgBox "Outlookアプリが起動されていません。" & vbCrLf & _
-                    "Outlookアプリを手動で起動・ログインしてからマクロを実行してください。" & vbCrLf & _
-                    "実行を中止します。", vbExclamation
-            End If
-            IsOpenOutlookWindow = False
-        End If
-        
-    End Function
-    
-    'Outlookの指定アカウントにログインしているか確認
-    Function IsLoginOutlook(ByVal strOutlookAccount As String, ByVal blnShowMessage As Boolean) As Boolean
-        
-        '★Outlookの参照設定を行っていない場合、Accountsのインデックスを指定するとがエラーが発生します。
-        Dim objOutlookAccount As Object
-        Set objOutlookAccount = CreateObject("Outlook.Application").Session.Accounts
-        
-        '指定アカウントを操作できない⇒ログインしていないと判断
-        '※DisplayNameを取得する事に特別な意味はありません。
-        On Error Resume Next
-        Dim strDisplayName As String
-        strDisplayName = objOutlookAccount(strOutlookAccount).DisplayName
-        If Err.Number <> 0 Then
-            IsLoginOutlook = False
-            If blnShowMessage = True Then
-                MsgBox "指定アカウント「" & strOutlookAccount & "」にログインしていません。" & vbCrLf & _
-                        "指定アカウントにログインしてから再度実行してください。" & vbCrLf & _
-                        "実行を中止します。", vbExclamation
-            End If
-        Else
-            IsLoginOutlook = True
-        End If
-        On Error GoTo 0
-    End Function
-    
-    'メインアカウントの確認
-    Function GetOutlookDefaultAccount() As String
-        
-        '★Outlookの参照設定を行っていない場合、Accountsのインデックスを指定するとがエラーが発生します。
-        Dim objOutlookAccount As Object
-        Set objOutlookAccount = CreateObject("Outlook.Application").Session.Accounts
-        GetOutlookDefaultAccount = objOutlookAccount(1).DisplayName
-        
-    End Function
-    
-    '下書きフォルダの現在の保存件数
-    Function CheckOutlookFolderItemsCount(ByVal strOutlookAccount As String)
-        
-        '★Outlookの参照設定を行っていない場合、Accountsのインデックスを指定するとがエラーが発生します。
-        Dim objOutlookAccount As Object
-        Set objOutlookAccount = CreateObject("Outlook.Application").Session.Accounts
-        CheckOutlookFolderItemsCount = objOutlookAccount(strOutlookAccount).DeliveryStore.GetDefaultFolder(16).items.Count
-        
-    End Function
-    
-    '下書きフォルダの本文のHTMLを取得
-    Function GetHTML(ByVal strOutlookAccount As String)
-        
-        '★Outlookの参照設定を行っていない場合、Accountsのインデックスを指定するとがエラーが発生します。
-        Dim objOutlookAccount As Object
-        Set objOutlookAccount = CreateObject("Outlook.Application").Session.Accounts
-        GetHTML = objOutlookAccount(strOutlookAccount).DeliveryStore.GetDefaultFolder(16).items(1).htmlbody
-        
-    End Function
-    
-    '下書きフォルダの本文のHTMLを変更
-    Function SetHtml(ByVal strOutlookAccount As String)
-        
-        '★Outlookの参照設定を行っていない場合、Accountsのインデックスを指定するとがエラーが発生します。
-        Dim objOutlookAccount As Object
-        Dim objMailItem As Object
-        Set objOutlookAccount = CreateObject("Outlook.Application").Session.Accounts
-        Set objMailItem = objOutlookAccount(strOutlookAccount).DeliveryStore.GetDefaultFolder(16).items(2)
-        objMailItem.htmlbody = "<font face=""メイリオ"" style=""background-color: lightskyblue; color: white; border: 1px solid black; margin: 10px;"">楽しい</font>だろうか？"
-        objMailItem.Save
-        
-    End Function
-
-    '「下書き」フォルダ内にマクロ用フォルダを生成して返却
-    Function GetMacroFolder(ByVal strOutlookAccount As String, ByVal strFolderName As String) As Object
-        
-        On Error Resume Next
-        With CreateObject("Outlook.Application").GetNamespace("MAPI").Folders(strOutlookAccount).Folders("下書き")
-            .Folders.Add strFolderName
-            Set GetMacroFolder = .Folders(strFolderName)
-        End With
-        On Error GoTo 0
         
     End Function
                     </pre>
