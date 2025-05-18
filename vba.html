@@ -4466,6 +4466,183 @@ Option Explicit
     
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
+'　Geminiと対話
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function PostToGemini(ByVal strQuestion As String)
+        
+        Const strGeminiUrl As String = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=API_KEY"
+        
+        Dim strPostData As String
+        strPostData = "{""contents"": [{""parts"":[{""text"": """ + strQuestion + """}]}]}"
+        
+        Dim objHttp As Object
+        Set objHttp = CreateObject("MSXML2.XMLHTTP")
+        
+        objHttp.Open "POST", strGeminiUrl, False
+        objHttp.setRequestHeader "Content-Type", "application/json"
+        objHttp.Send strPostData
+        
+        Dim strResponse As String
+        strResponse = objHttp.strResponseText
+        
+        Debug.Print "Response: " & strResponse
+        
+        Dim dctResponse As Object
+        Set dctResponse = JsonConverter.ParseJson(strResponse)
+        
+        Dim strResponseText As String
+        If Not dctResponse Is Nothing Then
+            If dctResponse.Exists("candidates") Then
+                strResponseText = dctResponse("candidates")(1)("content")("parts")(1)("text")
+            Else
+                strResponseText = dctResponse("error")("message")
+            End If
+        Else
+            strResponseText = "No valid JSON response"
+        End If
+        
+        PostToGemini = Replace(Replace(Replace(strResponseText, "\n", vbLf), vbCr, ""), "*", "")
+    
+    End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+'　GoogleSpreaSheetをAPI経由で操作
+'　※SpreadSheet経由でGmail、GoogleMap等を操作
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Sub GooglePost()
+        
+        'シンプルなWebApiリクエスト
+        Dim objHttpRequest As Object
+        Set objHttpRequest = CreateObject("MSXML2.ServerXMLHTTP")
+        
+        With objHttpRequest
+            .Open "POST", strApiUrl, False
+            .SetRequestHeader "Content-Type", "application/json"
+            .send "{""a"":1,""b"":2,""d"":3}"
+        End With
+        
+        Debug.Print objHttpRequest.responseText
+        
+    End Sub
+    
+    Sub GoogleGet()
+        
+        'シンプルなWebApiリクエスト
+        Dim objHttpRequest As Object
+        Set objHttpRequest = CreateObject("MSXML2.ServerXMLHTTP")
+        
+        Dim strUrlQuery As String
+        strUrlQuery = strApiUrl & "?type=mail&to=test@gmail.com&subject=TESTMAIL&body=TESTMAILBODY"
+        strUrlQuery = strApiUrl & "?type=holiday&start=2024/01/01&end=2024/12/31"
+        strUrlQuery = strApiUrl & "?type=map&home=東京駅&shop=京王多摩センター駅"
+        
+        With objHttpRequest
+            .Open "GET", strUrlQuery, False
+            .SetRequestHeader "Content-Type", "application/x-www-form-urlencoded"
+            .send
+        End With
+        
+        Debug.Print objHttpRequest.responseText
+        
+    End Sub
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' GASコード
+' ※デプロイ⇒ウェブアプリでURL取得
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'    function doPost(e) {
+'      let book = SpreadsheetApp.getActiveSpreadsheet();
+'      let sheet = book.getActiveSheet();
+'      let params = JSON.parse(e.postData.getDataAsString());
+'      sheet.getRange("A2").setValue(params.a);
+'      sheet.getRange("B2").setValue(params.b);
+'      sheet.getRange("C2").setValue(params.d);
+'      sheet.getRange("D2").setValue("POST");
+'      return;
+'    }
+'
+'    function doGet(e) {
+'      const parameter = e.parameter;
+'
+'      if (parameter.type == "map") {
+'        return ContentService.createTextOutput(getBestRoute(parameter.home, parameter.shop));
+'      } else if (parameter.type == "holiday") {
+'        return ContentService.createTextOutput(getHolidays(parameter.start, parameter.end));
+'      } else if (parameter.type == "mail") {
+'        MailApp.sendEmail(parameter.to, parameter.subject, parameter.body, {htmlBody: parameter.body})
+'        return ContentService.createTextOutput("OK");
+'      }
+'    }
+'
+'    function getBestRoute(home, shop) {
+'      Const directions = Maps.newDirectionFinder()
+'        .setOrigin (home)
+'        .setAlternatives (True)
+'        .setLanguage ("ja")
+'        .setDestination (shop)
+'        .setMode (Maps.DirectionFinder.Mode.TRANSIT)
+'        .getDirections();
+'
+'      let results = [];
+'      for (let i = 0; i < 5; i++) {
+'        if (i < directions.routes.length) {
+'          let route = directions.routes[i];
+'          let distance = route.legs[0].distance.text;
+'          let duration = route.legs[0].duration.text;
+'          let fare = route.fare.text.replaceAll(",", "");
+'          let text = home + "★⇒★";
+'          route.legs[0].steps.forEach(function(step){
+'            text += step.html_instructions + " " + step.duration.text + "★⇒★";
+'          });
+'          text = text.replace(route.legs[0].end_address, shop);
+'          results.push([distance, duration, fare, text]);
+'        } else {
+'          results.push(["", "", ""]);
+'        }
+'      }
+'      let resultsSort = results.sort((a, b) => {return Number.parseInt(a[2].replace("￥", "")) - Number.parseInt(b[2].replace("￥", "").replaceAll(",", ""))});
+'      let resultText = "";
+'      resultsSort.forEach(function(row){
+'        resultText += row.toString() + "\n";
+'      });
+'      return resultText;
+'    }
+'
+'    function getHolidays(startDate, endDate) {
+'
+'      startDate = new Date(startDate);
+'      endDate = new Date(endDate);
+'      const holidayCalendarId = 'ja.japanese#holiday@group.v.calendar.google.com';
+'      const calendar = CalendarApp.getCalendarById(holidayCalendarId);
+'      const events = calendar.getEvents(startDate, endDate);
+'
+'      let result = "";
+'
+'      for (const event of events) {
+'        const holidayDate = Utilities.formatDate(event.getStartTime(), "JST", "yyyy/MM/dd");
+'        const holidayTitle = event.getTitle();
+'        result += `${holidayDate},${holidayTitle}\n`;
+'      }
+'      return result;
+'    }
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
 ' 国土地理院API使用方法備忘録
 ' 住所文字列から「経度X」「緯度Y」情報を取得
 '

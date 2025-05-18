@@ -1,230 +1,14 @@
 ﻿<!DOCTYPE html><html lang='ja'><head>    <meta charset='UTF-8'>    <meta name='viewport' content='width=device-width, initial-scale=1.0'>    <title>貸出書籍</title>    <style>        * {            margin: 0;            padding: 0;            box-sizing: border-box;            font-size: 12px;        }        body {            background-color: lightsteelblue;        }        .header {            background-color: black;            opacity: 0.9;            display: flex;            justify-content: center;            align-items: center;            height: 40px;            position: fixed;            width: 100%;            color: white;            top: 0px;            z-index: 9999;        }        .header input {            color: black;            opacity: 1;            width: 300px;            padding: 2px 5px;            border-radius: 5px;            margin-left: 10px;        }        .container {            width: 95%;            text-align: center;            margin-top: 40px;            margin-left: auto;            margin-right: auto;            display: grid;            grid-template-columns: repeat(auto-fit, minmax(160px,1fr));            gap: 10px;            padding: 10px;            padding-bottom: 300px;        }        .item {            min-width: 160px;            border: 1px solid rgba(0, 0, 0, 0.2);            border-radius: 3px;            padding: 10px;            box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.1);            position: relative;            background-color: white;        }        .item.hide {            display: none;        }        .type {            position: absolute;            left: 15px;            top: 15px;            border-radius: 3px;            border: 2px solid red;            background-color: yellow;            color: red;            font-weight: bold;            padding: 2px 8px;            z-index: 100;            box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.1);        }        img {            width: 120px;            height: auto;            border: 1px solid rgba(0, 0, 0, 0.2);            box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.1);            margin: 10px;        }        img:hover {            transform: scale(1.05, 1.05);            transition: 0.2s all;            opacity: 0.8;        }        .infos {            display: flex;            justify-items: center;            justify-content: center;        }        .stars {            color: red;        }        .comment {            display: none;        }        .item:hover .comment {            display: block;            position: absolute;            border: 1px solid rgba(0, 0, 0, 0.2);            border-radius: 3px;            background-color: white;            box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.1);            padding: 5px;            z-index: 999;            text-align: left;            left: 5px;            width: calc(100% - 10px);        }    </style></head><body>    <div class='header'>        <div class='search'>            <input type='text' id='search' placeholder='検索'>        </div>    </div>    <div class='container'>        <div class='item'>
-<div class='type'>自己啓発</div>
-<a href='https://www.amazon.co.jp/dp/4800215315/' target='_blank'>
-<img src='https://m.media-amazon.com/images/I/71++Dv1jhWL._AC_UL320_.jpg'>
-</a>
-<div class='infos'>
-<div class='stars'>★★★★☆</div>
-<div class='release'>（2013/10/11）</div>
-</div>
-<div class='title'>まんがでわかる 7つの習慣_1</div>
-<div class='comment'>在庫：1冊<br>著者：フランクリン・コヴィー・ジャパン<br>コメントはまだありません。</div>
-</div>
-<div class='item'>
-<div class='type'>自己啓発</div>
-<a href='https://www.amazon.co.jp/dp/4800223997/' target='_blank'>
-<img src='https://m.media-amazon.com/images/I/711IUMOqkHL._AC_UL320_.jpg'>
-</a>
-<div class='infos'>
-<div class='stars'>★★★★☆</div>
-<div class='release'>（2014/07/11）</div>
-</div>
-<div class='title'>まんがでわかる 7つの習慣_2</div>
-<div class='comment'>在庫：1冊<br>著者：フランクリン・コヴィー・ジャパン<br>コメントはまだありません。</div>
-</div>
-<div class='item'>
-<div class='type'>自己啓発</div>
-<a href='https://www.amazon.co.jp/dp/480022716X/' target='_blank'>
-<img src='https://m.media-amazon.com/images/I/71LmdyuDfSL._AC_UL320_.jpg'>
-</a>
-<div class='infos'>
-<div class='stars'>★★★★☆</div>
-<div class='release'>（2014/10/09）</div>
-</div>
-<div class='title'>まんがでわかる 7つの習慣_3</div>
-<div class='comment'>在庫：1冊<br>著者：フランクリン・コヴィー・ジャパン<br>コメントはまだありません。</div>
-</div>
-<div class='item'>
-<div class='type'>自己啓発</div>
-<a href='https://www.amazon.co.jp/dp/4800230152/' target='_blank'>
-<img src='https://f.media-amazon.com/images/I/71-StyU49YL._AC_UL320_.jpg'>
-</a>
-<div class='infos'>
-<div class='stars'>★★★★☆</div>
-<div class='release'>（2015/01/15）</div>
-</div>
-<div class='title'>まんがでわかる 7つの習慣_4</div>
-<div class='comment'>在庫：1冊<br>著者：フランクリン・コヴィー・ジャパン<br>コメントはまだありません。</div>
-</div>
-<div class='item'>
-<div class='type'>自己啓発</div>
-<a href='https://www.amazon.co.jp/dp/4800249120/' target='_blank'>
-<img src='https://f.media-amazon.com/images/I/71bxMtXk1nL._AC_UL320_.jpg'>
-</a>
-<div class='infos'>
-<div class='stars'>★★★★☆</div>
-<div class='release'>（2016/01/15）</div>
-</div>
-<div class='title'>まんがでわかる 7つの習慣_Plus</div>
-<div class='comment'>在庫：1冊<br>著者：フランクリン・コヴィー・ジャパン<br>コメントはまだありません。</div>
-</div>
-<div class='item'>
-<div class='type'>自己啓発</div>
-<a href='https://www.amazon.co.jp/dp/4800235618/' target='_blank'>
-<img src='https://f.media-amazon.com/images/I/71EYxDtoyXL._AC_UL320_.jpg'>
-</a>
-<div class='infos'>
-<div class='stars'>★★★★☆</div>
-<div class='release'>（2015/04/09）</div>
-</div>
-<div class='title'>まんがでわかる D・カーネギーの「人を動かす」「道は開ける」_1</div>
-<div class='comment'>在庫：1冊<br>著者：藤屋 伸二<br>コメントはまだありません。</div>
-</div>
-<div class='item'>
-<div class='type'>自己啓発</div>
-<a href='https://www.amazon.co.jp/dp/4800244498/' target='_blank'>
-<img src='https://f.media-amazon.com/images/I/81x6p359k1L._AC_UL320_.jpg'>
-</a>
-<div class='infos'>
-<div class='stars'>★★★★☆</div>
-<div class='release'>（2015/09/18）</div>
-</div>
-<div class='title'>まんがでわかる D・カーネギーの「人を動かす」「道は開ける」_2</div>
-<div class='comment'>在庫：1冊<br>著者：藤屋 伸二<br>コメントはまだありません。</div>
-</div>
-<div class='item'>
-<div class='type'>自己啓発</div>
-<a href='https://www.amazon.co.jp/dp/480024630X/' target='_blank'>
-<img src='https://f.media-amazon.com/images/I/81fzbZ8l+JL._AC_UL320_.jpg'>
-</a>
-<div class='infos'>
-<div class='stars'>★★★★☆</div>
-<div class='release'>（2015/12/11）</div>
-</div>
-<div class='title'>まんがでわかる D・カーネギーの「人を動かす」「道は開ける」_3</div>
-<div class='comment'>在庫：1冊<br>著者：藤屋 伸二<br>コメントはまだありません。</div>
-</div>
-<div class='item'>
-<div class='type'>自己啓発</div>
-<a href='https://www.amazon.co.jp/dp/4041023602/' target='_blank'>
-<img src='https://m.media-amazon.com/images/I/71BwI9MqsxL._AC_UL320_.jpg'>
-</a>
-<div class='infos'>
-<div class='stars'>★★★★☆</div>
-<div class='release'>（2015/01/30）</div>
-</div>
-<div class='title'>マンガでわかる 道は開ける</div>
-<div class='comment'>在庫：1冊<br>著者：デール・カーネギー<br>コメントはまだありません。</div>
-</div>
-<div class='item'>
-<div class='type'>心理学</div>
-<a href='https://www.amazon.co.jp/dp/B072K27N5R/' target='_blank'>
-<img src='https://f.media-amazon.com/images/I/81mLrFKYqmL._AC_UL320_.jpg'>
-</a>
-<div class='infos'>
-<div class='stars'>★★★★☆</div>
-<div class='release'>（2017/06/06）</div>
-</div>
-<div class='title'>マンガでわかる 心理学超入門</div>
-<div class='comment'>在庫：1冊<br>著者：ゆうきゆう<br>コメントはまだありません。</div>
-</div>
-<div class='item'>
-<div class='type'>心理学</div>
-<a href='https://www.amazon.co.jp/dp/4820718363/' target='_blank'>
-<img src='https://f.media-amazon.com/images/I/71S85waUNXL._AC_UL320_.jpg'>
-</a>
-<div class='infos'>
-<div class='stars'>★★★★☆</div>
-<div class='release'>（2012/02/25）</div>
-</div>
-<div class='title'>マンガでやさしくわかる NLP</div>
-<div class='comment'>在庫：1冊<br>著者：山崎 啓支<br>コメントはまだありません。</div>
-</div>
-<div class='item'>
-<div class='type'>心理学</div>
-<a href='https://www.amazon.co.jp/dp/4820718614' target='_blank'>
-<img src='https://m.media-amazon.com/images/I/71wC1F3o6yL._AC_UL320_.jpg'>
-</a>
-<div class='infos'>
-<div class='stars'>★★★★☆</div>
-<div class='release'>（2013/01/30）</div>
-</div>
-<div class='title'>マンガでやさしくわかる NLPコミュニケーション</div>
-<div class='comment'>在庫：1冊<br>著者：山崎 啓支<br>コメントはまだありません。</div>
-</div>
-<div class='item'>
-<div class='type'>心理学</div>
-<a href='https://www.amazon.co.jp/dp/4046010118/' target='_blank'>
-<img src='https://m.media-amazon.com/images/I/71obzmEt8gL._AC_UL320_.jpg'>
-</a>
-<div class='infos'>
-<div class='stars'>★★★★☆</div>
-<div class='release'>（2014/10/25）</div>
-</div>
-<div class='title'>コミックでわかる アドラー心理学</div>
-<div class='comment'>在庫：1冊<br>著者：向後 千春<br>コメントはまだありません。</div>
-</div>
-<div class='item'>
-<div class='type'>心理学</div>
-<a href='https://www.amazon.co.jp/dp/B01JADEBX4/' target='_blank'>
-<img src='https://m.media-amazon.com/images/I/81WFo7wwYlL._AC_UL320_.jpg'>
-</a>
-<div class='infos'>
-<div class='stars'>★★★★☆</div>
-<div class='release'>（2016/08/02）</div>
-</div>
-<div class='title'>まんがで身につく アドラー明日を変える心理学</div>
-<div class='comment'>在庫：1冊<br>著者：鈴木 義也<br>コメントはまだありません。</div>
-</div>
-<div class='item'>
-<div class='type'>心理学</div>
-<a href='https://www.amazon.co.jp/dp/4820719084/' target='_blank'>
-<img src='https://m.media-amazon.com/images/I/71R1f3wWD6L._AC_UL320_.jpg'>
-</a>
-<div class='infos'>
-<div class='stars'>★★★★☆</div>
-<div class='release'>（2014/07/04）</div>
-</div>
-<div class='title'>マンガでやさしくわかる アドラー心理学</div>
-<div class='comment'>在庫：1冊<br>著者：岩井 俊憲<br>コメントはまだありません。</div>
-</div>
-<div class='item'>
-<div class='type'>心理学</div>
-<a href='https://www.amazon.co.jp/dp/4820719289' target='_blank'>
-<img src='https://m.media-amazon.com/images/I/71zixR9Fl0L._AC_UY218_.jpg'>
-</a>
-<div class='infos'>
-<div class='stars'>★★★★☆</div>
-<div class='release'>（2015/07/25）</div>
-</div>
-<div class='title'>マンガでやさしくわかる アサーション</div>
-<div class='comment'>在庫：1冊<br>著者：平木 典子<br>コメントはまだありません。</div>
-</div>
-<div class='item'>
-<div class='type'>心理学</div>
-<a href='https://www.amazon.co.jp/dp/4820731963' target='_blank'>
-<img src='https://m.media-amazon.com/images/I/71Kr6R0f6EL._AC_UY218_.jpg'>
-</a>
-<div class='infos'>
-<div class='stars'>★★★★☆</div>
-<div class='release'>（2020/03/12）</div>
-</div>
-<div class='title'>マンガでやさしくわかる カウンセリング</div>
-<div class='comment'>在庫：1冊<br>著者：平木 典子<br>コメントはまだありません。</div>
-</div>
-<div class='item'>
-<div class='type'>心理学</div>
-<a href='https://www.amazon.co.jp/dp/4820719017' target='_blank'>
-<img src='https://m.media-amazon.com/images/I/81tk154q6fL._AC_UY218_.jpg'>
-</a>
-<div class='infos'>
-<div class='stars'>★★★★☆</div>
-<div class='release'>（2014/03/21）</div>
-</div>
-<div class='title'>マンガでやさしくわかる メンタルヘルス</div>
-<div class='comment'>在庫：1冊<br>著者：武藤 清栄<br>コメントはまだありません。</div>
-</div>
-<div class='item'>
 <div class='type'>ビジネス</div>
 <a href='https://www.amazon.co.jp/dp/4820719416' target='_blank'>
 <img src='https://m.media-amazon.com/images/I/71BAjjZuCsL._AC_UL320_.jpg'>
 </a>
 <div class='infos'>
-<div class='stars'>☆☆☆☆☆</div>
+<div class='stars'>★★★★☆</div>
 <div class='release'>（2016/02/26）</div>
 </div>
 <div class='title'>マンガでやさしくわかる 人事の仕事</div>
-<div class='comment'>在庫：1冊<br>著者：株式会社トライアンフ<br>コメントはまだありません。</div>
+<div class='comment'>在庫：1冊<br>著者：株式会社トライアンフ<br>わかりみがやばい。</div>
 </div>
 <div class='item'>
 <div class='type'>ビジネス</div>
@@ -236,7 +20,7 @@
 <div class='release'>（2014/12/05）</div>
 </div>
 <div class='title'>コミック版 ザ・ゴール_1</div>
-<div class='comment'>在庫：1冊<br>著者：エリヤフ・ゴールドラット<br>コメントはまだありません。</div>
+<div class='comment'>在庫：1冊<br>著者：エリヤフ・ゴールドラット<br>わかりみがやばすぎる。</div>
 </div>
 <div class='item'>
 <div class='type'>ビジネス</div>
@@ -248,7 +32,19 @@
 <div class='release'>（2016/03/18）</div>
 </div>
 <div class='title'>コミック版 ザ・ゴール_2</div>
-<div class='comment'>在庫：1冊<br>著者：エリヤフ・ゴールドラット<br>コメントはまだありません。</div>
+<div class='comment'>在庫：1冊<br>著者：エリヤフ・ゴールドラット<br>わかりみしかない。</div>
+</div>
+<div class='item'>
+<div class='type'>ビジネス</div>
+<a href='https://www.amazon.co.jp/dp/B06Y3RQPNQ/' target='_blank'>
+<img src='https://m.media-amazon.com/images/I/91OZn+1j2JL._AC_UL320_.jpg'>
+</a>
+<div class='infos'>
+<div class='stars'>★★★★☆</div>
+<div class='release'>（2016/03/15）</div>
+</div>
+<div class='title'>マンガでよくわかる 怒らない技術</div>
+<div class='comment'>在庫：1冊<br>著者：嶋津 良智<br>わかりみの宝石箱。</div>
 </div>
 <div class='item'>
 <div class='type'>ビジネス</div>
@@ -260,7 +56,7 @@
 <div class='release'>（2014/03/22）</div>
 </div>
 <div class='title'>マンガでやさしくわかる 論理思考</div>
-<div class='comment'>在庫：1冊<br>著者：出口 汪<br>コメントはまだありません。</div>
+<div class='comment'>在庫：1冊<br>著者：出口 汪<br>わかりみがやばい。</div>
 </div>
 <div class='item'>
 <div class='type'>ビジネス</div>
@@ -272,7 +68,7 @@
 <div class='release'>（2015/01/19）</div>
 </div>
 <div class='title'>マンガでよくわかる 教える技術_1</div>
-<div class='comment'>在庫：1冊<br>著者：石田 淳<br>コメントはまだありません。</div>
+<div class='comment'>在庫：1冊<br>著者：石田 淳<br>わかりみがやばすぎる。</div>
 </div>
 <div class='item'>
 <div class='type'>ビジネス</div>
@@ -284,7 +80,7 @@
 <div class='release'>（2015/11/25）</div>
 </div>
 <div class='title'>マンガでよくわかる 教える技術_2</div>
-<div class='comment'>在庫：1冊<br>著者：石田 淳<br>コメントはまだありません。</div>
+<div class='comment'>在庫：1冊<br>著者：石田 淳<br>わかりみしかない。</div>
 </div>
 <div class='item'>
 <div class='type'>ビジネス</div>
@@ -296,7 +92,7 @@
 <div class='release'>（2014/10/02）</div>
 </div>
 <div class='title'>まんがでわかる セブンイレブンの16歳からの経営学</div>
-<div class='comment'>在庫：1冊<br>著者：セブンイレブン・ジャパン<br>コメントはまだありません。</div>
+<div class='comment'>在庫：1冊<br>著者：セブンイレブン・ジャパン<br>わかりみの宝石箱。</div>
 </div>
 <div class='item'>
 <div class='type'>ビジネス</div>
@@ -308,7 +104,7 @@
 <div class='release'>（2017/03/15）</div>
 </div>
 <div class='title'>まんがでわかる ドラッガーのマネジメント</div>
-<div class='comment'>在庫：1冊<br>著者：藤屋 伸二<br>コメントはまだありません。</div>
+<div class='comment'>在庫：1冊<br>著者：藤屋 伸二<br>わかりみがやばい。</div>
 </div>
 <div class='item'>
 <div class='type'>ビジネス</div>
@@ -320,7 +116,7 @@
 <div class='release'>（2014/04/14）</div>
 </div>
 <div class='title'>まんがでわかる ドラッガーのリーダーシップ論</div>
-<div class='comment'>在庫：1冊<br>著者：藤屋 伸二<br>コメントはまだありません。</div>
+<div class='comment'>在庫：1冊<br>著者：藤屋 伸二<br>わかりみがやばすぎる。</div>
 </div>
 <div class='item'>
 <div class='type'>ビジネス</div>
@@ -332,7 +128,7 @@
 <div class='release'>（2016/04/08）</div>
 </div>
 <div class='title'>マンガでわかる マッキンゼー式リーダー論</div>
-<div class='comment'>在庫：1冊<br>著者：赤羽 雄二<br>コメントはまだありません。</div>
+<div class='comment'>在庫：1冊<br>著者：赤羽 雄二<br>わかりみしかない。</div>
 </div>
 <div class='item'>
 <div class='type'>ビジネス</div>
@@ -344,7 +140,7 @@
 <div class='release'>（2015/07/25）</div>
 </div>
 <div class='title'>マンガでわかる マッキンゼー式ロジカルシンキング</div>
-<div class='comment'>在庫：1冊<br>著者：赤羽 雄二<br>コメントはまだありません。</div>
+<div class='comment'>在庫：1冊<br>著者：赤羽 雄二<br>わかりみの宝石箱。</div>
 </div>
 <div class='item'>
 <div class='type'>ビジネス</div>
@@ -356,7 +152,7 @@
 <div class='release'>（2017/01/27）</div>
 </div>
 <div class='title'>まんがでわかる 伝え方が9割</div>
-<div class='comment'>在庫：1冊<br>著者：佐々木 圭一<br>コメントはまだありません。</div>
+<div class='comment'>在庫：1冊<br>著者：佐々木 圭一<br>わかりみがやばい。</div>
 </div>
 <div class='item'>
 <div class='type'>ビジネス</div>
@@ -368,6 +164,222 @@
 <div class='release'>（2020/02/20）</div>
 </div>
 <div class='title'>まんがでわかる 伝え方が9割 強い言葉</div>
-<div class='comment'>在庫：1冊<br>著者：佐々木 圭一<br>コメントはまだありません。</div>
+<div class='comment'>在庫：1冊<br>著者：佐々木 圭一<br>わかりみがやばすぎる。</div>
+</div>
+<div class='item'>
+<div class='type'>自己啓発</div>
+<a href='https://www.amazon.co.jp/dp/4800215315/' target='_blank'>
+<img src='https://m.media-amazon.com/images/I/71++Dv1jhWL._AC_UL320_.jpg'>
+</a>
+<div class='infos'>
+<div class='stars'>★★★★☆</div>
+<div class='release'>（2013/10/11）</div>
+</div>
+<div class='title'>まんがでわかる 7つの習慣_1</div>
+<div class='comment'>在庫：1冊<br>著者：フランクリン・コヴィー・ジャパン<br>わかりみしかない。</div>
+</div>
+<div class='item'>
+<div class='type'>自己啓発</div>
+<a href='https://www.amazon.co.jp/dp/4800223997/' target='_blank'>
+<img src='https://m.media-amazon.com/images/I/711IUMOqkHL._AC_UL320_.jpg'>
+</a>
+<div class='infos'>
+<div class='stars'>★★★★☆</div>
+<div class='release'>（2014/07/11）</div>
+</div>
+<div class='title'>まんがでわかる 7つの習慣_2</div>
+<div class='comment'>在庫：1冊<br>著者：フランクリン・コヴィー・ジャパン<br>わかりみの宝石箱。</div>
+</div>
+<div class='item'>
+<div class='type'>自己啓発</div>
+<a href='https://www.amazon.co.jp/dp/480022716X/' target='_blank'>
+<img src='https://m.media-amazon.com/images/I/71LmdyuDfSL._AC_UL320_.jpg'>
+</a>
+<div class='infos'>
+<div class='stars'>★★★★☆</div>
+<div class='release'>（2014/10/09）</div>
+</div>
+<div class='title'>まんがでわかる 7つの習慣_3</div>
+<div class='comment'>在庫：1冊<br>著者：フランクリン・コヴィー・ジャパン<br>わかりみがやばい。</div>
+</div>
+<div class='item'>
+<div class='type'>自己啓発</div>
+<a href='https://www.amazon.co.jp/dp/4800230152/' target='_blank'>
+<img src='https://f.media-amazon.com/images/I/71-StyU49YL._AC_UL320_.jpg'>
+</a>
+<div class='infos'>
+<div class='stars'>★★★★☆</div>
+<div class='release'>（2015/01/15）</div>
+</div>
+<div class='title'>まんがでわかる 7つの習慣_4</div>
+<div class='comment'>在庫：1冊<br>著者：フランクリン・コヴィー・ジャパン<br>わかりみがやばすぎる。</div>
+</div>
+<div class='item'>
+<div class='type'>自己啓発</div>
+<a href='https://www.amazon.co.jp/dp/4800249120/' target='_blank'>
+<img src='https://f.media-amazon.com/images/I/71bxMtXk1nL._AC_UL320_.jpg'>
+</a>
+<div class='infos'>
+<div class='stars'>★★★★☆</div>
+<div class='release'>（2016/01/15）</div>
+</div>
+<div class='title'>まんがでわかる 7つの習慣_Plus</div>
+<div class='comment'>在庫：1冊<br>著者：フランクリン・コヴィー・ジャパン<br>わかりみしかない。</div>
+</div>
+<div class='item'>
+<div class='type'>自己啓発</div>
+<a href='https://www.amazon.co.jp/dp/4800235618/' target='_blank'>
+<img src='https://f.media-amazon.com/images/I/71EYxDtoyXL._AC_UL320_.jpg'>
+</a>
+<div class='infos'>
+<div class='stars'>★★★★☆</div>
+<div class='release'>（2015/04/09）</div>
+</div>
+<div class='title'>まんがでわかる D・カーネギーの「人を動かす」「道は開ける」_1</div>
+<div class='comment'>在庫：1冊<br>著者：藤屋 伸二<br>わかりみの宝石箱。</div>
+</div>
+<div class='item'>
+<div class='type'>自己啓発</div>
+<a href='https://www.amazon.co.jp/dp/4800244498/' target='_blank'>
+<img src='https://f.media-amazon.com/images/I/81x6p359k1L._AC_UL320_.jpg'>
+</a>
+<div class='infos'>
+<div class='stars'>★★★★☆</div>
+<div class='release'>（2015/09/18）</div>
+</div>
+<div class='title'>まんがでわかる D・カーネギーの「人を動かす」「道は開ける」_2</div>
+<div class='comment'>在庫：1冊<br>著者：藤屋 伸二<br>わかりみがやばい。</div>
+</div>
+<div class='item'>
+<div class='type'>自己啓発</div>
+<a href='https://www.amazon.co.jp/dp/480024630X/' target='_blank'>
+<img src='https://f.media-amazon.com/images/I/81fzbZ8l+JL._AC_UL320_.jpg'>
+</a>
+<div class='infos'>
+<div class='stars'>★★★★☆</div>
+<div class='release'>（2015/12/11）</div>
+</div>
+<div class='title'>まんがでわかる D・カーネギーの「人を動かす」「道は開ける」_3</div>
+<div class='comment'>在庫：1冊<br>著者：藤屋 伸二<br>わかりみがやばすぎる。</div>
+</div>
+<div class='item'>
+<div class='type'>自己啓発</div>
+<a href='https://www.amazon.co.jp/dp/4041023602/' target='_blank'>
+<img src='https://m.media-amazon.com/images/I/71BwI9MqsxL._AC_UL320_.jpg'>
+</a>
+<div class='infos'>
+<div class='stars'>★★★★☆</div>
+<div class='release'>（2015/01/30）</div>
+</div>
+<div class='title'>マンガでわかる 道は開ける</div>
+<div class='comment'>在庫：1冊<br>著者：デール・カーネギー<br>わかりみしかない。</div>
+</div>
+<div class='item'>
+<div class='type'>心理学</div>
+<a href='https://www.amazon.co.jp/dp/B072K27N5R/' target='_blank'>
+<img src='https://f.media-amazon.com/images/I/81mLrFKYqmL._AC_UL320_.jpg'>
+</a>
+<div class='infos'>
+<div class='stars'>★★★★☆</div>
+<div class='release'>（2017/06/06）</div>
+</div>
+<div class='title'>マンガでわかる 心理学超入門</div>
+<div class='comment'>在庫：1冊<br>著者：ゆうきゆう<br>わかりみの宝石箱。</div>
+</div>
+<div class='item'>
+<div class='type'>心理学</div>
+<a href='https://www.amazon.co.jp/dp/4046010118/' target='_blank'>
+<img src='https://m.media-amazon.com/images/I/71obzmEt8gL._AC_UL320_.jpg'>
+</a>
+<div class='infos'>
+<div class='stars'>★★★★☆</div>
+<div class='release'>（2014/10/25）</div>
+</div>
+<div class='title'>コミックでわかる アドラー心理学</div>
+<div class='comment'>在庫：1冊<br>著者：向後 千春<br>わかりみがやばい。</div>
+</div>
+<div class='item'>
+<div class='type'>心理学</div>
+<a href='https://www.amazon.co.jp/dp/B01JADEBX4/' target='_blank'>
+<img src='https://m.media-amazon.com/images/I/81WFo7wwYlL._AC_UL320_.jpg'>
+</a>
+<div class='infos'>
+<div class='stars'>★★★★☆</div>
+<div class='release'>（2016/08/02）</div>
+</div>
+<div class='title'>まんがで身につく アドラー明日を変える心理学</div>
+<div class='comment'>在庫：1冊<br>著者：鈴木 義也<br>わかりみがやばすぎる。</div>
+</div>
+<div class='item'>
+<div class='type'>心理学</div>
+<a href='https://www.amazon.co.jp/dp/4820719084/' target='_blank'>
+<img src='https://m.media-amazon.com/images/I/71R1f3wWD6L._AC_UL320_.jpg'>
+</a>
+<div class='infos'>
+<div class='stars'>★★★★☆</div>
+<div class='release'>（2014/07/04）</div>
+</div>
+<div class='title'>マンガでやさしくわかる アドラー心理学</div>
+<div class='comment'>在庫：1冊<br>著者：岩井 俊憲<br>わかりみしかない。</div>
+</div>
+<div class='item'>
+<div class='type'>心理学</div>
+<a href='https://www.amazon.co.jp/dp/4820719289' target='_blank'>
+<img src='https://m.media-amazon.com/images/I/71zixR9Fl0L._AC_UY218_.jpg'>
+</a>
+<div class='infos'>
+<div class='stars'>★★★★☆</div>
+<div class='release'>（2015/07/25）</div>
+</div>
+<div class='title'>マンガでやさしくわかる アサーション</div>
+<div class='comment'>在庫：1冊<br>著者：平木 典子<br>わかりみの宝石箱。</div>
+</div>
+<div class='item'>
+<div class='type'>心理学</div>
+<a href='https://www.amazon.co.jp/dp/4820731963' target='_blank'>
+<img src='https://m.media-amazon.com/images/I/71Kr6R0f6EL._AC_UY218_.jpg'>
+</a>
+<div class='infos'>
+<div class='stars'>★★★★☆</div>
+<div class='release'>（2020/03/12）</div>
+</div>
+<div class='title'>マンガでやさしくわかる カウンセリング</div>
+<div class='comment'>在庫：1冊<br>著者：平木 典子<br>わかりみがやばい。</div>
+</div>
+<div class='item'>
+<div class='type'>心理学</div>
+<a href='https://www.amazon.co.jp/dp/4820719017' target='_blank'>
+<img src='https://m.media-amazon.com/images/I/81tk154q6fL._AC_UY218_.jpg'>
+</a>
+<div class='infos'>
+<div class='stars'>★★★★☆</div>
+<div class='release'>（2014/03/21）</div>
+</div>
+<div class='title'>マンガでやさしくわかる メンタルヘルス</div>
+<div class='comment'>在庫：1冊<br>著者：武藤 清栄<br>わかりみがやばすぎる。</div>
+</div>
+<div class='item'>
+<div class='type'>心理学</div>
+<a href='https://www.amazon.co.jp/dp/4820718363/' target='_blank'>
+<img src='https://f.media-amazon.com/images/I/71S85waUNXL._AC_UL320_.jpg'>
+</a>
+<div class='infos'>
+<div class='stars'>★★★★☆</div>
+<div class='release'>（2012/02/25）</div>
+</div>
+<div class='title'>マンガでやさしくわかる NLP</div>
+<div class='comment'>在庫：1冊<br>著者：山崎 啓支<br>わかりみしかない。</div>
+</div>
+<div class='item'>
+<div class='type'>心理学</div>
+<a href='https://www.amazon.co.jp/dp/4820718614' target='_blank'>
+<img src='https://m.media-amazon.com/images/I/71wC1F3o6yL._AC_UL320_.jpg'>
+</a>
+<div class='infos'>
+<div class='stars'>★★★★☆</div>
+<div class='release'>（2013/01/30）</div>
+</div>
+<div class='title'>マンガでやさしくわかる NLPコミュニケーション</div>
+<div class='comment'>在庫：1冊<br>著者：山崎 啓支<br>わかりみの宝石箱。</div>
 </div>
     </div>    <script type='text/javascript'>        const input = document.getElementById('search');        input.addEventListener('keydown', function(e) {            let searchKey = input.value;            if (e.key === 'Enter') {                document.querySelectorAll('.item').forEach(function(item){                    if (item.textContent.indexOf(searchKey) >= 0) {                        item.classList.remove('hide');                    } else {                        item.classList.add('hide');                    }                });            }        });    </script></body></html>
