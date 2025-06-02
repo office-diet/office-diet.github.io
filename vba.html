@@ -4910,6 +4910,106 @@ Option Explicit
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
     
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 文字の類似度を計算（コサイン類似度を使用）
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function TextMatchRate(ByVal strA As String, ByVal strB As String, Optional ByVal intNgram As Integer = 1) As Double
+        
+        '文字列を整形
+        strA = CleanFormat(strA)
+        strB = CleanFormat(strB)
+        
+        '「全文字列」を連結
+        '※A末尾・B先頭のNgramが出現するが・・・気にしない！
+        Dim strAll As String
+        strAll = strA & strB
+        
+        '「文字」にIDを付与
+        Dim dctChars As Object
+        Set dctChars = CreateNewDictionary
+        
+        'nグラム対応
+        Dim intLength As Integer
+        For intLength = 1 To intNgram
+            
+            Dim intIndex As Integer
+            For intIndex = 1 To Len(strAll) - (intLength - 1)
+                
+                Dim strChar As String
+                strChar = Mid(strAll, intIndex, intLength)
+                
+                If dctChars.Exists(strChar) = False Then
+                    dctChars.Add strChar, dctChars.Count
+                End If
+                
+            Next
+            
+        Next
+        
+        '文章内に存在する文字をカウントしVector化
+        Dim intVectorA() As Integer
+        Dim intVectorB() As Integer
+        ReDim intVectorA(dctChars.Count - 1)
+        ReDim intVectorB(dctChars.Count - 1)
+        
+        '文字列Aベクトル
+        For intLength = 1 To intNgram
+            For intIndex = 1 To Len(strA) - (intLength - 1)
+                strChar = Mid(strA, intIndex, intLength)
+                intVectorA(dctChars(strChar)) = intVectorA(dctChars(strChar)) + 1
+            Next
+        Next
+        
+        '文字列Bベクトル
+        For intLength = 1 To intNgram
+            For intIndex = 1 To Len(strB) - (intLength - 1)
+                strChar = Mid(strB, intIndex, intLength)
+                intVectorB(dctChars(strChar)) = intVectorB(dctChars(strChar)) + 1
+            Next
+        Next
+        
+        'ベクトルのコサイン類似度を計算
+        With Application.WorksheetFunction
+            
+            Dim dblAB As Double
+            dblAB = .SumProduct(intVectorA, intVectorB)
+            
+            Dim dblA As Double
+            dblA = Sqr(.SumProduct(intVectorA, intVectorA))
+            
+            Dim dblB As Double
+            dblB = Sqr(.SumProduct(intVectorB, intVectorB))
+            
+            TextMatchRate = dblAB / (dblA * dblB)
+            
+        End With
+        
+    End Function
+    
+    '***************************************
+    ' 文字のベクトル変換前にフォーマットの統一
+    '***************************************
+    Function CleanFormat(ByVal strOrigin As String) As String
+        
+        Dim strClean As String
+        strClean = strOrigin
+        strClean = Replace(StrConv(StrConv(strClean, vbWide), vbUpperCase), "　", "")
+        strClean = Replace(strClean, vbCrLf, "")
+        strClean = Replace(strClean, vbCr, "")
+        strClean = Replace(strClean, vbLf, "")
+        strClean = Replace(strClean, vbTab, "")
+        strClean = Trim(strClean)
+        CleanFormat = strClean
+        
+    End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
 ' ****************************************************************
 ' TinySegmenter 0.1 Excel VBA Version
 '  by arihagne
