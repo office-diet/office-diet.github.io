@@ -2540,7 +2540,7 @@ Option Explicit
                             End With
                             
                             Dim strImageHtml As String
-                            strImageHtml = "<img src='cid:" & strImageRenameBase & intImageIndex & "'>"
+                            strImageHtml = "&lt;img src='cid:" & strImageRenameBase & intImageIndex & "'&gt;"
                             objOutlookMailItem.HtmlBody = Replace(objOutlookMailItem.HtmlBody, StrConv(strImagePlaceHolderKey & (intImageIndex + 1) & strImagePlaceHolderKey, vbWide), strImageHtml)
                             objOutlookMailItem.HtmlBody = Replace(objOutlookMailItem.HtmlBody, StrConv(strImagePlaceHolderKey & (intImageIndex + 1) & strImagePlaceHolderKey, vbNarrow), strImageHtml)
                             
@@ -9697,8 +9697,7 @@ Option Explicit
 '　JsonConverterの環境依存を解消
 '
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-    Option Explicit
-
+    
     ''
     ' VBA-JSON v2.3.1
     ' (c) Tim Hall - https://github.com/VBA-tools/VBA-JSON
