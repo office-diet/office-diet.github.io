@@ -1,4 +1,123 @@
-﻿<!DOCTYPE html><html lang='ja'><head>    <meta charset='UTF-8'>    <meta name='viewport' content='width=device-width, initial-scale=1.0'>    <title>貸出書籍</title>    <style>        * {            margin: 0;            padding: 0;            box-sizing: border-box;            font-size: 12px;        }        body {            background-color: lightsteelblue;        }        .header {            background-color: black;            opacity: 0.9;            display: flex;            justify-content: center;            align-items: center;            height: 40px;            position: fixed;            width: 100%;            color: white;            top: 0px;            z-index: 9999;        }        .header input {            color: black;            opacity: 1;            width: 300px;            padding: 2px 5px;            border-radius: 5px;            margin-left: 10px;        }        .container {            width: 95%;            text-align: center;            margin-top: 40px;            margin-left: auto;            margin-right: auto;            display: grid;            grid-template-columns: repeat(auto-fit, minmax(160px,1fr));            gap: 10px;            padding: 10px;            padding-bottom: 300px;        }        .item {            min-width: 160px;            border: 1px solid rgba(0, 0, 0, 0.2);            border-radius: 3px;            padding: 10px;            box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.1);            position: relative;            background-color: white;        }        .item.hide {            display: none;        }        .type {            position: absolute;            left: 15px;            top: 15px;            border-radius: 3px;            border: 2px solid red;            background-color: yellow;            color: red;            font-weight: bold;            padding: 2px 8px;            z-index: 100;            box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.1);        }        img {            width: 120px;            height: auto;            border: 1px solid rgba(0, 0, 0, 0.2);            box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.1);            margin: 10px;        }        img:hover {            transform: scale(1.05, 1.05);            transition: 0.2s all;            opacity: 0.8;        }        .infos {            display: flex;            justify-items: center;            justify-content: center;        }        .stars {            color: red;        }        .comment {            display: none;        }        .item:hover .comment {            display: block;            position: absolute;            border: 1px solid rgba(0, 0, 0, 0.2);            border-radius: 3px;            background-color: white;            box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.1);            padding: 5px;            z-index: 999;            text-align: left;            left: 5px;            width: calc(100% - 10px);        }    </style></head><body>    <div class='header'>        <div class='search'>            <input type='text' id='search' placeholder='検索'>        </div>    </div>    <div class='container'>        <div class='item'>
+﻿<!DOCTYPE html>
+<html lang='ja'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>貸出書籍</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-size: 12px;
+        }
+        body {
+            background-color: lightsteelblue;
+        }
+        .header {
+            background-color: black;
+            opacity: 0.9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 40px;
+            position: fixed;
+            width: 100%;
+            color: white;
+            top: 0px;
+            z-index: 9999;
+        }
+        .header input {
+            color: black;
+            opacity: 1;
+            width: 300px;
+            padding: 2px 5px;
+            border-radius: 5px;
+            margin-left: 10px;
+        }
+        .container {
+            width: 95%;
+            text-align: center;
+            margin-top: 40px;
+            margin-left: auto;
+            margin-right: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px,1fr));
+            gap: 10px;
+            padding: 10px;
+            padding-bottom: 300px;
+        }
+        .item {
+            min-width: 160px;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+            padding: 10px;
+            box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.1);
+            position: relative;
+            background-color: white;
+        }
+        .item.hide {
+            display: none;
+        }
+        .type {
+            position: absolute;
+            left: 15px;
+            top: 15px;
+            border-radius: 3px;
+            border: 2px solid red;
+            background-color: yellow;
+            color: red;
+            font-weight: bold;
+            padding: 2px 8px;
+            z-index: 100;
+            box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.1);
+        }
+        img {
+            width: 120px;
+            height: auto;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+        }
+        img:hover {
+            transform: scale(1.05, 1.05);
+            transition: 0.2s all;
+            opacity: 0.8;
+        }
+        .infos {
+            display: flex;
+            justify-items: center;
+            justify-content: center;
+        }
+        .stars {
+            color: red;
+        }
+        .comment {
+            display: none;
+        }
+        .item:hover .comment {
+            display: block;
+            position: absolute;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+            background-color: white;
+            box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.1);
+            padding: 5px;
+            z-index: 999;
+            text-align: left;
+            left: 5px;
+            width: calc(100% - 10px);
+        }
+    </style>
+</head>
+<body>
+    <div class='header'>
+        <div class='search'>
+            <input type='text' id='search' placeholder='検索'>
+        </div>
+    </div>
+    <div class='container'>
+        <div class='item'>
 <div class='type'>ビジネス</div>
 <a href='https://www.amazon.co.jp/dp/4820719416' target='_blank'>
 <img src='https://m.media-amazon.com/images/I/71BAjjZuCsL._AC_UL320_.jpg'>
@@ -514,4 +633,22 @@
 <div class='title'>マンガでわかるやさしい統計学</div>
 <div class='comment'>難度：座学必須<br>著者：小林 克彦<br>【紹介文（AI生成）】<br>統計学が苦手なあなたも大丈夫！マンガで楽しく学べる入門書。ストーリーを読み進めるうちに、統計の基本と活用方法が自然と身につきます。ビジネスシーンでのデータ分析に役立つ知識が満載！</div>
 </div>
-    </div>    <script type='text/javascript'>        const input = document.getElementById('search');        input.addEventListener('keydown', function(e) {            let searchKey = input.value;            if (e.key === 'Enter') {                document.querySelectorAll('.item').forEach(function(item){                    if (item.textContent.indexOf(searchKey) >= 0) {                        item.classList.remove('hide');                    } else {                        item.classList.add('hide');                    }                });            }        });    </script></body></html>
+    </div>
+    <script type='text/javascript'>
+        const input = document.getElementById('search');
+        input.addEventListener('keydown', function(e) {
+            let searchKey = input.value;
+            if (e.key === 'Enter') {
+                document.querySelectorAll('.item').forEach(function(item){
+                    if (item.textContent.indexOf(searchKey) >= 0) {
+                        item.classList.remove('hide');
+                    } else {
+                        item.classList.add('hide');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
