@@ -4414,6 +4414,39 @@ Option Explicit
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
     
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 指定URLを開くだけのシンプル機能
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Sub Sample()
+        
+        Dim strBrowser As String
+        strBrowser = "chrome.exe"
+        strBrowser = "msedge.exe"
+        
+        Dim strUrl As String
+        strUrl = "https://google.com"
+        
+        Call OpenBrowser(strUrl, strBrowser)
+        
+    End Sub
+    
+    Sub OpenBrowser(ByVal strUrl As String, ByVal strBrowser As String)
+        
+        If strBrowser = "" Then
+            CreateObject("WScript.Shell").Run strUrl
+        Else
+            CreateObject("WScript.Shell").Run strBrowser & " -url " & strUrl
+        End If
+        
+    End Sub
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 '　WebAPIを使用したスクレイピング・クローリング備忘録
