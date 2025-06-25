@@ -4074,6 +4074,118 @@ Option Explicit
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
     
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' CSVファイルの必要項目だけをPickup及び項目並べ替え
+' ※項目名の重複未対応。同一項目名は「1つ目だけ」処理されます
+' 　文字コードや改行コードの選択等修正の余地あり
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Sub ReformCsv(ByVal strOriginPath As String, ByVal strOutputPath As String, ByVal aryPickupFields As Variant)
+        
+        Const intHeaderRow As Integer = 0
+        Const intStartRow As Integer = 1
+        
+        '元となるCSVファイル全体を読込
+        With CreateObject("ADODB.Stream")
+            .Charset = "UTF-8"
+            .Open
+            .LoadFromFile strOriginPath
+            
+            Dim strCsvData As String
+            strCsvData = .ReadText
+            .Close
+        End With
+        
+        'テキストを行に分割
+        Dim aryRows As Variant
+        aryRows = Split(strCsvData, vbCrLf)
+        
+        '元ファイルのヘッダ配列化
+        Dim aryHeader As Variant
+        aryHeader = Split(aryRows(intHeaderRow), ",")
+        
+        'Dictionaryに行ごとにデータを収集
+        Dim dctDatas As Object
+        Set dctDatas = CreateNewDictionary
+        
+        Dim lngRow As Long
+        For lngRow = intStartRow To UBound(aryRows)
+            
+            '空欄ではない行のみ処理
+            If aryRows(lngRow) <> "" Then
+                
+                'データが存在したら「行」をDictionaryに格納
+                dctDatas.add lngRow, CreateNewDictionary
+                
+                '行のデータを配列に分割
+                Dim aryCells As Variant
+                aryCells = Split(aryRows(lngRow), ",")
+                
+                Dim lngColumn As Long
+                For lngColumn = 0 To UBound(aryHeader)
+                    
+                    Dim strFieldName As String
+                    strFieldName = aryHeader(lngColumn)
+                    
+                    '「列名：値」をDictinoaryに格納
+                    If dctDatas(lngRow).Exists(strFieldName) = False Then
+                        dctDatas(lngRow).add strFieldName, aryCells(lngColumn)
+                    End If
+                    
+                Next
+                
+            End If
+            
+        Next
+        
+        '「必要項目」のヘッダを生成
+        Dim strResultDatas As String
+        strResultDatas = Join(aryPickupFields, ",") & vbCrLf
+        
+        'Dictionaryの全行を走査
+        For lngRow = intStartRow To UBound(aryRows)
+            
+            If dctDatas.Exists(lngRow) = True Then
+                
+                '必要項目を文字列で収集
+                Dim strRow As String
+                strRow = ""
+                
+                For lngColumn = 0 To UBound(aryPickupFields)
+                    
+                    strFieldName = aryPickupFields(lngColumn)
+                    
+                    If dctDatas(lngRow).Exists(strFieldName) = True Then
+                        strRow = strRow & dctDatas(lngRow)(strFieldName) & ","
+                    End If
+                    
+                Next
+                
+                '末尾のカンマを除去⇒CSVのデータとして連結
+                strRow = Left(strRow, Len(strRow) - 1)
+                strResultDatas = strResultDatas & strRow & vbCrLf
+                
+            End If
+            
+        Next
+        
+        '必要情報に絞り込んだデータをCSVファイルとして保存
+        With CreateObject("ADODB.Stream")
+            .Charset = "UTF-8"
+            .Open
+            .WriteText strResultDatas, 0
+            .SaveToFile strOutputPath, 2
+            .Close
+        End With
+        
+    End Sub
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' シートやCSVファイルに対してSQLを実行
@@ -4492,6 +4604,43 @@ Option Explicit
         Set objHtmlDoc = Nothing
         
     End Sub
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+'　Httpリクエストを使用しファイルをダウンロード
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function DownloadWebFile(ByVal strFileUrl As String, ByVal strDownloadPath As String) As Boolean
+        
+        '本関数途中終了は「ダウンロード失敗」
+        DownloadWebFile = False
+        
+        Dim objHttpRequest As Object
+        Set objHttpRequest = CreateObject("MSXML2.ServerXMLHTTP")
+        objHttpRequest.Open "GET", strFileUrl, False
+        objHttpRequest.send
+        
+        If objHttpRequest.Status = 200 Then
+            
+            'バイナリデータとしてファイルを保存
+            Dim objStream As Object
+            Set objStream = CreateObject("ADODB.Stream")
+            objStream.Type = 1
+            objStream.Open
+            objStream.Write objHttpRequest.responseBody
+            objStream.SaveToFile strDownloadPath, 2
+            objStream.Close
+            
+            DownloadWebFile = True
+            
+        End If
+        
+    End Function
                     </pre>
                 </div>
                 <div class="vba-code">
