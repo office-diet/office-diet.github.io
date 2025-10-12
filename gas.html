@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="vba.css">
+
+    <title>24時間散歩おじさん～GAS汎用コード置き場～</title>
+    <meta property="og:url" content="https://office-diet.github.io/vba.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="24時間散歩おじさん～GAS汎用コード置き場～" />
+    <meta property="og:description" content="24時間散歩おじさん～GAS汎用コード置き場～" />
+    <meta property="og:site_name" content="24時間散歩おじさん～GAS汎用コード置き場～" />
+    <meta property="og:image" content="https://office-diet.github.io/vba.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:creator" content="@office_diet" />  
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="https://twitter.com/office_diet" target="_blank">24時間散歩おじさん GAS汎用コード置き場</a>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <div class="code-body">
+                <div class="vba-code">
+                    <pre class="prettyprint lang-js linenums" lang="vb">
+    
+// ============================================
+//  ActiveBookのシートを取得⇒データ取得
+// ============================================    
+    function Sample() {
+        const listSheet = {headerRow : 6, startRow : 7}
+        const book = SpreadsheetApp.getActiveSpreadsheet();
+        const sheet = book.getSheetByName("リスト");
+        const dataRange = sheet.getRange(listSheet.startRow, 1, sheet.getLastRow() - listSheet.headerRow, 4)
+        const data = dataRange.getValues();
+    }
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-js linenums" lang="vb">
+    
+// ============================================
+//  urlからIDを抽出
+// ※GoogleWorkspaceに慣れていないためいったん雑な関数を作成
+// ============================================
+    function pickupId(url) {
+        let result = url.replace("https://drive.google.com/file/d/", "");
+        result = result.replace("https://drive.google.com/drive/folders/", "");
+        result = result.replace("https://docs.google.com/spreadsheets/d/", "");
+        result = result.split("?")[0].split("/")[0];
+        return result;
+    }
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-js linenums" lang="vb">
+    
+// ============================================
+//  フォルダを取得
+//  ※名称で検索すると「複数のうちの最初だけ」取得されるので注意！
+// ============================================
+    function getFolderById(folderId) {
+        const folder = DriveApp.getFolderById(folderId);
+        return folder;
+    }
+
+    // 「指定フォルダ配下」に絞ることも可能
+    function getFolderByName(folderName, rootFolder) {
+        let folder = null;
+        if (rootFolder) {
+            folder = rootFolder.getFoldersByName(folderName);
+        } else {
+            folder = DriveApp.getFoldersByName(folderName);
+        }
+        if (folder.hasNext()) {
+            return folder.next();
+        }
+    }
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-js linenums" lang="vb">
+    
+// ============================================
+//  フォルダの生成
+// ※「指定フォルダ直下」に絞ることも可能
+// ============================================
+    function createFolder(folderName, rootFolder) {
+        if (rootFolder) {
+            return rootFolder.createFolder(folderName);
+        } else {
+            return DriveApp.createFolder(folderName);
+        }
+    }
+
+// ============================================
+//  フォルダの削除
+// ============================================
+    function removeFolderById(folderId) {
+        const folder = DriveApp.getFolderById(folderId);
+        folder.setTrashed(true);
+    }
+
+    // 「指定フォルダ配下」に絞ることも可能
+    function removeFolderByName(folderName, rootFolder) {
+        let folder = null;
+        if (rootFolder) {
+            folder = rootFolder.getFoldersByName(folderName);
+        } else {
+            folder = DriveApp.getFoldersByName(folderName);
+        }
+        if (folder.hasNext()) {
+            folder.next().setTrashed(true);
+        }
+    }
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-js linenums" lang="vb">
+    
+// ============================================
+// 共有権限の削除
+// ============================================    
+    function removeAllShare(folderFile) {
+        let editors = folderFile.getEditors();
+        for (let i = 0; i < editors.length; i++) {
+            folderFile.removeEditor(editors[i].getEmail());
+        }
+        let viewers = folderFile.getViewers();
+        for (let i = 0; i < viewers.length; i++) {
+            folderFile.removeViewer(viewers[i].getEmail());
+        }
+    }
+
+// ============================================
+// 編集権限の付与
+// ※DriveAPIを使用すると「通知」をオフにできる
+// ============================================
+    function addEditors(folderFileId, users) {
+        users.forEach(function (mail) {
+            Drive.Permissions.create(
+            {
+                'role': 'writer',
+                'type': 'user',
+                'emailAddress': mail,
+            },
+            folderFileId,
+            {
+                'sendNotificationEmail': 'false',
+                'supportsAllDrives': 'true'
+            }
+            )
+        });
+    }
+
+// ============================================
+// 閲覧権限の付与
+// ※DriveAPIを使用すると「通知」をオフにできる
+// ============================================
+    function addViewers(folderFileId, users) {
+        users.forEach(function (mail) {
+            Drive.Permissions.create(
+            {
+                'role': 'reader',
+                'type': 'user',
+                'emailAddress': mail,
+            },
+            folderFileId,
+            {
+                'sendNotificationEmail': 'false',
+                'supportsAllDrives': 'true'
+            }
+            )
+        });
+    }
+                    </pre>
+                </div>
+
+            </div>
+        </div>
+    </main>
+    <footer>
+        <div class="container">
+            <a href="https://twitter.com/office_diet" target="_blank">all right not reserved 24時間散歩おじさん
+        </div>
+    </footer>
+    <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=vbs&skin=sons-of-obsidian"></script>
+    <script src="vba.js"></script>
+</body>
+</html>
