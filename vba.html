@@ -4018,6 +4018,109 @@ Option Explicit
                 <div class="vba-code">
                     <pre class="prettyprint lang-vb linenums" lang="vb">
     
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' CSVファイルを正しい状態で開く
+' ※要改造！！！
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    '*********************************************
+    ' CSVファイルを指定シートに取り込む
+    ' ※「"」や「LF」が混入したCSVファイル用
+    '*********************************************
+    Sub ImportCsvToSheet(ByVal strFilePath As String, ByVal wsTarget As Worksheet)
+        
+        '特定方式のCSVファイルを開く※要カスタマイズ
+        With CreateObject("ADODB.Stream")
+            .Charset = "UTF-8"
+            .Open
+            .LoadFromFile strFilePath
+            
+            Dim strCsvData As String
+            strCsvData = .ReadText
+            .Close
+        End With
+        
+        '文中に「,」「LF」が混入する恐れがあるので余分なサイズの配列を確保
+        Dim aryRows As Variant
+        aryRows = Split(strCsvData, vbLf)
+        
+        'ただし1行目のヘッダは全て1行のはずなのでれ通を特定する
+        Dim lngRowsCount As Long
+        Dim lngColumnsCount As Long
+        lngRowsCount = UBound(aryRows)
+        lngColumnsCount = UBound(Split(aryRows(0), ","))
+        
+        Dim aryResultDatas() As Variant
+        ReDim aryResultDatas(lngRowsCount, lngColumnsCount)
+        
+        Dim lngRow As Long
+        Dim lngCol As Long
+        
+        Dim blnInsideQuate As Boolean
+        Dim strCellValue As String
+        blnInsideQuate = False
+        
+        'CSVデータの「全文字」を走査
+        Dim lngIndex As Long
+        For lngIndex = 1 To Len(strCsvData)
+            
+            '1文字ずつ取り出しチェック
+            Dim strChar As String
+            strChar = Mid(strCsvData, lngIndex, 1)
+            
+            '「"」に囲まれた「,」「LF」はデータ区切りではないので
+            '「"の内側・外側」を判別
+            If strChar = """" Then
+                blnInsideQuate = Not blnInsideQuate
+            End If
+            
+            '「"」外の「,」は区切り文字
+            If strChar = "," And blnInsideQuate = False Then
+                aryResultDatas(lngRow, lngCol) = FormatCellValue(strCellValue)
+                lngCol = lngCol + 1
+                strCellValue = ""
+                
+            '「"」外の「LF」は行区切り
+            ElseIf strChar = vbLf And blnInsideQuate = False Then
+                aryResultDatas(lngRow, lngCol) = FormatCellValue(strCellValue)
+                lngCol = 0
+                lngRow = lngRow + 1
+                strCellValue = ""
+            Else
+                strCellValue = strCellValue & strChar
+            End If
+            
+        Next
+        
+        '対象シートに配列を一気に展開
+        With wsTarget
+            .Range(.Cells(1, 1), .Cells(lngRowsCount + 1, lngColumnsCount + 1)).Value = aryResultDatas
+        End With
+        
+    End Sub
+    
+    '*********************************************
+    ' 「５ー１０」等が「日付」と認識されるのを回避するため「'」を付与
+    '*********************************************
+    Function FormatCellValue(ByVal strCellValue As String) As String
+        
+        Dim strResult As String
+        strResult = Trim(Replace(strCellValue, """", ""))
+        
+        If (IsDate(strResult) And Not (StrConv(strResult, vbNarrow) Like "*/*/*")) Or (IsNumeric(strResult) And Left(strResult, 1) = "0") Then
+            FormatCellValue = "'" & strResult
+        Else
+            FormatCellValue = strResult
+        End If
+        
+    End Function
+                    </pre>
+                </div>
+                <div class="vba-code">
+                    <pre class="prettyprint lang-vb linenums" lang="vb">
+    
 '■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 '
 ' 指定シートをそのままCSVファイルとして出力
