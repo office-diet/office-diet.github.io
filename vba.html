@@ -230,6 +230,37 @@
         Set CreateNewDictionary = CreateObject("Scripting.Dictionary")
         
     End Function
+    
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+'
+' 「項目名：列番号」のDictionaryを生成
+'
+'■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    Function CreateColumnsDictionary(ByVal wsTarget As Worksheet, Optional ByVal intHeaderRow As Integer = 1) As Object
+        
+        With wsTarget
+            
+            Dim dctColumns As Object
+            Set dctColumns = CreateNewDictionary
+            
+            Dim lngColumn As Long
+            For lngColumn = 1 To GetLastColumn(wsTarget, intHeaderRow)
+                
+                Dim strFieldName As String
+                strFieldName = .Cells(intHeaderRow, lngColumn).Value
+                
+                If dctColumns.Exists(strFieldName) = False And strFieldName <> "" Then
+                    dctColumns.Add strFieldName, lngColumn
+                End If
+                
+            Next
+            
+            Set CreateColumnsDictionary = dctColumns
+            
+        End With
+        
+    End Function
                     </pre>
                 </div>
                 <div class="vba-code">
