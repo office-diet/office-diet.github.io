@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- OGP基本設定 (共通・Facebook・LINEなど) -->
+    <meta property="og:title" content="思考力トレーニング・チャット">
+    <meta property="og:description" content="1分間の制限時間とプレッシャーの中で正解のない問いに挑む！AIがあなたを評価する脳トレチャットアプリ。">
+    <meta property="og:url" content="https://office-diet.github.io/ai_chat.html">
+    <meta property="og:image" content="https://office-diet.github.io/ai_chat.jpg">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="思考力トレーニング・チャット">
+
+    <!-- Twitter/X専用カード設定 -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="思考力トレーニング・チャット">
+    <meta name="twitter:description" content="1分間の制限時間とプレッシャーの中で正解のない問いに挑む！AIがあなたを評価する脳トレチャットアプリ。">
+    <meta name="twitter:image" content="https://office-diet.github.io/ai_chat.jpg">
+
+    <title>思考力トレーニング・チャット</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 80px 15px 0 15px; /* 固定ヘッダー分の余白を上部に追加 */
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        .header-card {
+            background: #fff;
+            padding: 15px 20px;
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 800px;
+            box-sizing: border-box;
+            z-index: 1000;
+        }
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .header-card input[type="password"] {
+            padding: 6px 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            width: 160px;
+        }
+        .header-card select {
+            padding: 6px 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            width: auto;
+        }
+        /* チャットタイムライン領域 */
+        #chatContainer {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .message {
+            padding: 16px;
+            border-radius: 12px;
+            max-width: 85%;
+            line-height: 1.6;
+            word-break: break-word;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        /* AIからのメッセージ（問題・評価） */
+        .message.ai {
+            background-color: #ffffff;
+            border-left: 5px solid #1a73e8;
+            align-self: flex-start;
+        }
+        /* ユーザーの回答メッセージ */
+        .message.user {
+            background-color: #d1e7dd;
+            border-right: 5px solid #198754;
+            align-self: flex-end;
+            white-space: pre-wrap;
+        }
+        .message-title {
+            font-weight: bold;
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 6px;
+        }
+        /* 入力コントロールカード */
+        .control-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            bottom: 20px;
+        }
+        .control-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        textarea {
+            resize: vertical;
+        }
+        button {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        button:hover {
+            background-color: #1557b0;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .timer-display {
+            font-weight: bold;
+            color: #d93025;
+            font-size: 16px;
+        }
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ヘッダー：APIキー・モデル選択固定 -->
+    <div class="header-card">
+        <h2 style="margin: 0; font-size: 18px;">🧠 思考力トレーニング・チャット</h2>
+        <div class="header-controls">
+            <div>
+                <label for="modelSelect" style="font-size: 11px; margin-right: 3px;">モデル:</label>
+                <select id="modelSelect">
+                    <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite</option>
+                    <option value="gemini-3.5-flash">gemini-3.5-flash</option>
+                    <option value="gemini-3.6-flash">gemini-3.6-flash</option>
+                    <option value="gemini-3.7-flash">gemini-3.7-flash</option>
+                    <option value="gemini-3.8-flash">gemini-3.8-flash</option>
+                </select>
+            </div>
+            <div>
+                <label for="apiKey" style="font-size: 11px; margin-right: 3px;">APIキー:</label>
+                <input type="password" id="apiKey" placeholder="AIzaSy...">
+            </div>
+        </div>
+    </div>
+
+    <!-- チャットログ蓄積エリア -->
+    <div id="chatContainer">
+        <div class="message ai">
+            <div class="message-title">🤖 ファシリテーターAI</div>
+            こんにちは！ここでは正解のない問題が出題され、1分以内で自分の意見を入力してAIから評価を受けるトレーニングができます。<br>
+            下のボタンから**「問題を出題する」**を押してください！
+        </div>
+    </div>
+
+    <!-- 下部コントロールパネル（固定） -->
+    <div class="control-card">
+        <!-- フェーズ1: 問題を出題してもらう画面 -->
+        <div id="phaseGenerate">
+            <div class="control-row">
+                <button id="generateBtn" style="width: 100%;" onclick="generateQuestion()">問題を出題する</button>
+            </div>
+        </div>
+
+        <!-- フェーズ2: 1分間で回答を入力する画面 -->
+        <div id="phaseAnswer" class="hidden">
+            <div class="control-row" style="justify-content: space-between;">
+                <span class="message-title" style="margin:0;">✍️ あなたの意見を入力してください（入力開始でタイマー起動）</span>
+                <span class="timer-display" id="timer">制限時間: 60秒</span>
+            </div>
+            <textarea id="userAnswer" rows="3" placeholder="ここに入力を始めると制限時間がカウントダウンされます..."></textarea>
+            <div style="text-align: right; margin-top: 8px;">
+                <button id="submitBtn" onclick="submitAnswer()">回答を送信して評価をもらう</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Google Gen AI SDK の読み込み -->
+    <script type="importmap">
+      {
+        "imports": {
+          "@google/genai": "https://esm.run/@google/genai"
+        }
+      }
+    </script>
+
+    <script type="module">
+        import { GoogleGenAI } from "@google/genai";
+
+        let currentQuestion = "";
+        let timerInterval = null;
+        let timeLeft = 60;
+        let isTimerStarted = false;
+        let chatSession = null; 
+
+        // ページ読み込み時にLocalStorageから設定を復元
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedApiKey = localStorage.getItem('gemini_api_key');
+            if (savedApiKey) {
+                document.getElementById('apiKey').value = savedApiKey;
+            }
+
+            const savedModel = localStorage.getItem('gemini_selected_model');
+            if (savedModel) {
+                document.getElementById('modelSelect').value = savedModel;
+            }
+
+            // APIキー変更時に自動保存
+            document.getElementById('apiKey').addEventListener('input', (e) => {
+                localStorage.setItem('gemini_api_key', e.target.value.trim());
+            });
+
+            // モデル変更時に自動保存 ＆ チャットセッションをリセット
+            document.getElementById('modelSelect').addEventListener('change', (e) => {
+                localStorage.setItem('gemini_selected_model', e.target.value);
+                chatSession = null; // モデル変更時は新しいセッションを作るためリセット
+            });
+
+            // ユーザーが入力し始めたらタイマーを起動するイベントリスナー
+            document.getElementById('userAnswer').addEventListener('input', () => {
+                if (!isTimerStarted) {
+                    isTimerStarted = true;
+                    startTimer();
+                }
+            });
+        });
+
+        // チャットにメッセージを追加する関数
+        function appendMessage(senderType, title, text) {
+            const container = document.getElementById('chatContainer');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${senderType}`;
+
+            const titleDiv = document.createElement('div');
+            titleDiv.className = 'message-title';
+            titleDiv.textContent = title;
+            msgDiv.appendChild(titleDiv);
+
+            const contentDiv = document.createElement('div');
+            contentDiv.textContent = text;
+            msgDiv.appendChild(contentDiv);
+
+            container.appendChild(msgDiv);
+            
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+
+        // 1. 問題を生成する
+        window.generateQuestion = async function() {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const currentModel = document.getElementById('modelSelect').value;
+
+            if (!apiKey) {
+                alert('APIキーを入力してください。');
+                return;
+            }
+
+            const btn = document.getElementById('generateBtn');
+            btn.disabled = true;
+            btn.textContent = '作成中...';
+
+            try {
+                const ai = new GoogleGenAI({ apiKey: apiKey });
+
+                // チャットセッションが未作成の場合、システム指示付きで作成
+                if (!chatSession) {
+                    chatSession = ai.chats.create({
+                        model: currentModel,
+                        config: {
+                            systemInstruction: "You are a creative facilitator for critical thinking and perspective training. " + 
+                                "Your role is to generate unique, imaginative, and open-ended questions that have no single correct answer. " +
+                                "Mix serious topics (philosophy, psychology, workplace, relationships) with playful, creative, or child-like whimsical questions (e.g., 'If animals could talk, which one would be the most annoying?', 'If you could instantly swap bodies with someone for a day, who would it be?', or 'What if clouds tasted like food?'). " +
+                                "CRITICAL RULE: Review your past questions in this conversation history, and NEVER repeat similar themes, angles, or phrasing. Every new question must explore a completely different perspective or topic. " +
+                                "Output ONLY the question text in about 2 lines. Do NOT include any introductory phrases, markdown, or English translation. The final output must be entirely in Japanese."
+                        }
+                    });
+                }
+
+                // チャットセッション経由でメッセージを送信
+                const response = await chatSession.sendMessage({
+                    message: "まったく新しいユニークな「正解のない問題」を1つだけ、前置きなしで約2行の日本語で出題してください。"
+                });
+
+                currentQuestion = response.text.trim();
+
+                appendMessage('ai', '🤖 出題された問題', currentQuestion);
+
+                // 入力フェーズへ切り替え
+                document.getElementById('phaseGenerate').classList.add('hidden');
+                document.getElementById('phaseAnswer').classList.remove('hidden');
+                document.getElementById('userAnswer').value = '';
+                
+                // タイマー状態のリセット
+                isTimerStarted = false;
+                timeLeft = 60;
+                document.getElementById('timer').textContent = `制限時間: ${timeLeft}秒`;
+
+                window.scrollTo({
+                    top: document.body.scrollHeight,
+                    behavior: 'smooth'
+                });
+
+            } catch (error) {
+                console.error(error);
+                alert('問題の生成に失敗しました: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '問題を出題する';
+            }
+        };
+
+        // タイマー処理
+        function startTimer() {
+            clearInterval(timerInterval);
+            const timerEl = document.getElementById('timer');
+            timerEl.textContent = `制限時間: ${timeLeft}秒`;
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerEl.textContent = `制限時間: ${timeLeft}秒`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    alert('タイムアップ！自動的に現在の回答を送信します。');
+                    submitAnswer();
+                }
+            }, 1000);
+        }
+
+        // 2. 回答を送信して評価をもらう
+        window.submitAnswer = async function() {
+            clearInterval(timerInterval);
+
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const currentModel = document.getElementById('modelSelect').value;
+            const userAnswer = document.getElementById('userAnswer').value.trim();
+
+            if (!userAnswer) {
+                alert('回答が入力されていません。');
+            }
+
+            appendMessage('user', '👤 あなたの回答', userAnswer || "（未入力）");
+
+            document.getElementById('phaseAnswer').classList.add('hidden');
+            document.getElementById('phaseGenerate').classList.remove('hidden');
+            const generateBtn = document.getElementById('generateBtn');
+            generateBtn.disabled = true;
+            generateBtn.textContent = 'AIが評価中...';
+
+            const evaluationPrompt = `
+以下の「正解のない問題」に対するユーザーの回答を評価してください。
+
+【正解のない問題】
+${currentQuestion}
+
+【ユーザーの回答】
+${userAnswer}
+
+【評価の観点】
+100点満点で点数を示し、そのあと5行～10行以内で要点を抑え、
+ポジティブかつ建設的なトーンで、分かりやすくフィードバックしてください。
+`;
+
+            try {
+                const ai = new GoogleGenAI({ apiKey: apiKey });
+                const response = await ai.models.generateContent({
+                    model: currentModel,
+                    contents: evaluationPrompt,
+                });
+
+                appendMessage('ai', '🤖 AIからの評価・フィードバック', response.text.trim());
+
+            } catch (error) {
+                console.error(error);
+                appendMessage('ai', '🤖 エラー', '評価の取得に失敗しました: ' + error.message);
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.textContent = '次の問題を出題する';
+            }
+        };
+    </script>
+
+</body>
+</html>
