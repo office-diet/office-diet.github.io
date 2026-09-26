@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="ja" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local TXT Editor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(156, 163, 175, 0.3);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(107, 114, 128, 0.6);
+        }
+        .resizer {
+            width: 5px;
+            cursor: col-resize;
+            transition: background 0.2s;
+        }
+        .resizer:hover, .resizer.resizing {
+            background: rgba(99, 102, 241, 0.5);
+        }
+        .drag-over {
+            background-color: rgba(99, 102, 241, 0.2) !important;
+            border: 2px dashed rgba(99, 102, 241, 0.6) !important;
+        }
+    </style>
+</head>
+<body class="h-full bg-slate-900 text-slate-100 font-sans antialiased overflow-hidden flex flex-col">
+
+    <header class="h-14 border-b border-slate-800 bg-slate-950/90 backdrop-blur flex items-center justify-between px-4 z-10 shrink-0">
+        <div class="flex items-center space-x-3">
+            <button id="btn-toggle-sidebar" title="エクスプローラーの折りたたみ" class="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-slate-200 transition cursor-pointer">
+                <i data-lucide="panel-left" class="w-5 h-5"></i>
+            </button>
+            <div class="bg-indigo-600 p-2 rounded-lg text-white shadow-lg shadow-indigo-500/20">
+                <i data-lucide="file-text" class="w-5 h-5"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-sm tracking-wide text-slate-200">Local TXT Folder Editor</h1>
+                <p id="folder-path-display" class="text-xs text-slate-400 truncate max-w-xs md:max-w-md">フォルダーが選択されていません</p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-2">
+            <button id="btn-open-folder" class="flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-500 text-white px-3.5 py-1.5 rounded-lg text-sm font-medium transition shadow-sm cursor-pointer">
+                <i data-lucide="folder-open" class="w-4 h-4"></i>
+                <span class="hidden sm:inline">フォルダーを開く</span>
+            </button>
+            <button id="btn-new-file" disabled class="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed px-3 py-1.5 rounded-lg text-sm transition cursor-pointer">
+                <i data-lucide="file-plus" class="w-4 h-4"></i>
+                <span class="hidden md:inline">新規 .txt</span>
+            </button>
+            <button id="btn-new-folder" disabled class="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed px-3 py-1.5 rounded-lg text-sm transition cursor-pointer">
+                <i data-lucide="folder-plus" class="w-4 h-4"></i>
+                <span class="hidden md:inline">新規フォルダー</span>
+            </button>
+            <button id="btn-save" disabled class="flex items-center space-x-1.5 bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-40 disabled:cursor-not-allowed px-3.5 py-1.5 rounded-lg text-sm font-medium transition shadow-sm cursor-pointer">
+                <i data-lucide="save" class="w-4 h-4"></i>
+                <span>保存 (Ctrl+S)</span>
+            </button>
+        </div>
+    </header>
+
+    <div class="flex-1 flex overflow-hidden relative">
+
+        <!-- Sidebar / File Explorer (.txt only) -->
+        <aside id="sidebar" style="width: 280px;" class="bg-slate-950/60 border-r border-slate-800 flex flex-col shrink-0 select-none transition-all duration-300 overflow-hidden">
+            <div class="p-3 border-b border-slate-800 space-y-2 shrink-0">
+                <div class="flex items-center justify-between text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                    <span>.txt エクスプローラー</span>
+                    <button id="btn-refresh" title="再読み込み" class="p-1 hover:bg-slate-800 rounded text-slate-400 hover:text-slate-200 transition cursor-pointer">
+                        <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+                <!-- Search input -->
+                <div class="relative">
+                    <i data-lucide="search" class="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-2.5"></i>
+                    <input type="text" id="file-search" placeholder=".txtファイルを絞り込み..." disabled class="w-full bg-slate-900 border border-slate-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-300 placeholder-slate-600 focus:outline-none focus:border-indigo-500 disabled:opacity-40">
+                </div>
+            </div>
+            
+            <!-- File Tree Container with Drag & Drop Import and Move Support -->
+            <div id="file-tree-container" class="flex-1 overflow-y-auto p-2 space-y-0.5">
+                <div id="empty-sidebar" class="h-full flex flex-col items-center justify-center text-center p-6 text-slate-500">
+                    <i data-lucide="folder-search" class="w-10 h-10 mb-3 opacity-40"></i>
+                    <p class="text-xs">「フォルダーを開く」ボタンから .txt が含まれるディレクトリを選択してください。<br><br>外部ファイルやフォルダのドロップによるインポートにも対応しています。</p>
+                </div>
+            </div>
+
+            <!-- Sidebar footer stats -->
+            <div id="sidebar-footer" class="p-2.5 border-t border-slate-800 text-[11px] text-slate-500 flex justify-between items-center hidden shrink-0">
+                <span id="file-count-label">0 .txt ファイル</span>
+                <span>UTF-8</span>
+            </div>
+        </aside>
+
+        <!-- Resizer Bar -->
+        <div id="sidebar-resizer" class="resizer shrink-0"></div>
+
+        <main class="flex-1 flex flex-col bg-slate-900 overflow-hidden relative">
+            
+            <!-- Tab Bar -->
+            <div id="tab-bar" class="h-10 bg-slate-950/40 border-b border-slate-800 flex items-center overflow-x-auto px-2 space-x-1 shrink-0">
+                <div id="no-tab-placeholder" class="text-xs text-slate-500 px-3 select-none">ファイルが開かれていません</div>
+            </div>
+
+            <!-- Textarea Editor Container -->
+            <div class="flex-1 relative flex">
+                <textarea id="code-editor" disabled placeholder="左側のツリーから .txt ファイルを選択して編集を開始してください。" class="w-full h-full bg-slate-900 text-slate-200 p-4 font-mono text-sm resize-none focus:outline-none disabled:bg-slate-950/30 disabled:text-slate-600 selection:bg-indigo-600/40 leading-relaxed"></textarea>
+            </div>
+
+            <!-- Editor Status Footer -->
+            <div class="h-7 border-t border-slate-800/80 bg-slate-950/80 px-4 flex items-center justify-between text-[11px] font-mono text-slate-400 shrink-0">
+                <span id="active-file-path" class="truncate max-w-md">--</span>
+                <div class="flex items-center space-x-4">
+                    <span id="stat-lines">行: 1</span>
+                    <span id="stat-chars">文字: 0</span>
+                </div>
+            </div>
+
+            <!-- Custom Modal Prompt -->
+            <div id="modal-backdrop" class="fixed inset-0 bg-slate-950/80 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+                <div class="bg-slate-900 border border-slate-800 rounded-xl shadow-2xl w-full max-w-md p-6 space-y-4">
+                    <h3 id="modal-title" class="text-base font-semibold text-slate-100">タイトル</h3>
+                    <p id="modal-desc" class="text-xs text-slate-400"></p>
+                    <input type="text" id="modal-input" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 font-mono">
+                    <div class="flex justify-end space-x-2 pt-2">
+                        <button id="modal-cancel" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-xs font-medium text-slate-300 transition cursor-pointer">キャンセル</button>
+                        <button id="modal-confirm" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-xs font-medium text-white transition cursor-pointer">実行</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Toast Notification Overlay -->
+            <div id="toast" class="absolute bottom-10 right-6 bg-slate-800 border border-slate-700 text-slate-100 px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 transform translate-y-20 opacity-0 transition-all duration-300 z-50 pointer-events-none">
+                <div id="toast-icon"></div>
+                <div id="toast-message" class="text-sm font-medium"></div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let rootDirHandle = null;
+        let openTabs = [];
+        let activeTabPath = null;
+        let searchQuery = '';
+
+        // DOM Elements
+        const btnOpenFolder = document.getElementById('btn-open-folder');
+        const btnSave = document.getElementById('btn-save');
+        const btnNewFile = document.getElementById('btn-new-file');
+        const btnNewFolder = document.getElementById('btn-new-folder');
+        const btnRefresh = document.getElementById('btn-refresh');
+        const btnToggleSidebar = document.getElementById('btn-toggle-sidebar');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarResizer = document.getElementById('sidebar-resizer');
+        const folderPathDisplay = document.getElementById('folder-path-display');
+        const fileTreeContainer = document.getElementById('file-tree-container');
+        const sidebarFooter = document.getElementById('sidebar-footer');
+        const fileCountLabel = document.getElementById('file-count-label');
+        const codeEditor = document.getElementById('code-editor');
+        const tabBar = document.getElementById('tab-bar');
+        const noTabPlaceholder = document.getElementById('no-tab-placeholder');
+        const activeFilePathLabel = document.getElementById('active-file-path');
+        const statLines = document.getElementById('stat-lines');
+        const statChars = document.getElementById('stat-chars');
+        const fileSearchInput = document.getElementById('file-search');
+        
+        // Modal Elements
+        const modalBackdrop = document.getElementById('modal-backdrop');
+        const modalTitle = document.getElementById('modal-title');
+        const modalDesc = document.getElementById('modal-desc');
+        const modalInput = document.getElementById('modal-input');
+        const modalCancel = document.getElementById('modal-cancel');
+        const modalConfirm = document.getElementById('modal-confirm');
+
+        // Toast Elements
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toast-message');
+        const toastIcon = document.getElementById('toast-icon');
+
+        lucide.createIcons();
+
+        // Browser support check
+        if (!window.showDirectoryPicker) {
+            showToast('お使いのブラウザは File System Access API に未対応です。Google Chrome または Microsoft Edge をご利用ください。', 'error');
+            btnOpenFolder.disabled = true;
+        }
+
+        // Sidebar Toggle Handler
+        btnToggleSidebar.addEventListener('click', () => {
+            if (sidebar.style.width === '0px' || sidebar.classList.contains('w-0')) {
+                sidebar.style.width = '280px';
+                sidebarResizer.style.display = '';
+            } else {
+                sidebar.style.width = '0px';
+                sidebarResizer.style.display = 'none';
+            }
+        });
+
+        // Resizer Drag Logic
+        let isResizing = false;
+        sidebarResizer.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            sidebarResizer.classList.add('resizing');
+            e.preventDefault();
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+            const newWidth = e.clientX;
+            if (newWidth > 180 && newWidth < 600) {
+                sidebar.style.width = `${newWidth}px`;
+            }
+        });
+
+        window.addEventListener('mouseup', () => {
+            if (isResizing) {
+                isResizing = false;
+                sidebarResizer.classList.remove('resizing');
+            }
+        });
+
+        // Toast Notification Function
+        function showToast(message, type = 'success') {
+            toastMessage.textContent = message;
+            toastIcon.innerHTML = type === 'success' 
+                ? '<i data-lucide="check-circle" class="w-5 h-5 text-emerald-400"></i>' 
+                : '<i data-lucide="alert-circle" class="w-5 h-5 text-rose-400"></i>';
+            lucide.createIcons();
+            
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // Custom Modal Prompt Function
+        function showPromptModal(title, description, defaultValue = '') {
+            return new Promise((resolve) => {
+                modalTitle.textContent = title;
+                modalDesc.textContent = description;
+                modalInput.value = defaultValue;
+                modalBackdrop.classList.remove('hidden');
+                modalInput.focus();
+
+                const cleanup = () => {
+                    modalBackdrop.classList.add('hidden');
+                    modalConfirm.removeEventListener('click', onConfirm);
+                    modalCancel.removeEventListener('click', onCancel);
+                    modalInput.removeEventListener('keydown', onKeydown);
+                };
+
+                const onConfirm = () => {
+                    const val = modalInput.value.trim();
+                    cleanup();
+                    resolve(val);
+                };
+
+                const onCancel = () => {
+                    cleanup();
+                    resolve(null);
+                };
+
+                const onKeydown = (e) => {
+                    if (e.key === 'Enter') onConfirm();
+                    if (e.key === 'Escape') onCancel();
+                };
+
+                modalConfirm.addEventListener('click', onConfirm);
+                modalCancel.addEventListener('click', onCancel);
+                modalInput.addEventListener('keydown', onKeydown);
+            });
+        }
+
+        // Editor Input Handler
+        codeEditor.addEventListener('input', () => {
+            if (!activeTabPath) return;
+            const tab = openTabs.find(t => t.path === activeTabPath);
+            if (tab) {
+                tab.content = codeEditor.value;
+                if (!tab.isUnsaved) {
+                    tab.isUnsaved = true;
+                    renderTabs();
+                }
+            }
+            updateEditorStats();
+        });
+
+        function updateEditorStats() {
+            const text = codeEditor.value;
+            const lines = text.split('\n').length;
+            const chars = text.length;
+            statLines.textContent = `行: ${lines}`;
+            statChars.textContent = `文字: ${chars}`;
+        }
+
+        // Keyboard Shortcut: Ctrl+S / Cmd+S
+        window.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                if (!btnSave.disabled) {
+                    saveActiveFile();
+                }
+            }
+        });
+
+        // Search Filter for .txt files
+        fileSearchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value.toLowerCase();
+            applySearchFilter();
+        });
+
+        function applySearchFilter() {
+            const items = fileTreeContainer.querySelectorAll('.file-item, .folder-node-wrapper');
+            items.forEach(el => {
+                const name = (el.dataset.name || '').toLowerCase();
+                if (!searchQuery || name.includes(searchQuery)) {
+                    el.style.display = '';
+                } else {
+                    el.style.display = 'none';
+                }
+            });
+        }
+
+        // Open Folder Handler
+        btnOpenFolder.addEventListener('click', async () => {
+            try {
+                rootDirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
+                folderPathDisplay.textContent = rootDirHandle.name;
+                await loadDirectoryTree();
+                btnNewFile.disabled = false;
+                btnNewFolder.disabled = false;
+                fileSearchInput.disabled = false;
+                sidebarFooter.classList.remove('hidden');
+                showToast(`フォルダー "${rootDirHandle.name}" を読み込みました`);
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    console.error(err);
+                    showToast('フォルダーのオープンに失敗しました', 'error');
+                }
+            }
+        });
+
+        btnRefresh.addEventListener('click', async () => {
+            if (rootDirHandle) {
+                await loadDirectoryTree();
+                showToast('ファイル一覧を更新しました');
+            }
+        });
+
+        // Load Directory Tree (.txt files only) with Drag-and-Drop and Move Support
+        async function loadDirectoryTree() {
+            fileTreeContainer.innerHTML = '';
+            let txtFileCount = 0;
+
+            async function readDir(dirHandle, parentElement, pathPrefix = '', currentDirObj = rootDirHandle) {
+                const entries = [];
+                for await (const entry of dirHandle.values()) {
+                    entries.push(entry);
+                }
+                
+                entries.sort((a, b) => {
+                    if (a.kind === b.kind) return a.name.localeCompare(b.name);
+                    return a.kind === 'directory' ? -1 : 1;
+                });
+
+                for (const entry of entries) {
+                    const currentPath = pathPrefix ? `${pathPrefix}/${entry.name}` : entry.name;
+                    
+                    if (entry.kind === 'directory') {
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'folder-node-wrapper space-y-0.5';
+                        wrapper.dataset.name = entry.name;
+
+                        const folderDiv = document.createElement('div');
+                        folderDiv.className = 'group flex items-center justify-between px-2 py-1.5 hover:bg-slate-800/60 rounded-lg cursor-pointer text-slate-300 text-xs transition';
+                        folderDiv.innerHTML = `
+                            <div class="flex items-center space-x-1.5 truncate flex-1">
+                                <i data-lucide="folder" class="w-4 h-4 text-amber-400 shrink-0"></i>
+                                <span class="truncate">${entry.name}</span>
+                            </div>
+                            <div class="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition">
+                                <button title="この中に .txt ファイル作成" class="new-subfile-btn p-1 hover:bg-indigo-500/20 hover:text-indigo-400 rounded transition text-slate-400">
+                                    <i data-lucide="file-plus" class="w-3 h-3"></i>
+                                </button>
+                                <button title="フォルダー削除" class="delete-folder-btn p-1 hover:bg-rose-500/20 hover:text-rose-400 rounded transition text-slate-400">
+                                    <i data-lucide="trash-2" class="w-3 h-3"></i>
+                                </button>
+                            </div>
+                        `;
+                        
+                        const childrenContainer = document.createElement('div');
+                        childrenContainer.className = 'pl-4 space-y-0.5 border-l border-slate-800/60 ml-2 mt-0.5';
+                        
+                        folderDiv.addEventListener('click', (e) => {
+                            if (e.target.closest('button')) return;
+                            childrenContainer.classList.toggle('hidden');
+                            const icon = folderDiv.querySelector('i');
+                            const isHidden = childrenContainer.classList.contains('hidden');
+                            icon.setAttribute('data-lucide', isHidden ? 'folder' : 'folder-open');
+                            lucide.createIcons();
+                        });
+
+                        // Drag and Drop Target for Folder (Internal Move & External Import)
+                        folderDiv.addEventListener('dragover', (e) => {
+                            e.preventDefault();
+                            folderDiv.classList.add('drag-over');
+                        });
+                        folderDiv.addEventListener('dragleave', () => {
+                            folderDiv.classList.remove('drag-over');
+                        });
+                        folderDiv.addEventListener('drop', async (e) => {
+                            e.preventDefault();
+                            folderDiv.classList.remove('drag-over');
+                            await handleDropEvent(e, entry, currentPath);
+                        });
+
+                        folderDiv.querySelector('.new-subfile-btn').addEventListener('click', () => createTxtFileInDir(currentPath, entry));
+                        folderDiv.querySelector('.delete-folder-btn').addEventListener('click', () => deleteDirectory(currentPath, dirHandle, entry.name));
+
+                        wrapper.appendChild(folderDiv);
+                        wrapper.appendChild(childrenContainer);
+                        parentElement.appendChild(wrapper);
+
+                        await readDir(entry, childrenContainer, currentPath, entry);
+
+                    } else if (entry.kind === 'file' && entry.name.toLowerCase().endsWith('.txt')) {
+                        txtFileCount++;
+
+                        const fileDiv = document.createElement('div');
+                        fileDiv.className = `file-item group flex items-center justify-between px-2 py-1.5 hover:bg-slate-800/80 rounded-lg cursor-pointer text-slate-300 text-xs transition ${activeTabPath === currentPath ? 'bg-indigo-600/20 text-indigo-300 font-medium' : ''}`;
+                        fileDiv.dataset.path = currentPath;
+                        fileDiv.dataset.name = entry.name;
+                        fileDiv.draggable = true;
+                        
+                        fileDiv.innerHTML = `
+                            <div class="flex items-center space-x-1.5 truncate flex-1">
+                                <i data-lucide="file-text" class="w-4 h-4 text-indigo-400 shrink-0"></i>
+                                <span class="truncate">${entry.name}</span>
+                            </div>
+                            <div class="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition">
+                                <button title="名前変更" class="rename-file-btn p-1 hover:bg-slate-700 rounded transition text-slate-400">
+                                    <i data-lucide="edit-2" class="w-3 h-3"></i>
+                                </button>
+                                <button title="削除" class="delete-file-btn p-1 hover:bg-rose-500/20 hover:text-rose-400 rounded transition text-slate-400">
+                                    <i data-lucide="trash-2" class="w-3 h-3"></i>
+                                </button>
+                            </div>
+                        `;
+
+                        // Drag start for internal moving
+                        fileDiv.addEventListener('dragstart', (e) => {
+                            e.dataTransfer.setData('text/plain', JSON.stringify({
+                                type: 'internal-file',
+                                path: currentPath,
+                                name: entry.name,
+                                parentDirPath: pathPrefix
+                            }));
+                        });
+
+                        fileDiv.addEventListener('click', (e) => {
+                            if (e.target.closest('.rename-file-btn')) {
+                                renameFile(currentPath, entry);
+                                return;
+                            }
+                            if (e.target.closest('.delete-file-btn')) {
+                                deleteFile(currentPath, dirHandle, entry.name);
+                                return;
+                            }
+                            openFileTab(currentPath, entry, dirHandle);
+                        });
+
+                        parentElement.appendChild(fileDiv);
+                    }
+                }
+            }
+
+            // Root drop zone support
+            fileTreeContainer.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                fileTreeContainer.classList.add('drag-over');
+            });
+            fileTreeContainer.addEventListener('dragleave', () => {
+                fileTreeContainer.classList.remove('drag-over');
+            });
+            fileTreeContainer.addEventListener('drop', async (e) => {
+                e.preventDefault();
+                fileTreeContainer.classList.remove('drag-over');
+                await handleDropEvent(e, rootDirHandle, '');
+            });
+
+            await readDir(rootDirHandle, fileTreeContainer);
+            fileCountLabel.textContent = `${txtFileCount} .txt ファイル`;
+            lucide.createIcons();
+            if (searchQuery) applySearchFilter();
+        }
+
+        // Handle Drop Events (External Import or Internal Move)
+        async function handleDropEvent(e, targetDirHandle, targetDirPath) {
+            // Check for internal move first
+            const internalDataStr = e.dataTransfer.getData('text/plain');
+            if (internalDataStr) {
+                try {
+                    const data = JSON.parse(internalDataStr);
+                    if (data.type === 'internal-file') {
+                        if (data.parentDirPath === targetDirPath) {
+                            showToast('同じフォルダー内への移動です', 'error');
+                            return;
+                        }
+                        await moveInternalFile(data.path, data.name, targetDirHandle, targetDirPath);
+                        return;
+                    }
+                } catch (err) {
+                    // Not JSON, treat as external files/folders
+                }
+            }
+
+            // External files/folders drop import
+            if (e.dataTransfer.items) {
+                let importedCount = 0;
+                for (const item of e.dataTransfer.items) {
+                    const entry = item.webkitGetAsEntry ? item.webkitGetAsEntry() : null;
+                    if (entry) {
+                        await importEntryRecursive(entry, targetDirHandle);
+                        importedCount++;
+                    }
+                }
+                if (importedCount > 0) {
+                    await loadDirectoryTree();
+                    showToast('アイテムをインポートしました');
+                }
+            }
+        }
+
+        async function importEntryRecursive(entry, destDirHandle) {
+            if (entry.isFile) {
+                const file = await new Promise((res) => entry.file(res));
+                if (!file.name.toLowerCase().endsWith('.txt')) return; // Only .txt
+                const newFileHandle = await destDirHandle.getFileHandle(file.name, { create: true });
+                const writable = await newFileHandle.createWritable();
+                await writable.write(await file.text());
+                await writable.close();
+            } else if (entry.isDirectory) {
+                const newSubDirHandle = await destDirHandle.getDirectoryHandle(entry.name, { create: true });
+                const reader = entry.createReader();
+                const entries = await new Promise((res) => reader.readEntries(res));
+                for (const subEntry of entries) {
+                    await importEntryRecursive(subEntry, newSubDirHandle);
+                }
+            }
+        }
+
+        // Move internal file to another folder
+        async function moveInternalFile(oldPath, fileName, targetDirHandle, targetDirPath) {
+            try {
+                // Get old file handle and content
+                const pathParts = oldPath.split('/');
+                let sourceParent = rootDirHandle;
+                for (let i = 0; i < pathParts.length - 1; i++) {
+                    sourceParent = await sourceParent.getDirectoryHandle(pathParts[i]);
+                }
+                const oldFileHandle = await sourceParent.getFileHandle(fileName);
+                const file = await oldFileHandle.getFile();
+                const content = await file.text();
+
+                // Create in target directory
+                const newFileHandle = await targetDirHandle.getFileHandle(fileName, { create: true });
+                const writable = await newFileHandle.createWritable();
+                await writable.write(content);
+                await writable.close();
+
+                // Remove old entry
+                await sourceParent.removeEntry(fileName);
+
+                // Update open tabs if open
+                const newPath = targetDirPath ? `${targetDirPath}/${fileName}` : fileName;
+                const tab = openTabs.find(t => t.path === oldPath);
+                if (tab) {
+                    tab.path = newPath;
+                    tab.name = fileName;
+                    tab.handle = newFileHandle;
+                    if (activeTabPath === oldPath) {
+                        activeTabPath = newPath;
+                        activeFilePathLabel.textContent = newPath;
+                    }
+                    renderTabs();
+                }
+
+                await loadDirectoryTree();
+                showToast(`"${fileName}" を移動しました`);
+            } catch (err) {
+                console.error(err);
+                showToast('ファイルの移動に失敗しました（同名ファイルが存在する可能性があります）', 'error');
+            }
+        }
+
+        // Open or Switch File Tab
+        async function openFileTab(path, handle, dirHandle) {
+            let existingTab = openTabs.find(t => t.path === path);
+            if (existingTab) {
+                switchTab(path);
+                return;
+            }
+
+            try {
+                const file = await handle.getFile();
+                const content = await file.text();
+
+                const newTab = {
+                    path,
+                    handle,
+                    dirHandle,
+                    name: handle.name,
+                    content,
+                    isUnsaved: false
+                };
+
+                openTabs.push(newTab);
+                switchTab(path);
+                showToast(`"${handle.name}" を開きました`);
+            } catch (err) {
+                console.error(err);
+                showToast('ファイルの読み込みに失敗しました', 'error');
+            }
+        }
+
+        // Switch Active Tab
+        function switchTab(path) {
+            activeTabPath = path;
+            const tab = openTabs.find(t => t.path === path);
+
+            if (tab) {
+                codeEditor.value = tab.content;
+                codeEditor.disabled = false;
+                btnSave.disabled = false;
+                activeFilePathLabel.textContent = tab.path;
+                updateEditorStats();
+            } else {
+                codeEditor.value = '';
+                codeEditor.disabled = true;
+                btnSave.disabled = true;
+                activeFilePathLabel.textContent = '--';
+                updateEditorStats();
+            }
+
+            renderTabs();
+            updateSidebarHighlight();
+        }
+
+        // Render Tabs
+        function renderTabs() {
+            tabBar.innerHTML = '';
+            if (openTabs.length === 0) {
+                noTabPlaceholder.classList.remove('hidden');
+                tabBar.appendChild(noTabPlaceholder);
+                return;
+            }
+
+            noTabPlaceholder.classList.add('hidden');
+
+            openTabs.forEach(tab => {
+                const tabEl = document.createElement('div');
+                const isActive = tab.path === activeTabPath;
+                tabEl.className = `group flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs cursor-pointer transition select-none shrink-0 border ${isActive ? 'bg-slate-900 border-slate-700 text-indigo-300 font-medium shadow-sm' : 'bg-slate-950/40 border-transparent text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'}`;
+                
+                tabEl.innerHTML = `
+                    <i data-lucide="file-text" class="w-3.5 h-3.5 ${isActive ? 'text-indigo-400' : 'text-slate-500'}"></i>
+                    <span class="max-w-[120px] truncate">${tab.name}</span>
+                    <span class="w-2 h-2 rounded-full ${tab.isUnsaved ? 'bg-amber-400' : 'opacity-0'}"></span>
+                    <button title="タブを閉じる" class="close-tab-btn p-0.5 hover:bg-slate-700 rounded text-slate-400 hover:text-slate-200 transition">
+                        <i data-lucide="x" class="w-3 h-3"></i>
+                    </button>
+                `;
+
+                tabEl.addEventListener('click', (e) => {
+                    if (e.target.closest('.close-tab-btn')) {
+                        e.stopPropagation();
+                        closeTab(tab.path);
+                        return;
+                    }
+                    switchTab(tab.path);
+                });
+
+                tabBar.appendChild(tabEl);
+            });
+
+            lucide.createIcons();
+        }
+
+        // Close Tab
+        function closeTab(path) {
+            const index = openTabs.findIndex(t => t.path === path);
+            if (index === -1) return;
+
+            const tab = openTabs[index];
+            if (tab.isUnsaved) {
+                if (!confirm(`"${tab.name}" には未保存の変更があります。保存せずに閉じますか？`)) {
+                    return;
+                }
+            }
+
+            openTabs.splice(index, 1);
+
+            if (activeTabPath === path) {
+                if (openTabs.length > 0) {
+                    const nextTab = openTabs[Math.max(0, index - 1)];
+                    switchTab(nextTab.path);
+                } else {
+                    switchTab(null);
+                }
+            } else {
+                renderTabs();
+            }
+        }
+
+        function updateSidebarHighlight() {
+            document.querySelectorAll('.file-item').forEach(el => {
+                if (el.dataset.path === activeTabPath) {
+                    el.classList.add('bg-indigo-600/20', 'text-indigo-300', 'font-medium');
+                } else {
+                    el.classList.remove('bg-indigo-600/20', 'text-indigo-300', 'font-medium');
+                }
+            });
+        }
+
+        // Save File
+        async function saveActiveFile() {
+            if (!activeTabPath) return;
+            const tab = openTabs.find(t => t.path === activeTabPath);
+            if (!tab) return;
+
+            try {
+                const writable = await tab.handle.createWritable();
+                await writable.write(codeEditor.value);
+                await writable.close();
+
+                tab.isUnsaved = false;
+                renderTabs();
+                showToast(`"${tab.name}" を保存しました`);
+            } catch (err) {
+                console.error(err);
+                showToast('ファイルの保存に失敗しました', 'error');
+            }
+        }
+
+        btnSave.addEventListener('click', saveActiveFile);
+
+        // Create New .txt File in Root
+        btnNewFile.addEventListener('click', async () => {
+            if (!rootDirHandle) return;
+            const fileNameInput = await showPromptModal('新規 .txt ファイル作成', '作成するファイル名を入力してください (自動で .txt が付与されます):', 'memo');
+            if (!fileNameInput) return;
+
+            const fileName = fileNameInput.endsWith('.txt') ? fileNameInput : `${fileNameInput}.txt`;
+
+            try {
+                const newHandle = await rootDirHandle.getFileHandle(fileName, { create: true });
+                await loadDirectoryTree();
+                openFileTab(fileName, newHandle, rootDirHandle);
+                showToast(`"${fileName}" を作成しました`);
+            } catch (err) {
+                console.error(err);
+                showToast('ファイルの作成に失敗しました', 'error');
+            }
+        });
+
+        // Create New .txt File in Directory
+        async function createTxtFileInDir(dirPath, dirHandle) {
+            const fileNameInput = await showPromptModal('新規 .txt ファイル作成', `"${dirPath}" 内に作成するファイル名を入力してください:`, 'note');
+            if (!fileNameInput) return;
+
+            const fileName = fileNameInput.endsWith('.txt') ? fileNameInput : `${fileNameInput}.txt`;
+
+            try {
+                const newHandle = await dirHandle.getFileHandle(fileName, { create: true });
+                const fullPath = `${dirPath}/${fileName}`;
+                await loadDirectoryTree();
+                openFileTab(fullPath, newHandle, dirHandle);
+                showToast(`"${fileName}" を作成しました`);
+            } catch (err) {
+                console.error(err);
+                showToast('ファイルの作成に失敗しました', 'error');
+            }
+        }
+
+        // Create New Folder
+        btnNewFolder.addEventListener('click', async () => {
+            if (!rootDirHandle) return;
+            const folderName = await showPromptModal('新規フォルダー作成', 'ルートディレクトリに作成するフォルダー名を入力してください:', 'documents');
+            if (!folderName) return;
+
+            try {
+                await rootDirHandle.getDirectoryHandle(folderName, { create: true });
+                await loadDirectoryTree();
+                showToast(`フォルダー "${folderName}" を作成しました`);
+            } catch (err) {
+                console.error(err);
+                showToast('フォルダーの作成に失敗しました', 'error');
+            }
+        });
+
+        // Delete .txt File
+        async function deleteFile(path, parentDirHandle, fileName) {
+            if (!confirm(`"${path}" を削除してもよろしいですか？`)) return;
+
+            try {
+                await parentDirHandle.removeEntry(fileName);
+
+                const tabIndex = openTabs.findIndex(t => t.path === path);
+                if (tabIndex !== -1) {
+                    openTabs.splice(tabIndex, 1);
+                    if (activeTabPath === path) {
+                        switchTab(openTabs.length > 0 ? openTabs[0].path : null);
+                    } else {
+                        renderTabs();
+                    }
+                }
+
+                await loadDirectoryTree();
+                showToast(`"${path}" を削除しました`);
+            } catch (err) {
+                console.error(err);
+                showToast('ファイルの削除に失敗しました', 'error');
+            }
+        }
+
+        // Delete Directory
+        async function deleteDirectory(path, dirHandle, dirName) {
+            if (!confirm(`フォルダー "${path}" 内のすべてのコンテンツが削除されます。よろしいですか？`)) return;
+
+            try {
+                const pathParts = path.split('/');
+                let targetDir = rootDirHandle;
+                for (let i = 0; i < pathParts.length - 1; i++) {
+                    targetDir = await targetDir.getDirectoryHandle(pathParts[i]);
+                }
+                await targetDir.removeEntry(dirName, { recursive: true });
+
+                openTabs = openTabs.filter(t => {
+                    const isInside = t.path.startsWith(path + '/');
+                    if (isInside && activeTabPath === t.path) {
+                        activeTabPath = null;
+                    }
+                    return !isInside;
+                });
+                if (!openTabs.find(t => t.path === activeTabPath)) {
+                    switchTab(openTabs.length > 0 ? openTabs[0].path : null);
+                }
+
+                await loadDirectoryTree();
+                showToast(`フォルダー "${path}" を削除しました`);
+            } catch (err) {
+                console.error(err);
+                showToast('フォルダーの削除に失敗しました', 'error');
+            }
+        }
+
+        // Rename File
+        async function renameFile(path, fileHandle) {
+            const oldName = fileHandle.name;
+            const newNameInput = await showPromptModal('ファイル名変更', '新しい .txt ファイル名を入力してください:', oldName);
+            if (!newNameInput || newNameInput === oldName) return;
+
+            const newName = newNameInput.endsWith('.txt') ? newNameInput : `${newNameInput}.txt`;
+
+            try {
+                const pathParts = path.split('/');
+                let parentDir = rootDirHandle;
+                for (let i = 0; i < pathParts.length - 1; i++) {
+                    parentDir = await parentDir.getDirectoryHandle(pathParts[i]);
+                }
+
+                const file = await fileHandle.getFile();
+                const text = await file.text();
+
+                const newFileHandle = await parentDir.getFileHandle(newName, { create: true });
+                const writable = await newFileHandle.createWritable();
+                await writable.write(text);
+                await writable.close();
+
+                await parentDir.removeEntry(oldName);
+                await loadDirectoryTree();
+
+                const newPath = pathParts.slice(0, -1).concat(newName).join('/');
+                const tab = openTabs.find(t => t.path === path);
+                if (tab) {
+                    tab.path = newPath;
+                    tab.name = newName;
+                    tab.handle = newFileHandle;
+                    if (activeTabPath === path) {
+                        activeTabPath = newPath;
+                        activeFilePathLabel.textContent = newPath;
+                    }
+                    renderTabs();
+                    updateSidebarHighlight();
+                }
+
+                showToast(`"${oldName}" を "${newName}" に変更しました`);
+            } catch (err) {
+                console.error(err);
+                showToast('名前の変更に失敗しました（同名ファイルが存在する可能性があります）', 'error');
+            }
+        }
+    </script>
+</body>
+</html>
