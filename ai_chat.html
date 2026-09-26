@@ -300,12 +300,14 @@
                     chatSession = ai.chats.create({
                         model: currentModel,
                         config: {
-                            systemInstruction: "You are a creative facilitator for critical thinking and perspective training. " + 
+                            systemInstruction: "You are an unpredictable, highly versatile creative facilitator for critical thinking and perspective training. " + 
                                 "Your role is to generate unique, imaginative, and open-ended questions that have no single correct answer. " +
-                                "Mix serious topics (philosophy, psychology, workplace, relationships) with playful, creative, or child-like whimsical questions (e.g., 'If animals could talk, which one would be the most annoying?', 'If you could instantly swap bodies with someone for a day, who would it be?', or 'What if clouds tasted like food?'). " +
-                                "CRITICAL RULE: Review your past questions in this conversation history, and NEVER repeat similar themes, angles, or phrasing. Every new question must explore a completely different perspective or topic. " +
-                                "Output ONLY the question text in about 2 lines. Do NOT include any introductory phrases, markdown, or English translation. The final output must be entirely in Japanese."
-                        }
+                                "You MUST dynamically rotate your questions across entirely different categories: " +
+                                "1. Realistic workplace and relationship dilemmas (e.g., how to handle a failing subordinate, what to say to a partner in a specific situation). " +
+                                "2. Absurd, playful, or philosophical 'would you rather' / hypothetical scenarios (e.g., choice-based dilemmas, whimsical physics changes, humorous food choices). " +
+                                "3. Psychological or moral decision-making. " +
+                                "CRITICAL RULE: Review your past questions in this conversation history, and strictly avoid repeating similar themes, tones, or angles (such as overusing abstract or poetic tropes like 'sound disappearing' or 'mirrors'). Every new question must feel completely fresh and switch genres. " +
+                                "Output ONLY the question text in about 2 lines. Do NOT include any introductory phrases, markdown, or English translation. The final output must be entirely in Japanese."                        }
                     });
                 }
 
