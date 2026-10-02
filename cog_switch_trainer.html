@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 基本情報 -->
+    <meta property="og:title" content="脳を鍛える神アプリ！COG-SWITCH TRAINER">
+    <meta property="og:description" content="1秒で選択を切り替えろ！認知切り替えトレーニングで集中力＆瞬発力をブースト。今すぐ無料プレイ！">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://office-diet.github.io/cog_switch_trainer.html">
+    <meta property="og:site_name" content="COG-SWITCH TRAINER">
+
+    <!-- 画像（横長バズ画像のURLを設定） -->
+    <meta property="og:image" content="https://office-diet.github.io/cog_switch_trainer.jpg">
+    <meta property="og:image:width" content="1536">
+    <meta property="og:image:height" content="1024">
+
+    <!-- Twitterカード -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="脳を鍛える神アプリ！COG-SWITCH TRAINER">
+    <meta name="twitter:description" content="文字と色が不一致の中で正しい方を瞬時に選べ！脳がフル回転する認知トレ。">
+    <meta name="twitter:image" content="https://office-diet.github.io/cog_switch_trainer.html">
+
+    <title>認知スイッチング・脳トレアプリ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+JP:wght@400;700;900&display=swap');
+        body { font-family: 'Noto Sans JP', 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col items-center justify-between p-4 selection:bg-indigo-500 selection:text-white">
+
+    <!-- ヘッダー -->
+    <header class="w-full max-w-xl text-center py-2">
+        <h1 class="text-xl font-black tracking-wider bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+            COG-SWITCH TRAINER
+        </h1>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <main class="w-full max-w-xl flex-1 flex flex-col items-center justify-center my-1">
+
+        <!-- ===== 1. 設定画面 ===== -->
+        <div id="setup-screen" class="w-full bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-2xl backdrop-blur-md space-y-5">
+            
+            <!-- ① モード選択 -->
+            <div>
+                <label class="block text-sm font-bold text-indigo-300 mb-2">① ベースモード</label>
+                <div class="grid grid-cols-3 gap-2">
+                    <button type="button" onclick="setBaseMode('color')" id="btn-mode-color" class="py-3 px-2 rounded-xl text-sm font-bold transition-all border border-indigo-500/50 bg-indigo-600/30 text-indigo-200 shadow-sm">
+                        🎨 色モード
+                    </button>
+                    <button type="button" onclick="setBaseMode('spatial')" id="btn-mode-spatial" class="py-3 px-2 rounded-xl text-sm font-bold transition-all border border-slate-800 bg-slate-800/50 text-slate-400 hover:bg-slate-800">
+                        📍 場所モード
+                    </button>
+                    <button type="button" onclick="setBaseMode('random')" id="btn-mode-random" class="py-3 px-2 rounded-xl text-sm font-bold transition-all border border-slate-800 bg-slate-800/50 text-slate-400 hover:bg-slate-800">
+                        🔀 ランダム
+                    </button>
+                </div>
+            </div>
+
+            <!-- ② 視点選択 -->
+            <div>
+                <label class="block text-sm font-bold text-purple-300 mb-2">② 認知視点</label>
+                <div class="grid grid-cols-2 gap-3">
+                    <button type="button" onclick="setSubMode('text')" id="btn-sub-text" class="py-3 px-4 rounded-xl text-sm font-bold transition-all border border-purple-500/50 bg-purple-600/30 text-purple-200 shadow-sm">
+                        ✍️ 「文字」モード
+                    </button>
+                    <button type="button" onclick="setSubMode('visual')" id="btn-sub-visual" class="py-3 px-4 rounded-xl text-sm font-bold transition-all border border-slate-800 bg-slate-800/50 text-slate-400 hover:bg-slate-800">
+                        👁️️ 「見た目」モード
+                    </button>
+                </div>
+                <p id="mode-explanation" class="text-xs text-slate-400 mt-2 bg-slate-950/50 p-3 rounded-lg border border-slate-800/80 leading-relaxed">
+                    <!-- 動的に説明文が変わる -->
+                </p>
+            </div>
+
+            <!-- スピード設定 (0.1秒〜1.0秒) -->
+            <div>
+                <div class="flex justify-between items-center mb-2">
+                    <label class="text-sm font-bold text-pink-300">⏱️ 切り替えスピード</label>
+                    <span id="speed-value" class="text-base font-extrabold text-pink-400 bg-pink-950/40 px-3 py-0.5 rounded-full border border-pink-900/50">0.5 秒 / 問</span>
+                </div>
+                <input type="range" id="speed-range" min="0.1" max="1.0" step="0.1" value="0.5" oninput="updateSpeed(this.value)"
+                    class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-pink-500">
+                <div class="flex justify-between text-[10px] text-slate-500 mt-1 px-1">
+                    <span>高速 (0.1秒)</span>
+                    <span>標準 (0.5秒)</span>
+                    <span>ゆっくり (1.0秒)</span>
+                </div>
+            </div>
+
+            <!-- 問題数設定 (10〜50問、5問刻み) -->
+            <div>
+                <div class="flex justify-between items-center mb-2">
+                    <label class="text-sm font-bold text-teal-300">🔢 問題数</label>
+                    <span id="count-value" class="text-base font-extrabold text-teal-400 bg-teal-950/40 px-3 py-0.5 rounded-full border border-teal-900/50">10 問</span>
+                </div>
+                <input type="range" id="count-range" min="10" max="50" step="5" value="10" oninput="updateCount(this.value)"
+                    class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-teal-500">
+                <div class="flex justify-between text-[10px] text-slate-500 mt-1 px-1">
+                    <span>10問</span>
+                    <span>30問</span>
+                    <span>50問</span>
+                </div>
+            </div>
+
+            <!-- スタートボタン -->
+            <button onclick="startTraining()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-black text-lg shadow-lg hover:opacity-95 active:scale-[0.98] transition-all tracking-wider">
+                トレーニング開始
+            </button>
+        </div>
+
+        <!-- ===== 2. プレイ画面 ===== -->
+        <div id="play-screen" class="w-full hidden flex flex-col items-center justify-center space-y-3">
+            
+            <!-- 進捗情報 -->
+            <div class="w-full flex justify-between items-center px-2 text-xs font-bold text-slate-400">
+                <div>第 <span id="current-q" class="text-indigo-400 text-base font-black">1</span> / <span id="total-q-display">10</span> 問</div>
+                <div id="mode-badge" class="px-2.5 py-0.5 rounded-full bg-slate-900 text-slate-300 border border-slate-800">
+                    色モード
+                </div>
+            </div>
+
+            <!-- プログレスバー -->
+            <div class="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden border border-slate-800">
+                <div id="progress-bar" class="bg-gradient-to-r from-indigo-500 to-pink-500 h-full w-0 transition-all duration-300"></div>
+            </div>
+
+            <!-- 【シンプル常時表示】現在のモード (大きく表示) -->
+            <div id="play-mode-display" class="w-full py-3 rounded-2xl text-center shadow-lg border">
+                <span id="play-mode-text" class="text-2xl font-black tracking-wider">
+                    <!-- ✍️ 「文字」モード or 👁️ 「見た目」モード -->
+                </span>
+            </div>
+
+            <!-- 出題エリア -->
+            <div id="stimulus-container" class="w-full aspect-square max-w-[300px] bg-slate-900/80 border border-slate-800 rounded-3xl p-4 flex items-center justify-center relative shadow-2xl backdrop-blur-md">
+                <!-- JavaScriptでここに描画 -->
+            </div>
+
+            <!-- 中断ボタン -->
+            <button onclick="abortTraining()" class="text-xs text-slate-500 hover:text-slate-300 underline py-1 transition-colors">
+                設定に戻る
+            </button>
+        </div>
+
+        <!-- ===== 3. 終了画面 ===== -->
+        <div id="result-screen" class="w-full hidden bg-slate-900/90 border border-slate-800 rounded-3xl p-8 text-center shadow-2xl backdrop-blur-md space-y-6">
+            <div class="w-16 h-16 bg-gradient-to-tr from-emerald-500 to-teal-400 rounded-full flex items-center justify-center mx-auto text-3xl shadow-lg shadow-emerald-500/20">
+                ✨
+            </div>
+            <div>
+                <h2 class="text-2xl font-black text-slate-100 mb-1">セッション完了！</h2>
+                <p class="text-sm text-slate-400">お疲れ様でした。</p>
+            </div>
+
+            <div class="bg-slate-950/60 rounded-2xl p-4 border border-slate-800/80 space-y-2">
+                <div class="text-xs text-slate-400">設定モード</div>
+                <div id="result-summary" class="text-sm font-bold text-indigo-300">色モード / 文字</div>
+                <div class="flex justify-around pt-2 text-xs">
+                    <div>
+                        <span class="text-slate-400">問題数:</span> <span id="result-count" class="font-bold text-teal-300">10 問</span>
+                    </div>
+                    <div>
+                        <span class="text-slate-400">スピード:</span> <span id="result-speed" class="font-bold text-pink-300">0.5 秒</span>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="backToSetup()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-black text-base shadow-lg hover:opacity-95 active:scale-[0.98] transition-all">
+                もう一度挑戦する
+            </button>
+        </div>
+
+    </main>
+
+    <!-- フッター -->
+    <footer class="w-full max-w-xl text-center py-2 text-xs text-slate-600">
+        Cognitive Switching Trainer
+    </footer>
+
+    <!-- スクリプト制御 -->
+    <script>
+        // 状態管理
+        let state = {
+            baseMode: 'color', // 'color' | 'spatial' | 'random'
+            subMode: 'text',   // 'text' | 'visual'
+            speed: 0.5,        // 秒 (0.1〜1.0)
+            totalQuestions: 10,// 問題数 (10〜50、5問刻み)
+            currentQuestion: 0,
+            timer: null,
+            currentQuestionsData: []
+        };
+
+        // カラー定義
+        const colors = [
+            { name: '赤', code: '#ef4444', tailwind: 'text-red-500' },
+            { name: '青', code: '#3b82f6', tailwind: 'text-blue-500' },
+            { name: '緑', code: '#10b981', tailwind: 'text-emerald-500' },
+            { name: '黄', code: '#eab308', tailwind: 'text-yellow-500' },
+            { name: '紫', code: '#a855f7', tailwind: 'text-purple-500' }
+        ];
+
+        const spatialPositions = ['上', '下', '左', '右', '中'];
+
+        // 初期化（LocalStorageからの読み込み）
+        window.onload = function() {
+            loadSettings();
+            updateModeExplanation();
+        };
+
+        // LocalStorageに設定を保存
+        const STORAGE_KEY = 'cog_switch_trainer_settings_v1';
+
+        function saveSettings() {
+            const settings = {
+                baseMode: state.baseMode,
+                subMode: state.subMode,
+                speed: state.speed,
+                totalQuestions: state.totalQuestions
+            };
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+            } catch (e) {
+                console.error('Failed to save settings to localStorage', e);
+            }
+        }
+
+        // LocalStorageから設定を読み込み
+        function loadSettings() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (parsed.baseMode) setBaseModeUI(parsed.baseMode);
+                    if (parsed.subMode) setSubModeUI(parsed.subMode);
+                    if (typeof parsed.speed === 'number') {
+                        state.speed = parsed.speed;
+                        document.getElementById('speed-range').value = state.speed;
+                        document.getElementById('speed-value').innerText = `${state.speed.toFixed(1)} 秒 / 問`;
+                    }
+                    if (typeof parsed.totalQuestions === 'number') {
+                        state.totalQuestions = parsed.totalQuestions;
+                        document.getElementById('count-range').value = state.totalQuestions;
+                        document.getElementById('count-value').innerText = `${state.totalQuestions} 問`;
+                    }
+                }
+            } catch (e) {
+                console.error('Failed to load settings from localStorage', e);
+            }
+        }
+
+        // UIのみを変更するヘルパー
+        function setBaseModeUI(mode) {
+            state.baseMode = mode;
+            ['color', 'spatial', 'random'].forEach(m => {
+                const btn = document.getElementById(`btn-mode-${m}`);
+                if (m === mode) {
+                    btn.className = "py-3 px-2 rounded-xl text-sm font-bold transition-all border border-indigo-500/50 bg-indigo-600/30 text-indigo-200 shadow-sm";
+                } else {
+                    btn.className = "py-3 px-2 rounded-xl text-sm font-bold transition-all border border-slate-800 bg-slate-800/50 text-slate-400 hover:bg-slate-800";
+                }
+            });
+        }
+
+        function setSubModeUI(sub) {
+            state.subMode = sub;
+            ['text', 'visual'].forEach(s => {
+                const btn = document.getElementById(`btn-sub-${s}`);
+                if (s === sub) {
+                    btn.className = "py-3 px-4 rounded-xl text-sm font-bold transition-all border border-purple-500/50 bg-purple-600/30 text-purple-200 shadow-sm";
+                } else {
+                    btn.className = "py-3 px-4 rounded-xl text-sm font-bold transition-all border border-slate-800 bg-slate-800/50 text-slate-400 hover:bg-slate-800";
+                }
+            });
+        }
+
+        function setBaseMode(mode) {
+            setBaseModeUI(mode);
+            updateModeExplanation();
+            saveSettings();
+        }
+
+        function setSubMode(sub) {
+            setSubModeUI(sub);
+            updateModeExplanation();
+            saveSettings();
+        }
+
+        function updateSpeed(val) {
+            state.speed = parseFloat(val);
+            document.getElementById('speed-value').innerText = `${state.speed.toFixed(1)} 秒 / 問`;
+            saveSettings();
+        }
+
+        function updateCount(val) {
+            state.totalQuestions = parseInt(val);
+            document.getElementById('count-value').innerText = `${state.totalQuestions} 問`;
+            saveSettings();
+        }
+
+        function updateModeExplanation() {
+            const expEl = document.getElementById('mode-explanation');
+            let text = "";
+
+            if (state.baseMode === 'color') {
+                if (state.subMode === 'text') {
+                    text = "💡 <b>【色モード × 文字】</b>：文字の「意味」を答えます。（例：赤字で「青」➡ <b>青</b>）";
+                } else {
+                    text = "💡 <b>【色モード × 見た目】</b>：文字の「インクの色」を答えます。（例：赤字で「青」➡ <b>赤</b>）";
+                }
+            } else if (state.baseMode === 'spatial') {
+                if (state.subMode === 'text') {
+                    text = "💡 <b>【場所モード × 文字】</b>：文字の「言葉の意味」を答えます。";
+                } else {
+                    text = "💡 <b>【場所モード × 見た目】</b>：十字のどこに表示されたかを答えます。";
+                }
+            } else {
+                if (state.subMode === 'text') {
+                    text = "💡 <b>【ランダム × 文字】</b>：色・場所がランダムに出現し、すべて「文字の意味」を答えます。";
+                } else {
+                    text = "💡 <b>【ランダム × 見た目】</b>：色・場所がランダムに出現し、すべて「見た目（インク色/物理位置）」を答えます。";
+                }
+            }
+            expEl.innerHTML = text;
+        }
+
+        // トレーニング開始
+        function startTraining() {
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('play-screen').classList.remove('hidden');
+
+            document.getElementById('total-q-display').innerText = state.totalQuestions;
+
+            const modeDisplay = document.getElementById('play-mode-display');
+            const modeText = document.getElementById('play-mode-text');
+
+            if (state.subMode === 'text') {
+                modeDisplay.className = "w-full py-2.5 rounded-2xl text-center shadow-md bg-purple-950/40 border border-purple-500/50";
+                modeText.className = "text-xl font-black tracking-wider text-purple-200";
+                modeText.innerText = "✍️ 「文字」モード";
+            } else {
+                modeDisplay.className = "w-full py-2.5 rounded-2xl text-center shadow-md bg-pink-950/40 border border-pink-500/50";
+                modeText.className = "text-xl font-black tracking-wider text-pink-200";
+                modeText.innerText = "👁️ 「見た目」モード";
+            }
+
+            state.currentQuestion = 0;
+            generateQuestions();
+            runNextQuestion();
+        }
+
+        // 問題データを生成（連続重複防止）
+        function generateQuestions() {
+            state.currentQuestionsData = [];
+            
+            let lastColorText = null;
+            let lastColorInk = null;
+            let lastSpatialPos = null;
+            let lastSpatialText = null;
+            let lastSpatialColor = null;
+
+            for (let i = 0; i < state.totalQuestions; i++) {
+                let mode = state.baseMode;
+                if (mode === 'random') {
+                    mode = Math.random() < 0.5 ? 'color' : 'spatial';
+                }
+
+                if (mode === 'color') {
+                    let availableTexts = colors.filter(c => c.name !== lastColorText);
+                    if (availableTexts.length === 0) availableTexts = colors;
+                    const textObj = availableTexts[Math.floor(Math.random() * availableTexts.length)];
+
+                    let availableInks = colors.filter(c => c.name !== textObj.name && c.name !== lastColorInk);
+                    if (availableInks.length === 0) {
+                        availableInks = colors.filter(c => c.name !== textObj.name);
+                        if (availableInks.length === 0) availableInks = colors;
+                    }
+                    const colorObj = availableInks[Math.floor(Math.random() * availableInks.length)];
+
+                    lastColorText = textObj.name;
+                    lastColorInk = colorObj.name;
+
+                    state.currentQuestionsData.push({ type: 'color', textObj, colorObj });
+                } else {
+                    let availablePos = spatialPositions.filter(p => p !== lastSpatialPos);
+                    if (availablePos.length === 0) availablePos = spatialPositions;
+                    const chosenPos = availablePos[Math.floor(Math.random() * availablePos.length)];
+
+                    let availableText = spatialPositions.filter(p => p !== lastSpatialText);
+                    if (availableText.length === 0) availableText = spatialPositions;
+                    const chosenText = availableText[Math.floor(Math.random() * availableText.length)];
+
+                    let availableColors = colors.filter(c => c.name !== lastSpatialColor);
+                    if (availableColors.length === 0) availableColors = colors;
+                    const colorObj = availableColors[Math.floor(Math.random() * availableColors.length)];
+
+                    lastSpatialPos = chosenPos;
+                    lastSpatialText = chosenText;
+                    lastSpatialColor = colorObj.name;
+
+                    state.currentQuestionsData.push({ type: 'spatial', position: chosenPos, text: chosenText, color: colorObj.tailwind });
+                }
+            }
+        }
+
+        // 次の問題を表示
+        function runNextQuestion() {
+            if (state.currentQuestion >= state.totalQuestions) {
+                finishTraining();
+                return;
+            }
+
+            state.currentQuestion++;
+            document.getElementById('current-q').innerText = state.currentQuestion;
+            const progressPct = (state.currentQuestion / state.totalQuestions) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPct}%`;
+
+            const qData = state.currentQuestionsData[state.currentQuestion - 1];
+
+            let badgeText = "";
+            if (state.baseMode === 'random') {
+                badgeText = `ランダム (${qData.type === 'color' ? '色' : '場所'})`;
+            } else if (state.baseMode === 'color') {
+                badgeText = `色モード`;
+            } else {
+                badgeText = `場所モード`;
+            }
+            document.getElementById('mode-badge').innerText = badgeText;
+
+            const container = document.getElementById('stimulus-container');
+            container.innerHTML = '';
+
+            if (qData.type === 'color') {
+                const div = document.createElement('div');
+                div.className = `text-6xl md:text-7xl font-black ${qData.colorObj.tailwind} tracking-widest drop-shadow-md`;
+                div.innerText = qData.textObj.name;
+                container.appendChild(div);
+            } else {
+                // 十字の5マスレイアウト (CSS Grid 3x3の指定位置にのみ要素を配置し、全てのマスにはっきりと枠線と背景を付与)
+                const grid = document.createElement('div');
+                grid.className = 'w-full h-full grid grid-cols-3 grid-rows-3 gap-3 p-2';
+
+                const crossPositions = [
+                    { name: '上', r: 1, c: 2 },
+                    { name: '左', r: 2, c: 1 },
+                    { name: '中', r: 2, c: 2 },
+                    { name: '右', r: 2, c: 3 },
+                    { name: '下', r: 3, c: 2 }
+                ];
+
+                crossPositions.forEach(pos => {
+                    const cell = document.createElement('div');
+                    cell.style.gridRow = pos.r;
+                    cell.style.gridColumn = pos.c;
+
+                    if (pos.name === qData.position) {
+                        // アクティブ（問題が表示されている）マス
+                        cell.className = 'rounded-2xl bg-indigo-600/40 border-2 border-indigo-400 flex items-center justify-center shadow-lg shadow-indigo-500/30 transition-all';
+                        const textSpan = document.createElement('span');
+                        textSpan.className = `text-3xl md:text-4xl font-black ${qData.color}`;
+                        textSpan.innerText = qData.text;
+                        cell.appendChild(textSpan);
+                    } else {
+                        // 空の十字マス（視認性を高めるため枠線と背景色を明確に表示）
+                        cell.className = 'rounded-2xl bg-slate-900/90 border-2 border-slate-700/80 flex items-center justify-center shadow-inner';
+                    }
+                    grid.appendChild(cell);
+                });
+
+                container.appendChild(grid);
+            }
+
+            const intervalMs = state.speed * 1000;
+            state.timer = setTimeout(runNextQuestion, intervalMs);
+        }
+
+        // トレーニング終了
+        function finishTraining() {
+            document.getElementById('play-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+
+            let baseName = "";
+            if (state.baseMode === 'color') baseName = "色モード";
+            else if (state.baseMode === 'spatial') baseName = "場所モード";
+            else baseName = "ランダム";
+
+            let subName = state.subMode === 'text' ? "文字" : "見た目";
+
+            document.getElementById('result-summary').innerText = `${baseName} / ${subName}`;
+            document.getElementById('result-count').innerText = `${state.totalQuestions} 問`;
+            document.getElementById('result-speed').innerText = `${state.speed.toFixed(1)} 秒`;
+        }
+
+        // 中断
+        function abortTraining() {
+            if (state.timer) clearTimeout(state.timer);
+            document.getElementById('play-screen').classList.add('hidden');
+            document.getElementById('setup-screen').classList.remove('hidden');
+        }
+
+        // 設定画面に戻る
+        function backToSetup() {
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('setup-screen').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
